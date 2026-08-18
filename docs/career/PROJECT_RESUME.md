@@ -6,7 +6,7 @@
 - **角色**: 全栈 / AI 架构师
 - **技术栈**: Python, FastAPI, React, TypeScript, PostgreSQL, Redis, ChromaDB, Docker, Kubernetes, Helm, LLM, RAG, OpenTelemetry, MCP
 - **项目周期**: 约 3 个月
-- **GitHub**: [Enterprise AI Agent Platform](https://github.com/user/repo)
+- **GitHub**: [Enterprise AI Agent Platform](https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform)
 
 ---
 

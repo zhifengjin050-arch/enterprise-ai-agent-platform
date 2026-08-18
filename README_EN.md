@@ -8,7 +8,7 @@ An enterprise AI Agent platform with knowledge intelligence, workflow automation
 
 [中文](README.md) · [Release Guide](docs/RELEASE_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-[![CI](https://github.com/user/repo/actions/workflows/ci.yml/badge.svg)](https://github.com/user/repo/actions/workflows/ci.yml)
+[![CI](https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)]()
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)]()
 [![Release](https://img.shields.io/badge/Release-v1.0.0-blue)]()
@@ -147,7 +147,7 @@ FastAPI · SQLAlchemy 2.0 · React 18 · TypeScript · PostgreSQL · Redis · Ch
 ## Quick start
 
 ```bash
-git clone https://github.com/<owner>/enterprise-ai-agent-platform.git
+git clone https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
 cd enterprise-ai-agent-platform
 cp .env.example .env
 docker compose up -d

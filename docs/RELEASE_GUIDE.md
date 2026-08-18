@@ -20,7 +20,7 @@ A private, production-oriented AI Agent platform: knowledge intelligence, workfl
 ## Install
 
 ```bash
-git clone https://github.com/<owner>/enterprise-ai-agent-platform.git
+git clone https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
 cd enterprise-ai-agent-platform
 cp .env.example .env
 ```

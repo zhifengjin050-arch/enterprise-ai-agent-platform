@@ -8,7 +8,7 @@
 
 [English](README_EN.md) · [Release Guide](docs/RELEASE_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-[![CI](https://github.com/user/repo/actions/workflows/ci.yml/badge.svg)](https://github.com/user/repo/actions/workflows/ci.yml)
+[![CI](https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)]()
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)]()
 [![Release](https://img.shields.io/badge/Release-v1.0.0-blue)]()
@@ -159,7 +159,7 @@ helm install enterprise-ai ./charts/enterprise-ai-platform \
 ## 快速开始
 
 ```bash
-git clone https://github.com/<owner>/enterprise-ai-agent-platform.git
+git clone https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
 cd enterprise-ai-agent-platform
 cp .env.example .env
 # 可选：写入 LLM_API_KEY 与 JWT_SECRET

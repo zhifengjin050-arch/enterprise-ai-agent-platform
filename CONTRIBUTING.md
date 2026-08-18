@@ -5,7 +5,7 @@ Thank you for considering a contribution. This document describes how to set up 
 ## Development setup
 
 ```bash
-git clone https://github.com/<owner>/enterprise-ai-agent-platform.git
+git clone https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
 cd enterprise-ai-agent-platform
 cp .env.example .env
 

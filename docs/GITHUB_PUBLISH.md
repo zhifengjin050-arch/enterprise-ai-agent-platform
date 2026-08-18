@@ -1,12 +1,11 @@
 # GitHub 仓库创建说明
 
-发布前在 GitHub 创建 **Public** 仓库，再把 URL 发回本对话，即可执行 `git remote add` 与 `git push`。
+仓库已创建：https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform
 
-**本地已完成：** `git init`、分支 `main`、提交与附注标签 `v1.0.0`（见下方「等待你提供」）。  
-**尚未执行：** `git remote add` / `git push`（需仓库 URL）。
+本地推送：
 
 ```bash
-git remote add origin <repository_url>
+git remote add origin https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
 git branch -M main
 git push -u origin main
 git push origin v1.0.0
