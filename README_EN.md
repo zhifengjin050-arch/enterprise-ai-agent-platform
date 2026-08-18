@@ -4,6 +4,8 @@
 
 # Enterprise AI Agent Platform
 
+**Enterprise knowledge-base Agent: document processing, hybrid RAG, vector search, and permission control.**
+
 An enterprise AI Agent platform with knowledge intelligence, workflow automation, multi-tenant security, and cloud-native deployment.
 
 [中文](README.md) · [Release Guide](docs/RELEASE_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
@@ -97,6 +99,40 @@ flowchart TB
 ```
 
 A Security Layer (JWT / RBAC / tenant / audit), Observability Layer (traces / metrics / alerts), and MCP Layer (discovery / registry / remote tools) cut across the runtime.
+
+---
+
+## RAG Pipeline
+
+<img src="docs/images/rag-pipeline.png" alt="RAG pipeline" width="100%" />
+
+Connectors ingest documents → chunk / embed → vector + full-text + graph → hybrid retrieve → rerank → LLM answer with citations. Access is bounded by tenant isolation and RBAC.
+
+```mermaid
+flowchart LR
+    Docs[Documents] --> Conn[Connector]
+    Conn --> Chunk[Chunking]
+    Chunk --> Emb[Embedding]
+    Emb --> VS[Vector Search]
+    Emb --> FT[Full-text]
+    Emb --> KG[Knowledge Graph]
+    VS --> Hyb[Hybrid Retriever]
+    FT --> Hyb
+    KG --> Hyb
+    Hyb --> Rank[Rerank]
+    Rank --> LLM[LLM + citations]
+```
+
+### Evaluation
+
+| Check | Result |
+|-------|--------|
+| Stable pytest (workflow excluded on Windows) | 998 passed, 3 skipped |
+| `python -m compileall app/` | success |
+| Frontend production build | success |
+| Retrieval | Hybrid vector + BM25; optional graph boost and rerank |
+
+See [docs/RELEASE_GUIDE.md](docs/RELEASE_GUIDE.md). The workflow suite runs in CI with timeout protection.
 
 ---
 
@@ -231,13 +267,13 @@ Later (out of this release):
 
 | Dashboard | Agent | Knowledge |
 |-----------|-------|-----------|
-| ![Dashboard](docs/screenshots/01_dashboard.png) | ![Agent](docs/screenshots/02_agent_chat.png) | ![Search](docs/screenshots/03_knowledge_search.png) |
+| ![Dashboard](docs/images/dashboard.png) | ![Agent](docs/images/agent-chat.png) | ![Search](docs/images/knowledge-search.png) |
 
-| Workflow | Connector Preview | Observability | Security Preview |
-|----------|-------------------|---------------|------------------|
-| ![Workflow](docs/screenshots/04_workflow.png) | ![Connector](docs/screenshots/05_connector.png) | ![Monitor](docs/screenshots/06_observability.png) | ![Security](docs/screenshots/07_security.png) |
+| Architecture | RAG Pipeline |
+|--------------|--------------|
+| ![Architecture](docs/images/architecture_overview.png) | ![RAG](docs/images/rag-pipeline.png) |
 
-Connector and Security images are product previews (no dedicated dashboard routes yet). The others are captured from the running UI.
+Additional runtime pages live in `docs/screenshots/`.
 
 ---
 

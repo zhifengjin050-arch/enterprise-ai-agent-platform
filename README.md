@@ -4,6 +4,8 @@
 
 # Enterprise AI Agent Platform
 
+企业级知识库 Agent：**Document Processing · Hybrid RAG · Vector Search · Permission Control**
+
 企业级 AI Agent 平台，支持知识智能、Workflow 自动化、多租户、安全治理和云原生部署。
 
 [English](README_EN.md) · [Release Guide](docs/RELEASE_GUIDE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
@@ -97,6 +99,40 @@ flowchart TB
 ```
 
 Security Layer（JWT / RBAC / Tenant / Audit）、Observability Layer（Trace / Metrics / Alert）与 MCP Layer（Discovery / Registry / Remote tools）横切运行时。
+
+---
+
+## RAG Pipeline
+
+<img src="docs/images/rag-pipeline.png" alt="RAG pipeline" width="100%" />
+
+企业知识库检索管线：连接器接入文档 → 分块 / Embedding → 向量检索 + 全文 + 知识图谱 → 融合与 Rerank → LLM 带引用作答。权限在租户与 RBAC 边界内生效。
+
+```mermaid
+flowchart LR
+    Docs[Documents] --> Conn[Connector]
+    Conn --> Chunk[Chunking]
+    Chunk --> Emb[Embedding]
+    Emb --> VS[Vector Search]
+    Emb --> FT[Full-text]
+    Emb --> KG[Knowledge Graph]
+    VS --> Hyb[Hybrid Retriever]
+    FT --> Hyb
+    KG --> Hyb
+    Hyb --> Rank[Rerank]
+    Rank --> LLM[LLM + citations]
+```
+
+### Evaluation
+
+| Check | Result |
+|-------|--------|
+| Stable pytest (workflow excluded on Windows) | 998 passed, 3 skipped |
+| `python -m compileall app/` | success |
+| Frontend production build | success |
+| Retrieval | Hybrid vector + BM25; optional graph boost and rerank |
+
+Quality notes: [docs/RELEASE_GUIDE.md](docs/RELEASE_GUIDE.md). Workflow suite is executed in CI with timeout protection.
 
 ---
 
@@ -263,13 +299,13 @@ CI：`.github/workflows/ci.yml`（lint + pytest + bandit + frontend build）。
 
 | Dashboard | Agent | Knowledge |
 |-----------|-------|-----------|
-| ![Dashboard](docs/screenshots/01_dashboard.png) | ![Agent](docs/screenshots/02_agent_chat.png) | ![Search](docs/screenshots/03_knowledge_search.png) |
+| ![Dashboard](docs/images/dashboard.png) | ![Agent](docs/images/agent-chat.png) | ![Search](docs/images/knowledge-search.png) |
 
-| Workflow | Connector Preview | Observability | Security Preview |
-|----------|-------------------|---------------|------------------|
-| ![Workflow](docs/screenshots/04_workflow.png) | ![Connector](docs/screenshots/05_connector.png) | ![Monitor](docs/screenshots/06_observability.png) | ![Security](docs/screenshots/07_security.png) |
+| Architecture | RAG Pipeline |
+|--------------|--------------|
+| ![Architecture](docs/images/architecture_overview.png) | ![RAG](docs/images/rag-pipeline.png) |
 
-Connector / Security 两张为产品能力预览（当前 Dashboard 未挂独立路由），其余为运行时页面截图。
+更多运行时页面（Workflow / Monitor）与 Product Preview 见 `docs/screenshots/`。
 
 ---
 
