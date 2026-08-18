@@ -44,7 +44,7 @@ cd frontend && npm run build  → success
 |----|------|
 | Apache-2.0 LICENSE | 已就绪 |
 | 双语 README + 截图 + 架构图 | 已就绪 |
-| 本地 `git init` + `main` + tag `v1.0.0` | 本报告生成后执行 |
+| 本地 `git init` + `main` + tag `v1.0.0` | **已完成**（`a4ac2e7`，未推送） |
 | `git push` | **等待仓库 URL**，见 [GITHUB_PUBLISH.md](GITHUB_PUBLISH.md) |
 
 `.gitignore` 排除 `.env`、`*.db`、`*.sqlite`、`logs/`、`*.log`、`node_modules/`、`dist/`、`build/`、`__pycache__/`、`.pytest_cache/`。
