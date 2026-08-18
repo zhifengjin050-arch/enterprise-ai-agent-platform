@@ -1,0 +1,106 @@
+{{- $fullname := include "enterprise-ai-platform.fullname" . }}
+
+{{- range $component, $config := dict "backend" .Values.backend "frontend" .Values.frontend }}
+{{- if $config.enabled | default true }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $config.name | default (printf "%s-%s" $fullname $component) }}
+  namespace: {{ $.Values.global.namespace | default "default" }}
+  labels:
+    {{- include "enterprise-ai-platform.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  replicas: {{ $config.replicaCount }}
+  selector:
+    matchLabels:
+      {{- if eq $component "backend" }}
+      {{- include "enterprise-ai-platform.backendSelectorLabels" $ | nindent 6 }}
+      {{- else }}
+      {{- include "enterprise-ai-platform.frontendSelectorLabels" $ | nindent 6 }}
+      {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        {{- include "enterprise-ai-platform.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $component }}
+    spec:
+      {{- with $config.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $config.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $config.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $component }}
+          image: "{{ $config.image.repository }}:{{ $config.image.tag }}"
+          imagePullPolicy: {{ $config.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $config.service.targetPort }}
+              protocol: TCP
+              name: {{ $config.service.portName | default "http" }}
+          envFrom:
+            {{- if eq $component "backend" }}
+            - configMapRef:
+                name: {{ printf "%s-config" $fullname }}
+            - secretRef:
+                name: {{ printf "%s-secrets" $fullname }}
+            {{- end }}
+          env:
+            {{- if eq $component "backend" }}
+            - name: DATABASE_URL
+              value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-secrets" $fullname }}
+                  key: jwt-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-secrets" $fullname }}
+                  key: postgres-password
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-secrets" $fullname }}
+                  key: llm-api-key
+            {{- end }}
+            {{- with $config.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml $config.resources | nindent 12 }}
+          {{- with $config.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $config.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if and (eq $component "backend") ($.Values.backend.persistence.enabled) }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          {{- end }}
+      {{- if and (eq $component "backend") ($.Values.backend.persistence.enabled) }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $.Values.backend.persistence.existingClaim | default (printf "%s-data" $fullname) }}
+      {{- end }}
+{{- end }}
+{{- end }}

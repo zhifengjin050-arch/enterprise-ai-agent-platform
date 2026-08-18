@@ -1,0 +1,17 @@
+apiVersion: v2
+name: enterprise-ai-platform
+description: Enterprise AI Agent Platform Helm Chart — Deploys backend, frontend, and infrastructure for an AI-powered DevOps RAG Knowledge Base
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - ai
+  - rag
+  - devops
+  - knowledge-base
+  - agent
+home: https://github.com/enterprise-ai/enterprise-ai-platform
+maintainers:
+  - name: Enterprise AI Team
+    email: ai-team@enterprise.com
+icon: https://raw.githubusercontent.com/enterprise-ai/enterprise-ai-platform/main/docs/icon.png

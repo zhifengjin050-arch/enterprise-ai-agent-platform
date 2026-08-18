@@ -1,0 +1,60 @@
+"""Tests for Prometheus metrics collector."""
+from __future__ import annotations
+from httpx import AsyncClient, ASGITransport
+from app.main import app
+from app.monitor.metrics import MetricsCollector, metrics
+
+class TestMetricsCollector:
+    """Test MetricsCollector operations."""
+
+    def test_record_http_request(self) -> None:
+        """Test recording an HTTP request metric."""
+        metrics.record_http_request(method="GET", endpoint="/api/health", status=200, duration=0.05)
+        assert True
+
+    def test_record_workflow_execution(self) -> None:
+        """Test recording workflow execution."""
+        metrics.record_workflow_execution(workflow_type="knowledge")
+        assert True
+
+    def test_record_workflow_failure(self) -> None:
+        """Test recording workflow failure."""
+        metrics.record_workflow_failure(workflow_type="knowledge")
+        assert True
+
+    def test_record_llm_call(self) -> None:
+        """Test recording LLM call."""
+        metrics.record_llm_call(provider="deepseek", model="deepseek-chat", request_type="answer_generation", prompt_tokens=100, completion_tokens=50)
+        assert True
+
+    def test_record_embedding_call(self) -> None:
+        """Test recording embedding call."""
+        metrics.record_embedding_call(provider="openai")
+        assert True
+
+    def test_record_search_duration(self) -> None:
+        """Test recording search duration."""
+        metrics.record_search_duration(search_type="hybrid", duration=0.15)
+        assert True
+
+    def test_set_active_workflows(self) -> None:
+        """Test setting active workflow count."""
+        metrics.set_active_workflows(count=5)
+        assert True
+
+    def test_generate_metrics(self) -> None:
+        """Test generating Prometheus metrics output."""
+        output = metrics.generate_metrics()
+        assert isinstance(output, str)
+        assert len(output) > 0
+
+class TestMetricsEndpoint:
+    """Test /metrics endpoint."""
+
+    async def test_metrics_endpoint(self) -> None:
+        """Test that the /metrics endpoint returns Prometheus format."""
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get("/metrics")
+            assert response.status_code == 200
+            assert "text/plain" in response.headers.get("content-type", "")

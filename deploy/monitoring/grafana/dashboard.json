@@ -1,0 +1,121 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "title": "Enterprise AI Knowledge Copilot — Phase 8 Overview",
+  "uid": "enterprise-ai-overview",
+  "version": 1,
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "System Overview",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+    {
+      "title": "HTTP Request Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "rate(http_requests_total[5m])", "legendFormat": "{{method}} {{endpoint}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 1 }
+    },
+    {
+      "title": "HTTP Request Latency (p99)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))", "legendFormat": "{{method}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 1 }
+    },
+    {
+      "title": "Active Agents",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "active_agents" }
+      ],
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 }
+    },
+
+    {
+      "title": "AI Overview",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 }
+    },
+    {
+      "title": "Agent Task Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "rate(agent_tasks_total[5m])", "legendFormat": "{{agent_type}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 }
+    },
+    {
+      "title": "Agent Task Latency (p50)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "histogram_quantile(0.5, rate(agent_task_duration_seconds_bucket[5m]))", "legendFormat": "{{agent_type}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 }
+    },
+    {
+      "title": "LLM Tokens / min",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "rate(llm_tokens_input_total[5m]) + rate(llm_tokens_output_total[5m])", "legendFormat": "{{model}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 7 }
+    },
+    {
+      "title": "LLM Cost / hr",
+      "type": "graph",
+      "datasource": "Prometheus (derived)",
+      "targets": [
+        { "expr": "rate(llm_requests_total[1h]) * 0.002", "legendFormat": "{{provider}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 7 }
+    },
+
+    {
+      "title": "Knowledge & Sync",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 }
+    },
+    {
+      "title": "Knowledge Retrieval Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "rate(knowledge_retrievals_total[5m])", "legendFormat": "{{search_type}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 11 }
+    },
+    {
+      "title": "Sync Job Duration (p50)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "histogram_quantile(0.5, rate(sync_job_duration_seconds_bucket[5m]))", "legendFormat": "{{connector_type}}" }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 11 }
+    },
+    {
+      "title": "Sync Success Rate",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "1 - (rate(sync_failures_total[1h]) / rate(sync_jobs_total[1h]))",
+          "legendFormat": "Success Rate"
+        }
+      ],
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 11 }
+    }
+  ],
+  "schemaVersion": 30
+}

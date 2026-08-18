@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Connector Preview — Enterprise AI Agent Platform</title>
+  <style>
+    :root { --sidebar:#0b1220; --bg:#f8fafc; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#64748b; --primary:#2563eb; --ok:#16a34a; --warn:#d97706; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--text); display:flex; height:100vh; }
+    aside { width:256px; background:var(--sidebar); color:#e2e8f0; padding:20px 16px; }
+    .logo { font-weight:700; margin-bottom:24px; }
+    aside a { display:block; padding:8px 12px; border-radius:8px; color:#cbd5e1; text-decoration:none; margin-bottom:4px; }
+    aside a.active { background:#1e3a5f; color:#fff; }
+    main { flex:1; padding:28px 36px; overflow:auto; }
+    h1 { margin:0 0 6px; font-size:24px; }
+    p.sub { color:var(--muted); margin:0 0 24px; }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .name { font-weight:600; margin-bottom:8px; }
+    .meta { font-size:13px; color:var(--muted); margin:4px 0; }
+    .badge { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; }
+    .ok { background:#dcfce7; color:var(--ok); }
+    .warn { background:#fef3c7; color:var(--warn); }
+    .banner { font-size:12px; color:var(--muted); margin-top:16px; }
+  </style>
+</head>
+<body>
+  <aside>
+    <div class="logo">DevOps RAG</div>
+    <a>仪表盘</a><a>AI 智能体</a><a>知识库</a><a>工作流</a><a>系统监控</a>
+    <a class="active">连接器</a>
+  </aside>
+  <main>
+    <h1>Connector 管理</h1>
+    <p class="sub">CloudTech · Feishu / Yuque / GitLab 同步状态</p>
+    <div class="grid">
+      <div class="card">
+        <div class="name">CloudTech Feishu</div>
+        <div class="meta">type: feishu</div>
+        <div class="meta">last sync: 2 min ago · 128 docs</div>
+        <span class="badge ok">SUCCESS</span>
+      </div>
+      <div class="card">
+        <div class="name">CloudTech Yuque</div>
+        <div class="meta">type: yuque</div>
+        <div class="meta">last sync: 8 min ago · 64 docs</div>
+        <span class="badge ok">SUCCESS</span>
+      </div>
+      <div class="card">
+        <div class="name">CloudTech GitLab</div>
+        <div class="meta">type: gitlab</div>
+        <div class="meta">last sync: running wiki + CI docs</div>
+        <span class="badge warn">RUNNING</span>
+      </div>
+    </div>
+    <p class="banner">Product preview — Connector API exists; this page is documentation-only (no dashboard route in v1.0.0).</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1 @@
+"""Tests for the Knowledge Agent (Day 8)."""

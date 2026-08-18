@@ -1,0 +1,49 @@
+# Enterprise AI Knowledge Copilot Dependencies
+
+# Web framework
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.32.0,<1.0.0
+
+# Configuration
+pydantic-settings>=2.5.0,<3.0.0
+
+# Database
+sqlalchemy>=2.0.35,<3.0.0
+aiosqlite>=0.20.0,<1.0.0
+asyncpg>=0.29.0,<1.0.0
+alembic>=1.13.0,<2.0.0
+psycopg2-binary>=2.9.0,<3.0.0
+
+# Document parsing
+PyMuPDF>=1.25.0,<2.0.0
+python-docx>=1.1.0,<2.0.0
+markdown>=3.6.0,<4.0.0
+python-frontmatter>=1.1.0,<2.0.0
+
+# Vector Store (semantic search)
+# Note: On Windows, chromadb may require MSVC Build Tools.
+# Install manually if needed: pip install chromadb
+chromadb>=0.5.0,<1.0.0
+
+# Knowledge Workflow Engine
+langgraph>=0.2.0,<1.0.0
+
+# HTTP client (for integrations and embedding API)
+httpx>=0.27.0,<1.0.0
+
+# Auth / Security
+python-jose[cryptography]>=3.5.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.0
+
+# Monitoring
+prometheus-client>=0.26.0
+
+# OpenTelemetry Tracing (optional — TraceManager degrades gracefully)
+opentelemetry-api>=1.28.0
+opentelemetry-sdk>=1.28.0
+opentelemetry-exporter-otlp-proto-http>=1.28.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.24.0

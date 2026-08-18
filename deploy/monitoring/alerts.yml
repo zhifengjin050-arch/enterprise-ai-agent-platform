@@ -1,0 +1,73 @@
+# Alert rules for Enterprise AI Knowledge Copilot
+
+groups:
+  - name: enterprise-knowledge-agent
+    interval: 30s
+    rules:
+
+      # ── API Error Rate ──
+      - alert: HighAPIErrorRate
+        expr: |
+          rate(http_requests_total{status=~"5.."}[5m])
+          /
+          rate(http_requests_total[5m])
+          > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "API error rate > 5%"
+          description: "Error rate {{ $value | humanizePercentage }} in last 5 minutes"
+
+      # ── LLM Failure Rate ──
+      - alert: HighLLMFailureRate
+        expr: |
+          rate(agent_failures_total{error_code=~"llm.*"}[5m])
+          /
+          rate(agent_tasks_total[5m])
+          > 0.03
+        for: 2m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "LLM failure rate > 3%"
+          description: "LLM failure rate {{ $value | humanizePercentage }}"
+
+      # ── Sync Failures ──
+      - alert: SyncFailureRateHigh
+        expr: rate(sync_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: sync
+        annotations:
+          summary: "Sync failure rate elevated"
+          description: "Sync failures rate {{ $value }} per second"
+
+      # ── Token Growth Anomaly ──
+      - alert: TokenGrowthAnomaly
+        expr: |
+          rate(llm_tokens_input_total[10m])
+          /
+          rate(llm_tokens_input_total[1h])
+          > 3.0
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "Unusual token consumption spike"
+          description: "Token input rate {{ $value }}x normal"
+
+      # ── Database Connectivity ──
+      - alert: DatabaseUnhealthy
+        expr: up{job="enterprise-knowledge-agent"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database unreachable"
+          description: "Database scrape target is down"

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enterprise-ai-config
+  namespace: default
+  labels:
+    app.kubernetes.io/name: enterprise-ai-platform
+    app.kubernetes.io/component: config
+data:
+  # Application
+  APP_NAME: "Enterprise AI Agent Platform"
+  DEBUG: "false"
+
+  # PostgreSQL
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "enterprise_ai"
+  POSTGRES_USER: "postgres"
+
+  # Chroma Vector DB
+  CHROMA_HOST: "chroma-service"
+  CHROMA_PORT: "8000"
+
+  # Redis
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+
+  # LLM Configuration
+  LLM_BASE_URL: "https://api.deepseek.com/v1"
+  LLM_MODEL: "deepseek-chat"
+
+  # Embedding Model
+  EMBEDDING_MODEL: "text-embedding-ada-002"

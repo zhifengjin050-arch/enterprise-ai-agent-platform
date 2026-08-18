@@ -1,0 +1,169 @@
+# =============================================================================
+# Enterprise AI Agent Platform — Helm Values
+# =============================================================================
+
+# --- Global Settings ---
+global:
+  namespace: default
+
+# --- Backend Configuration ---
+backend:
+  replicaCount: 2
+  name: enterprise-ai-backend
+  image:
+    repository: enterprise-ai-platform
+    tag: latest
+    pullPolicy: IfNotPresent
+  serviceName: ""  # defaults to <fullname>-backend
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    portName: http
+  resources:
+    requests:
+      cpu: 500m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  livenessProbe:
+    httpGet:
+      path: /api/health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      path: /api/health
+      port: 8000
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 2
+  env:
+    - name: APP_NAME
+      value: "Enterprise AI Agent Platform"
+    - name: DEBUG
+      value: "false"
+    - name: POSTGRES_HOST
+      value: "postgres-service"
+    - name: POSTGRES_PORT
+      value: "5432"
+    - name: POSTGRES_DB
+      value: "enterprise_ai"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: CHROMA_HOST
+      value: "chroma-service"
+    - name: CHROMA_PORT
+      value: "8000"
+    - name: REDIS_HOST
+      value: "redis-service"
+    - name: REDIS_PORT
+      value: "6379"
+    - name: LLM_BASE_URL
+      value: "https://api.deepseek.com/v1"
+    - name: LLM_MODEL
+      value: "deepseek-chat"
+    - name: EMBEDDING_MODEL
+      value: "text-embedding-ada-002"
+
+  # Secret references (plaintext values; Helm will base64-encode them automatically)
+  # In production, leave these empty and use External Secrets Operator or Vault.
+  secrets:
+    postgresPassword: ""     # e.g. "my-secure-password"
+    jwtSecret: ""            # e.g. "my-jwt-secret-key"
+    llmApiKey: ""            # e.g. "sk-..."
+    grafanaPassword: ""      # e.g. "secure-admin-password"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    existingClaim: ""
+
+# --- Frontend Configuration ---
+frontend:
+  replicaCount: 1
+  name: enterprise-ai-frontend
+  image:
+    repository: enterprise-ai-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  serviceName: ""  # defaults to <fullname>-frontend
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+    portName: http
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+  env: []
+
+# --- Infrastructure Services ---
+postgresql:
+  enabled: false  # Set true to deploy as a subchart, or manage externally
+  service:
+    name: postgres-service
+    port: 5432
+
+redis:
+  enabled: false  # Set true to deploy as a subchart, or manage externally
+  service:
+    name: redis-service
+    port: 6379
+
+chroma:
+  enabled: false  # Set true to deploy as a subchart, or manage externally
+  service:
+    name: chroma-service
+    port: 8000
+
+# --- Ingress Configuration ---
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+  hosts:
+    - host: ai.enterprise.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          service:
+            name: enterprise-ai-backend-service
+            port: 8000
+        - path: /
+          pathType: Prefix
+          service:
+            name: enterprise-ai-frontend-service
+            port: 80
+  tls:
+    - hosts:
+        - ai.enterprise.local
+      secretName: enterprise-ai-tls

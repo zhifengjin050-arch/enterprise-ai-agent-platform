@@ -1,0 +1,13 @@
+{{- $fullname := include "enterprise-ai-platform.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" $fullname }}
+  namespace: {{ .Values.global.namespace | default "default" }}
+  labels:
+    {{- include "enterprise-ai-platform.labels" . | nindent 4 }}
+    app.kubernetes.io/component: config
+data:
+  {{- range $env := .Values.backend.env }}
+  {{ $env.name }}: {{ $env.value | quote }}
+  {{- end }}

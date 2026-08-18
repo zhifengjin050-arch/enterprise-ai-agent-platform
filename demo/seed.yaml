@@ -1,0 +1,26 @@
+tenant:
+  name: CloudTech
+  description: CloudTech demo enterprise for GitHub showcase
+
+user:
+  username: admin
+  password: admin123
+  email: admin@cloudtech.demo
+
+agent:
+  name: Enterprise Assistant
+  agent_type: knowledge
+
+workflow:
+  name: Incident Analysis
+  description: Analyze incidents with knowledge retrieval and approval
+
+connectors:
+  - name: CloudTech Feishu
+    type: feishu
+  - name: CloudTech Yuque
+    type: yuque
+  - name: CloudTech GitLab
+    type: gitlab
+
+documents_dir: documents

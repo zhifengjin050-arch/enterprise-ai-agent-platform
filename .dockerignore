@@ -1,0 +1,50 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project data (runtime)
+data/
+logs/
+
+# Frontend (built separately)
+frontend/node_modules/
+frontend/.tmp/
+frontend/dist/
+
+# Documentation (not needed in runtime image)
+docs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Docker
+Dockerfile
+docker-compose*.yml
+
+# CI
+.github/
