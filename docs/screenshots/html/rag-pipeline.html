@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><title>RAG Pipeline</title>
+<link rel="stylesheet" href="_shell.css"/>
+<style>body{background:#fff;padding:36px 48px}</style>
+</head>
+<body>
+  <h1>RAG Pipeline</h1>
+  <p class="sub">Parse → Embedding → Vector + Full-text (+Rerank) → Cited answer</p>
+  <div class="row" style="flex-direction:column;gap:0">
+    <div class="node">Documents / Connectors</div><div class="arrow"></div>
+    <div class="node">Chunking + Embedding</div><div class="arrow"></div>
+    <div class="row" style="width:100%">
+      <div class="node">Vector Search</div>
+      <div class="node">Full-text</div>
+      <div class="node">Knowledge Graph</div>
+    </div>
+    <div class="arrow"></div>
+    <div class="node">Hybrid Retriever + Rerank</div><div class="arrow"></div>
+    <div class="node">LLM + citations / refuse if no evidence</div>
+  </div>
+  <p class="preview">Product preview — evaluation uses sample-set口径.</p>
+</body></html>

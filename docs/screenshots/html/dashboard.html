@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"/><title>Dashboard</title>
+<link rel="stylesheet" href="_shell.css"/>
+</head>
+<body class="app">
+<aside>
+  <div class="logo">DevOps RAG<small>CloudTech · admin</small></div>
+  <a class="active">仪表盘</a><a>AI 智能体</a><a>知识库</a><a>工作流</a><a>系统监控</a>
+</aside>
+<main>
+  <h1>仪表盘</h1>
+  <p class="sub">Hybrid RAG · Agent · Workflow · 租户隔离</p>
+  <div class="kpis">
+    <div class="card kpi"><div class="n">5</div><div class="l">知识文档</div></div>
+    <div class="card kpi"><div class="n">36</div><div class="l">Agent 执行</div></div>
+    <div class="card kpi"><div class="n">97%</div><div class="l">成功率</div></div>
+    <div class="card kpi"><div class="n">healthy</div><div class="l">API / DB / Redis</div></div>
+  </div>
+  <div class="card">
+    <strong>最近活动</strong>
+    <table>
+      <tr><th>时间</th><th>动作</th><th>结果</th></tr>
+      <tr><td>10:05</td><td>Agent 执行 · Pod OOM 排查</td><td><span class="badge">COMPLETED</span></td></tr>
+      <tr><td>10:04</td><td>Hybrid 检索 · Kubernetes 运维规范</td><td><span class="badge blue">2 hits</span></td></tr>
+      <tr><td>10:03</td><td>Workflow · Incident Analysis</td><td><span class="badge">CREATED</span></td></tr>
+    </table>
+  </div>
+  <p class="preview">Product preview — CloudTech demo tenant, no production secrets.</p>
+</main>
+</body></html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"/><title>Agent</title>
+<link rel="stylesheet" href="_shell.css"/>
+</head>
+<body class="app">
+<aside>
+  <div class="logo">DevOps RAG<small>Enterprise Assistant</small></div>
+  <a>仪表盘</a><a class="active">AI 智能体</a><a>知识库</a><a>工作流</a>
+</aside>
+<main>
+  <h1>Agent 执行</h1>
+  <p class="sub">Planner → Tool Registry → Hybrid RAG → 带引用作答</p>
+  <div class="chat">
+    <div class="bubble user"><strong>用户</strong><br/>生产环境 Pod 频繁 OOM，应该怎么排查？</div>
+    <div class="bubble bot">
+      <strong>Enterprise Assistant</strong>
+      <p>先确认 memory request/limit，再看 recent events 与 cgroup 指标。证据来自知识库，无证据则拒答。</p>
+      <p class="cite">引用 · Kubernetes 运维规范（score 0.92）</p>
+      <p class="cite">工具 · knowledge_search { query: "Pod OOM" } → 3 hits</p>
+    </div>
+  </div>
+  <p class="preview">Product preview — sample CloudTech run, no live cluster credentials.</p>
+</main>
+</body></html>
