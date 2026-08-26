@@ -38,11 +38,13 @@ class AgentTrace:
         self.tools = []
 
     def record_tool(self, name: str, *, latency_ms: int, success: bool) -> None:
-        self.tools.append({
-            "name": name,
-            "latency_ms": latency_ms,
-            "success": success,
-        })
+        self.tools.append(
+            {
+                "name": name,
+                "latency_ms": latency_ms,
+                "success": success,
+            }
+        )
 
     def record_model(self, model: str, tokens: int = 0) -> None:
         self.model = model

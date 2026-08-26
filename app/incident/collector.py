@@ -47,11 +47,7 @@ async def record_incident(
     else:
         timeline_json = timeline
 
-    status = (
-        IncidentStatus.RESOLVED.value
-        if resolved_at
-        else IncidentStatus.NEW.value
-    )
+    status = IncidentStatus.RESOLVED.value if resolved_at else IncidentStatus.NEW.value
 
     incident = IncidentRecord(
         title=title,

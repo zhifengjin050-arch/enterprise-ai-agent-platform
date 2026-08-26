@@ -40,7 +40,9 @@ class DocumentChunk(Base):
         default=lambda: str(uuid.uuid4()),
     )
     document_id: Mapped[str] = mapped_column(
-        String(36), nullable=False, index=True,
+        String(36),
+        nullable=False,
+        index=True,
         comment="FK to knowledge_documents.id",
     )
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -50,10 +52,14 @@ class DocumentChunk(Base):
     embedding_id: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSON, nullable=True, default=None,
+        JSON,
+        nullable=True,
+        default=None,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(),
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
     )
 
     def to_dict(self) -> Dict[str, Any]:

@@ -2,14 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
-from unittest.mock import AsyncMock, patch
-
-import pytest
 import pytest_asyncio
 from httpx import AsyncClient
-
-from app.main import app as fastapi_app
 
 
 class TestConnectorAPI:
@@ -104,7 +98,6 @@ class TestConnectorModels:
 
     def test_connector_init_no_config(self) -> None:
         """Test BaseConnector subclass init with no config."""
-        from app.connector.base import BaseConnector
         from app.connector.feishu import FeishuConnector
 
         assert FeishuConnector.name == "Feishu"

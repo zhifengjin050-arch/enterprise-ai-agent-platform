@@ -75,7 +75,8 @@ export interface KnowledgeStats {
 export interface SearchResult {
   query: string
   results: Array<{
-    id: string
+    id?: string
+    document_id?: string
     title: string
     content: string
     score: number

@@ -107,9 +107,7 @@ def parse_pdf(file_path: Path) -> ParsedDocument:
     try:
         import fitz  # PyMuPDF
     except ImportError as exc:
-        raise ImportError(
-            "PyMuPDF is required for PDF parsing: pip install PyMuPDF"
-        ) from exc
+        raise ImportError("PyMuPDF is required for PDF parsing: pip install PyMuPDF") from exc
 
     try:
         doc = fitz.open(str(file_path))
@@ -325,8 +323,7 @@ def parse_markdown(file_path: Path) -> ParsedDocument:
         import frontmatter
     except ImportError as exc:
         raise ImportError(
-            "python-frontmatter is required for Markdown parsing: "
-            "pip install python-frontmatter"
+            "python-frontmatter is required for Markdown parsing: pip install python-frontmatter"
         ) from exc
 
     try:

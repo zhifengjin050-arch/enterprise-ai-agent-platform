@@ -36,26 +36,24 @@ spec:
           envFrom:
             - configMapRef:
                 name: enterprise-ai-config
-            - secretRef:
-                name: enterprise-ai-secrets
           env:
-            - name: DATABASE_URL
-              value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: enterprise-ai-secrets
-                  key: jwt-secret
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: enterprise-ai-secrets
                   key: postgres-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: enterprise-ai-secrets
+                  key: jwt-secret
             - name: LLM_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: enterprise-ai-secrets
                   key: llm-api-key
+            - name: DATABASE_URL
+              value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
           resources:
             requests:
               cpu: 500m
@@ -84,8 +82,7 @@ spec:
               mountPath: /app/data
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: enterprise-ai-data
+          emptyDir: {}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -122,6 +119,9 @@ spec:
             - containerPort: 80
               protocol: TCP
               name: http
+          env:
+            - name: BACKEND_HOST
+              value: enterprise-ai-backend-service
           resources:
             requests:
               cpu: 100m

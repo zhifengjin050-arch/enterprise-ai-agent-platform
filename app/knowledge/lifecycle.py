@@ -56,9 +56,7 @@ async def archive_document(
 ) -> Optional[KnowledgeDocument]:
     """Archive a document (soft delete via status)."""
     result = await session.execute(
-        select(KnowledgeDocument).where(
-            KnowledgeDocument.id == uuid.UUID(str(document_id))
-        )
+        select(KnowledgeDocument).where(KnowledgeDocument.id == uuid.UUID(str(document_id)))
     )
     document = result.scalar_one_or_none()
     if not document:
@@ -77,9 +75,7 @@ async def create_new_version(
 ) -> Optional[KnowledgeDocument]:
     """Archive current version and create a new incremented version."""
     result = await session.execute(
-        select(KnowledgeDocument).where(
-            KnowledgeDocument.id == uuid.UUID(str(document_id))
-        )
+        select(KnowledgeDocument).where(KnowledgeDocument.id == uuid.UUID(str(document_id)))
     )
     original = result.scalar_one_or_none()
     if not original:

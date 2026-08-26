@@ -2,21 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
-from app.db.base import Base
-from app.db.session import reset_engine
-from app.entity.models import EntityType, KnowledgeEntity
-from app.knowledge.chunk_models import DocumentChunk
-from app.knowledge.chunk_repository import DocumentChunkRepository
-from app.knowledge.chunking import Chunk, SmartChunker
-from app.knowledge.graph import GraphEdge, GraphNode, KnowledgeGraph
-from app.knowledge.memory import KnowledgeMemory
-from app.knowledge.context_builder import IntelligenceContextBuilder
-from app.knowledge.retrieval import RetrievalResult
-from app.relation.models import KnowledgeRelation, RelationType
 
 import app.auth.models  # noqa: F401
 import app.connector.models  # noqa: F401
@@ -26,6 +13,16 @@ import app.knowledge.models  # noqa: F401
 import app.relation.models  # noqa: F401
 import app.sync_engine.models  # noqa: F401
 import app.task.models  # noqa: F401
+from app.db.base import Base
+from app.db.session import reset_engine
+from app.entity.models import EntityType, KnowledgeEntity
+from app.knowledge.chunk_repository import DocumentChunkRepository
+from app.knowledge.chunking import Chunk, SmartChunker
+from app.knowledge.context_builder import IntelligenceContextBuilder
+from app.knowledge.graph import GraphEdge, GraphNode, KnowledgeGraph
+from app.knowledge.memory import KnowledgeMemory
+from app.knowledge.retrieval import RetrievalResult
+from app.relation.models import KnowledgeRelation, RelationType
 
 
 @pytest_asyncio.fixture

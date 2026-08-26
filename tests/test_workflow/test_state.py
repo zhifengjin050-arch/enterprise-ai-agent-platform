@@ -1,4 +1,5 @@
 """Tests for KnowledgeState schema and KnowledgeState model."""
+
 from __future__ import annotations
 
 import pytest

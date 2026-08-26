@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.search.hybrid import HybridResult, HybridSearch, rrf_score
 from app.search.fulltext import DocumentResult
+from app.search.hybrid import HybridResult, HybridSearch, rrf_score
 from app.search.semantic import SemanticResult
 
 

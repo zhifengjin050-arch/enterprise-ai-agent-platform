@@ -4,6 +4,7 @@ Calls the LLM with structured_output to produce a JSON-formatted
 answer with confidence assessment and source attribution.
 Uses the global llm_client with api_key fallback behaviour.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

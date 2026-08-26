@@ -74,9 +74,7 @@ class KnowledgeMemory:
         while len(self._retrieval_cache) > self._max_retrievals:
             self._retrieval_cache.popitem(last=False)
 
-    def recall_retrieval(
-        self, session_id: str, query: str
-    ) -> Optional[MemoryEntry]:
+    def recall_retrieval(self, session_id: str, query: str) -> Optional[MemoryEntry]:
         """Recall a cached retrieval if present.
 
         Args:

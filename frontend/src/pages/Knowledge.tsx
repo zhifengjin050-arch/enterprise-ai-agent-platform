@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { getKnowledgeStats, getKnowledgeDocuments, searchKnowledge } from "@/lib/api"
 import type { KnowledgeStats, KnowledgeDocument, SearchResult } from "@/types/api"
-import { cn, formatDate, formatNumber } from "@/lib/utils"
+import { formatDate, formatNumber } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,6 @@ import {
   BookOpen,
   ChevronDown,
   ChevronUp,
-  ExternalLink,
 } from "lucide-react"
 
 export default function Knowledge() {
@@ -184,14 +183,14 @@ export default function Knowledge() {
             {searchResults.results.length === 0 && (
               <p className="text-sm text-muted-foreground">未找到相关结果</p>
             )}
-            {searchResults.results.map((result) => (
+            {searchResults.results.map((result) => {
+              const docId = result.id || result.document_id || result.title || "unknown"
+              return (
               <div
-                key={result.id}
+                key={docId}
                 className="rounded-md border p-3 transition-colors hover:bg-muted/50 cursor-pointer"
                 onClick={() =>
-                  setExpandedDoc(
-                    expandedDoc === result.id ? null : result.id
-                  )
+                  setExpandedDoc(expandedDoc === docId ? null : docId)
                 }
               >
                 <div className="flex items-start justify-between">
@@ -203,14 +202,14 @@ export default function Knowledge() {
                     <Badge variant="secondary" className="text-xs">
                       相关度 {(result.score * 100).toFixed(0)}%
                     </Badge>
-                    {expandedDoc === result.id ? (
+                    {expandedDoc === docId ? (
                       <ChevronUp className="h-4 w-4 text-muted-foreground" />
                     ) : (
                       <ChevronDown className="h-4 w-4 text-muted-foreground" />
                     )}
                   </div>
                 </div>
-                {expandedDoc === result.id && (
+                {expandedDoc === docId && (
                   <div className="mt-3 space-y-2">
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
                       {result.content}
@@ -226,7 +225,8 @@ export default function Knowledge() {
                   </div>
                 )}
               </div>
-            ))}
+              )
+            })}
           </CardContent>
         </Card>
       )}

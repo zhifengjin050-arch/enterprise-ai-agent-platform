@@ -4,6 +4,7 @@ Handles creation, updating, and rebuilding of search indices
 for both full-text (FTS5/PostgreSQL FTS) and semantic (ChromaDB)
 search backends.
 """
+
 from __future__ import annotations
 
 import logging
@@ -32,7 +33,7 @@ class KnowledgeIndexer:
         embedding_provider: Optional[OpenAICompatibleEmbedding] = None,
         vector_store: Optional[ChromaStore] = None,
     ) -> None:
-        settings = get_settings()
+        self._settings = get_settings()
         self._embedding = embedding_provider or OpenAICompatibleEmbedding()
         self._store = vector_store or ChromaStore()
 
@@ -80,7 +81,7 @@ class KnowledgeIndexer:
 
             if vector is None:
                 # Fallback: zero vector with configured dimension
-                vector = [0.0] * (settings.embedding_dimension or 1536)
+                vector = [0.0] * (self._settings.embedding_dimension or 1536)
 
             # Build metadata for ChromaDB
             metadata: Dict[str, Any] = {
@@ -149,8 +150,10 @@ class KnowledgeIndexer:
             chunk_id = str(getattr(chunk, "id", f"{document_id}:{i}"))
             content = getattr(chunk, "content", "") or ""
             heading = getattr(chunk, "heading", "") or ""
-            vector = vectors[i] if i < len(vectors) else [0.0] * (
-                get_settings().embedding_dimension or 1536
+            vector = (
+                vectors[i]
+                if i < len(vectors)
+                else [0.0] * (get_settings().embedding_dimension or 1536)
             )
             metadata: Dict[str, Any] = {
                 "document_id": str(document_id),

@@ -207,12 +207,7 @@ async def list_tags(session: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
     """List all tags."""
     repo = KnowledgeRepository(session)
     tags = await repo.list_tags()
-    return {
-        "tags": [
-            {"id": str(t.id), "name": t.name, "description": t.description}
-            for t in tags
-        ]
-    }
+    return {"tags": [{"id": str(t.id), "name": t.name, "description": t.description} for t in tags]}
 
 
 @router.post("/documents/{document_id}/tags")

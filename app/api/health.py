@@ -3,6 +3,7 @@
 Checks database, Redis, vector store, LLM provider, connectors.
 Returns healthy / degraded / unhealthy status.
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter
@@ -29,6 +30,7 @@ async def health_check() -> dict:
         factory = get_session_factory()
         async with factory() as session:
             from sqlalchemy import text
+
             await session.execute(text("SELECT 1"))
         components["database"] = "healthy"
     except Exception:
@@ -38,6 +40,7 @@ async def health_check() -> dict:
     try:
         if settings.chroma_host:
             import httpx
+
             async with httpx.AsyncClient() as client:
                 resp = await client.get(
                     f"http://{settings.chroma_host}:{settings.chroma_port}/api/v1/heartbeat",
@@ -56,6 +59,7 @@ async def health_check() -> dict:
     if settings.llm_api_key:
         try:
             import httpx
+
             async with httpx.AsyncClient() as client:
                 resp = await client.get(
                     settings.llm_base_url.rstrip("/v1") or "https://api.deepseek.com",
@@ -84,7 +88,11 @@ async def health_check() -> dict:
     # Redis (optional)
     try:
         import socket
-        socket.create_connection(("localhost", 6379), timeout=2).close()
+
+        socket.create_connection(
+            (settings.redis_host or "localhost", int(settings.redis_port or 6379)),
+            timeout=2,
+        ).close()
         components["redis"] = "healthy"
     except Exception:
         components["redis"] = "not_configured"
@@ -99,12 +107,22 @@ async def health_check() -> dict:
         overall_status = "healthy"
 
     from app.observability.trace import TraceManager
+
     trace_id = TraceManager.get_trace_id()
+
+    # #region agent log
+    try:
+        import json as _json
+        import time as _time
+        open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"A","location":"app/api/health.py:health_check","message":"health payload","data":{"version":settings.app_version,"service":settings.service_name,"status":overall_status},"timestamp":int(_time.time()*1000)})+"\n")
+    except Exception:
+        pass
+    # #endregion
 
     return {
         "status": overall_status,
-        "version": "0.9.0",
-        "service": "enterprise-ai-knowledge-copilot",
+        "version": settings.app_version,
+        "service": settings.service_name,
         "app_name": settings.app_name,
         "trace_id": trace_id,
         "components": components,

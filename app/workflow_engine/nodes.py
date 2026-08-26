@@ -16,6 +16,8 @@ import asyncio
 import logging
 from typing import Any, Dict, List, Optional
 
+from app.core.safe_eval import UnsafeExpressionError, safe_eval
+
 logger = logging.getLogger(__name__)
 
 
@@ -67,7 +69,7 @@ class Node(abc.ABC):
     @abc.abstractmethod
     async def execute(self, context: NodeContext) -> Dict[str, Any]:
         """Execute the node and return result dict.
-        
+
         Must include at minimum:
             {"status": "success" | "failure" | "waiting",
              "output": {...} | None,
@@ -101,7 +103,8 @@ class TriggerNode(Node):
             context.variables.update(payload)
             logger.info(
                 "TriggerNode %s executed — payload keys: %s",
-                self.name, list(payload.keys()),
+                self.name,
+                list(payload.keys()),
             )
             return {
                 "status": "success",
@@ -153,7 +156,8 @@ class AgentNode(Node):
 
             logger.info(
                 "AgentNode %s completed — agent=%s",
-                self.name, self._agent_name,
+                self.name,
+                self._agent_name,
             )
             return {
                 "status": "success",
@@ -164,9 +168,7 @@ class AgentNode(Node):
             logger.error("AgentNode %s failed: %s", self.name, exc)
             return {"status": "failure", "output": None, "error": str(exc)}
 
-    async def _call_agent(
-        self, context: NodeContext, task_input: str
-    ) -> Dict[str, Any]:
+    async def _call_agent(self, context: NodeContext, task_input: str) -> Dict[str, Any]:
         """Try real Agent Runtime; fall back to simulated response."""
         try:
             from app.agent import AgentRuntime
@@ -224,7 +226,8 @@ class ToolNode(Node):
 
             logger.info(
                 "ToolNode %s completed — tool=%s",
-                self.name, self._tool_name,
+                self.name,
+                self._tool_name,
             )
             return {
                 "status": "success",
@@ -251,9 +254,7 @@ class ToolNode(Node):
                 resolved[key] = val
         return resolved
 
-    async def _call_tool(
-        self, context: NodeContext, params: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _call_tool(self, context: NodeContext, params: Dict[str, Any]) -> Dict[str, Any]:
         """Try real Tool System; fall back to simulated."""
         try:
             from app.tool.base import ToolRegistry
@@ -299,36 +300,18 @@ class ConditionNode(Node):
 
     async def execute(self, context: NodeContext) -> Dict[str, Any]:
         try:
-            # Safely evaluate expression against context variables
-            safe_globals: Dict[str, Any] = {
-                "__builtins__": {
-                    "True": True,
-                    "False": False,
-                    "None": None,
-                    "abs": abs,
-                    "len": len,
-                    "int": int,
-                    "float": float,
-                    "str": str,
-                    "bool": bool,
-                    "list": list,
-                    "dict": dict,
-                    "min": min,
-                    "max": max,
-                    "sum": sum,
-                    "any": any,
-                    "all": all,
-                }
-            }
             local_vars = dict(context.variables)
             local_vars.update(context.node_results)
-            result = bool(eval(self._expression, safe_globals, local_vars))  # noqa: S307
+            result = bool(safe_eval(self._expression, local_vars))
 
             next_node = self._true_next if result else self._false_next
 
             logger.info(
                 "ConditionNode %s → %s (expression=%s, result=%s)",
-                self.name, next_node, self._expression, result,
+                self.name,
+                next_node,
+                self._expression,
+                result,
             )
             return {
                 "status": "success",
@@ -339,7 +322,7 @@ class ConditionNode(Node):
                 "error": None,
                 "_next_node": next_node,
             }
-        except Exception as exc:
+        except (UnsafeExpressionError, Exception) as exc:
             logger.error("ConditionNode %s failed: %s", self.name, exc)
             return {
                 "status": "failure",
@@ -400,7 +383,8 @@ class ApprovalNode(Node):
         # Return waiting status — engine will poll or receive callback
         logger.info(
             "ApprovalNode %s — waiting for approval id=%s",
-            self.name, approval.get("id"),
+            self.name,
+            approval.get("id"),
         )
         return {
             "status": "waiting",

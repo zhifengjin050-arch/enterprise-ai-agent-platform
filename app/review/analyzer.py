@@ -233,12 +233,8 @@ class LLMQualityAnalyzer:
                         "technical_accuracy": quality.dimension_scores.get(
                             "technical_accuracy", 0.0
                         ),
-                        "executability": quality.dimension_scores.get(
-                            "executability", 0.0
-                        ),
-                        "timeliness": quality.dimension_scores.get(
-                            "timeliness", 0.0
-                        ),
+                        "executability": quality.dimension_scores.get("executability", 0.0),
+                        "timeliness": quality.dimension_scores.get("timeliness", 0.0),
                     },
                     use_content_hash=True,
                     content=content,
@@ -328,9 +324,7 @@ async def analyze_document_quality(
         llm_result = await llm_analyzer.analyze(title, content)
 
         # Use LLM result if it provides deeper analysis
-        if llm_result.score > rule_result.score or len(llm_result.issues) > len(
-            rule_result.issues
-        ):
+        if llm_result.score > rule_result.score or len(llm_result.issues) > len(rule_result.issues):
             return llm_result
 
     return rule_result
@@ -422,9 +416,7 @@ async def legacy_analyze_document_quality(
     max_age_days = freshness_rules.get(document.doc_type, 365)
     freshness_score = max(0.0, 1.0 - (days_since_update / max_age_days))
 
-    is_expired = document.is_expired or (
-        document.expires_at and document.expires_at < now
-    )
+    is_expired = document.is_expired or (document.expires_at and document.expires_at < now)
 
     missing_sections = []
     suggestions_list = []

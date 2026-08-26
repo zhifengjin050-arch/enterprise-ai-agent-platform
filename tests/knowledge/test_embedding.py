@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 from typing import List
-from unittest.mock import AsyncMock
-
-import pytest
 
 from app.knowledge.chunking import Chunk
 from app.knowledge.embedding import ChunkEmbeddingService

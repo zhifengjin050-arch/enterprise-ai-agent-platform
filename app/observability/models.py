@@ -1,4 +1,5 @@
 """Observability ORM models: agent_execution_traces, system_events, llm_usage_records."""
+
 from __future__ import annotations
 
 import enum
@@ -18,9 +19,7 @@ class AgentExecutionTrace(Base):
 
     __tablename__ = "agent_execution_traces"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     task_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     step: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -55,9 +54,7 @@ class LLMUsageRecord(Base):
 
     __tablename__ = "llm_usage_records"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     user_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     agent_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
@@ -103,9 +100,7 @@ class SystemEvent(Base):
 
     __tablename__ = "system_events"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     event_type: Mapped[str] = mapped_column(
         String(20), nullable=False, default=SystemEventType.INFO.value, index=True
     )

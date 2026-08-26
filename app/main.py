@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
     logger.info(
         "Starting %s v%s",
         settings.app_name,
-        "1.0.0",
+        settings.app_version,
     )
     logger.info("Database: %s", settings.database_url)
     logger.info(
@@ -74,6 +74,7 @@ async def lifespan(app: FastAPI):
 
     # Start ApprovalService background timeout checker
     from app.workflow_engine.approval import approval_service
+
     await approval_service.start()
     logger.info("Workflow Engine: ApprovalService timeout checker started")
 
@@ -97,7 +98,10 @@ async def lifespan(app: FastAPI):
         await registry.close_all()
         logger.info("MCP: All clients closed")
 
-    # Stop ApprovalService background timeout checker
+    # Stop in-flight workflow runs, then the approval timeout checker
+    from app.workflow_engine.engine import workflow_engine
+
+    await workflow_engine.shutdown()
     await approval_service.stop()
     logger.info("Workflow Engine: ApprovalService stopped")
     logger.info("Shutting down %s", settings.app_name)
@@ -105,7 +109,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.app_name,
-    version="1.0.0",
+    version=settings.app_version,
     description=(
         "Enterprise AI Agent Platform v1.0 - Knowledge Intelligence, "
         "AI Agent Runtime, Workflow Automation Engine, Enterprise Security, "
@@ -132,13 +136,13 @@ register_exception_handlers(app)
 # Register API routers — no business logic here
 app.include_router(health_router)
 app.include_router(knowledge_router)
-app.include_router(sop_router)
-app.include_router(incident_router)
-app.include_router(context_router)
-app.include_router(search_router)
+app.include_router(sop_router, deprecated=True)
+app.include_router(incident_router, deprecated=True)
+app.include_router(context_router, deprecated=True)
+app.include_router(search_router, deprecated=True)
 app.include_router(review_router)
-app.include_router(workflow_router)
-app.include_router(agent_router)
+app.include_router(workflow_router, deprecated=True)
+app.include_router(agent_router, deprecated=True)
 app.include_router(agents_router)
 app.include_router(graph_router)
 app.include_router(auth_router)

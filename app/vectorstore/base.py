@@ -3,6 +3,7 @@
 Defines the interface for vector storage backends used in the
 knowledge platform's semantic search pipeline.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

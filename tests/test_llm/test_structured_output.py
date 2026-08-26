@@ -122,7 +122,9 @@ class TestOpenAICompatibleLLMStructuredOutput:
             mock_client.post = mock_post
             mock_get_client.return_value = mock_client
 
-            client = OpenAICompatibleLLM(api_key="test-key", base_url="https://api.test.com/v1", model="test-model")
+            client = OpenAICompatibleLLM(
+                api_key="test-key", base_url="https://api.test.com/v1", model="test-model"
+            )
             result = await client.structured_output(
                 prompt="Classify",
                 schema={"type": "object", "properties": {}},
@@ -181,9 +183,7 @@ class TestOpenAICompatibleLLMStructuredOutput:
     def test_parse_json_response_plain(self) -> None:
         """_parse_json_response should handle plain JSON."""
         client = OpenAICompatibleLLM(api_key="test")
-        result = client._parse_json_response(
-            '{"doc_type": "sop", "confidence": 0.9}'
-        )
+        result = client._parse_json_response('{"doc_type": "sop", "confidence": 0.9}')
         assert result["doc_type"] == "sop"
         assert result["confidence"] == 0.9
 

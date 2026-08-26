@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
@@ -12,12 +12,12 @@ from app.connector.factory import ConnectorFactory
 from app.connector.registry import ConnectorRegistry
 from app.core.exceptions import ConnectorConfigError
 
-
 # ── Test connectors ──
 
 
 class SearchConnector(BaseConnector):
     """A connector that supports search."""
+
     name: str = "Search"
     connector_type: str = "search"
     capabilities: List[ConnectorCapability] = [ConnectorCapability.DOCUMENT_READ]
@@ -53,6 +53,7 @@ class TestConnectorFactory:
         # Since factory uses the module-level connector_registry singleton,
         # we need to register on that singleton.
         from app.connector.registry import connector_registry as main_registry
+
         self._main_registry = main_registry
 
     @pytest.mark.asyncio

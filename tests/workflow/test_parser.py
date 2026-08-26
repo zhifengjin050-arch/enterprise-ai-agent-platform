@@ -6,15 +6,15 @@ from typing import Any, Dict
 
 import pytest
 
-from app.workflow_engine.parser import WorkflowParser, WorkflowValidationError
 from app.workflow_engine.nodes import (
-    TriggerNode,
     AgentNode,
-    ToolNode,
-    ConditionNode,
     ApprovalNode,
+    ConditionNode,
     EndNode,
+    ToolNode,
+    TriggerNode,
 )
+from app.workflow_engine.parser import WorkflowParser, WorkflowValidationError
 
 
 class TestParseDefinition:
@@ -54,7 +54,9 @@ class TestParseDefinition:
 
     def test_too_few_nodes_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="'nodes' must be a list"):
-            WorkflowParser.parse_definition({"name": "test", "nodes": [{"type": "trigger", "name": "t"}]})
+            WorkflowParser.parse_definition(
+                {"name": "test", "nodes": [{"type": "trigger", "name": "t"}]}
+            )
 
     def test_missing_trigger_raises(self, invalid_workflow_no_trigger: Dict[str, Any]) -> None:
         with pytest.raises(WorkflowValidationError, match="must have a 'trigger' node"):
@@ -66,84 +68,104 @@ class TestParseDefinition:
 
     def test_duplicate_node_names_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="Duplicate node name"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "agent", "name": "start", "config": {"agent_name": "a"}},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {"type": "agent", "name": "start", "config": {"agent_name": "a"}},
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_invalid_node_type_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="invalid type"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "invalid_type", "name": "bad"},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {"type": "invalid_type", "name": "bad"},
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_missing_agent_name_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="missing 'agent_name'"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "agent", "name": "a", "config": {}},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {"type": "agent", "name": "a", "config": {}},
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_missing_tool_name_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="missing 'tool_name'"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "tool", "name": "t", "config": {}},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {"type": "tool", "name": "t", "config": {}},
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_missing_condition_expression_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="missing 'expression'"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {
-                        "type": "condition", "name": "c",
-                        "config": {"true_next": "a", "false_next": "b"},
-                    },
-                    {"type": "end", "name": "a"},
-                    {"type": "end", "name": "b"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {
+                            "type": "condition",
+                            "name": "c",
+                            "config": {"true_next": "a", "false_next": "b"},
+                        },
+                        {"type": "end", "name": "a"},
+                        {"type": "end", "name": "b"},
+                    ],
+                }
+            )
 
     def test_missing_approvers_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="missing 'approvers'"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "approval", "name": "ap", "config": {}},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {"type": "approval", "name": "ap", "config": {}},
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_unknown_field_raises(self) -> None:
         with pytest.raises(WorkflowValidationError, match="unknown field"):
-            WorkflowParser.parse_definition({
-                "name": "test",
-                "nodes": [
-                    {"type": "trigger", "name": "start"},
-                    {"type": "agent", "name": "a", "config": {"agent_name": "x"}, "unknown_field": True},
-                    {"type": "end", "name": "end"},
-                ],
-            })
+            WorkflowParser.parse_definition(
+                {
+                    "name": "test",
+                    "nodes": [
+                        {"type": "trigger", "name": "start"},
+                        {
+                            "type": "agent",
+                            "name": "a",
+                            "config": {"agent_name": "x"},
+                            "unknown_field": True,
+                        },
+                        {"type": "end", "name": "end"},
+                    ],
+                }
+            )
 
     def test_preserves_trigger_config(self, sample_workflow_definition: Dict[str, Any]) -> None:
         wf = dict(sample_workflow_definition)

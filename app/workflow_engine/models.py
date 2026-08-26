@@ -82,16 +82,12 @@ class WorkflowDefinition(Base):
 
     __tablename__ = "workflows"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str] = mapped_column(String(128), nullable=False, comment="Workflow display name")
     description: Mapped[Optional[str]] = mapped_column(
         Text, nullable=True, comment="Optional description"
     )
-    version: Mapped[str] = mapped_column(
-        String(16), default="1.0", comment="DSL schema version"
-    )
+    version: Mapped[str] = mapped_column(String(16), default="1.0", comment="DSL schema version")
     definition: Mapped[Dict[str, Any]] = mapped_column(
         JSON, nullable=False, comment="Full JSON DSL definition"
     )
@@ -160,15 +156,11 @@ class WorkflowNode(Base):
 
     __tablename__ = "workflow_nodes"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     workflow_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
     )
-    node_type: Mapped[NodeType] = mapped_column(
-        Enum(NodeType), nullable=False, comment="Node type"
-    )
+    node_type: Mapped[NodeType] = mapped_column(Enum(NodeType), nullable=False, comment="Node type")
     node_name: Mapped[str] = mapped_column(
         String(64), nullable=False, comment="Unique node name within workflow"
     )
@@ -191,9 +183,7 @@ class WorkflowNode(Base):
     sort_order: Mapped[int] = mapped_column(Integer, default=0, comment="Display ordering")
 
     # Multi-tenant
-    tenant_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True, index=True
-    )
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
 
     # Audit
     created_at: Mapped[datetime] = mapped_column(
@@ -227,9 +217,7 @@ class WorkflowExecution(Base):
 
     __tablename__ = "workflow_executions"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     workflow_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
     )
@@ -239,9 +227,7 @@ class WorkflowExecution(Base):
     status: Mapped[WorkflowStatus] = mapped_column(
         Enum(WorkflowStatus), default=WorkflowStatus.CREATED, comment="Run status"
     )
-    trigger_type: Mapped[Optional[TriggerType]] = mapped_column(
-        Enum(TriggerType), nullable=True
-    )
+    trigger_type: Mapped[Optional[TriggerType]] = mapped_column(Enum(TriggerType), nullable=True)
     trigger_event_id: Mapped[Optional[str]] = mapped_column(
         String(128), nullable=True, comment="External event ID that triggered this run"
     )
@@ -255,21 +241,15 @@ class WorkflowExecution(Base):
         JSON, nullable=True, comment="Runtime context / state"
     )
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True, comment="Error message")
-    started_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     duration_ms: Mapped[Optional[float]] = mapped_column(
         Float, nullable=True, comment="Execution duration in milliseconds"
     )
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Multi-tenant
-    tenant_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True, index=True
-    )
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
 
     # Audit
     triggered_by: Mapped[Optional[str]] = mapped_column(
@@ -314,9 +294,7 @@ class WorkflowEvent(Base):
 
     __tablename__ = "workflow_events"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     workflow_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
     )
@@ -327,19 +305,17 @@ class WorkflowEvent(Base):
         String(64), nullable=True, comment="Node that produced the event"
     )
     event_type: Mapped[str] = mapped_column(
-        String(32), nullable=False, comment="node_start | node_end | pause | resume | cancel | error | approval | decision"
+        String(32),
+        nullable=False,
+        comment="node_start | node_end | pause | resume | cancel | error | approval | decision",
     )
     event_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON, nullable=True, comment="Event payload"
     )
-    severity: Mapped[str] = mapped_column(
-        String(16), default="info", comment="info | warn | error"
-    )
+    severity: Mapped[str] = mapped_column(String(16), default="info", comment="info | warn | error")
 
     # Multi-tenant
-    tenant_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True, index=True
-    )
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
 
     # Audit
     created_by: Mapped[Optional[str]] = mapped_column(

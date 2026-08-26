@@ -10,9 +10,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
-
-import pytest
 
 from app.core.logging import configure_logging, get_logger
 from app.core.logging.formatter import StructuredFormatter

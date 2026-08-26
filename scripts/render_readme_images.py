@@ -6,6 +6,7 @@ Usage:
     python -m playwright install chromium
     python scripts/render_readme_images.py
 """
+
 from __future__ import annotations
 
 import sys

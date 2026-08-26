@@ -3,6 +3,7 @@
 Lightweight in-memory conversation representation for
 the knowledge agent chat feature.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -19,6 +20,7 @@ class ConversationMessage:
         content: Message content text.
         created_at: Timestamp when the message was created.
     """
+
     role: str = "user"  # "user" or "assistant"
     content: str = ""
     created_at: Optional[str] = None
@@ -47,6 +49,7 @@ class Conversation:
         created_at: Creation timestamp.
         updated_at: Last update timestamp.
     """
+
     id: str = ""
     user_id: str = ""
     title: str = "New Conversation"

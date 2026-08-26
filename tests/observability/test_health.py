@@ -48,13 +48,17 @@ class TestHealthEndpoint:
     async def test_health_version_matches(self, api_client):
         resp = await api_client.get("/api/health")
         data = resp.json()
-        assert data["version"] == "0.9.0"
+        from app.core.config import get_settings
+
+        assert data["version"] == get_settings().app_version
 
     @pytest.mark.asyncio
     async def test_health_service_name_present(self, api_client):
         resp = await api_client.get("/api/health")
         data = resp.json()
-        assert data["service"] == "enterprise-ai-knowledge-copilot"
+        from app.core.config import get_settings
+
+        assert data["service"] == get_settings().service_name
 
 
 class TestMonitorEndpoint:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
@@ -10,12 +10,12 @@ from app.connector.base import BaseConnector, ConnectorDocument
 from app.connector.capability import ConnectorCapability
 from app.connector.registry import ConnectorRegistry
 
-
 # ── Test connectors with capabilities ──
 
 
 class ReaderConnector(BaseConnector):
     """Connector that only reads documents."""
+
     name: str = "Reader"
     connector_type: str = "reader"
     capabilities: List[ConnectorCapability] = [
@@ -44,6 +44,7 @@ class ReaderConnector(BaseConnector):
 
 class FullFeatureConnector(BaseConnector):
     """Connector with all capabilities."""
+
     name: str = "FullFeature"
     connector_type: str = "full_feature"
     capabilities: List[ConnectorCapability] = [

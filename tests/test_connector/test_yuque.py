@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.connector.base import ConnectorDocument
-from app.connector.exceptions import AuthenticationError, ConnectionError, NotFoundError
+from app.connector.exceptions import AuthenticationError
 from app.connector.yuque import YuqueConnector
 
 

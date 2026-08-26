@@ -9,6 +9,7 @@ RRF formula:
 where rank_i(d) is the rank of document d in search mode i,
 and k is a constant (default 60).
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

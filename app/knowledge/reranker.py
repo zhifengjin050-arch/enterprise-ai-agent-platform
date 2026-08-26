@@ -97,8 +97,7 @@ class Reranker:
                 if original > 1.0:
                     norm_original = min(1.0, original / (original + 1.0))
                 rerank_score = (
-                    self._original_weight * norm_original
-                    + self._lexical_weight * lexical
+                    self._original_weight * norm_original + self._lexical_weight * lexical
                 )
 
             # Write back score if possible

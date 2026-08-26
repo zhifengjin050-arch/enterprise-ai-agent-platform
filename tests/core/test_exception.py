@@ -10,8 +10,6 @@ Covers all exception classes in app/core/exceptions/:
 
 from __future__ import annotations
 
-import pytest
-
 from app.core.exceptions import (
     AuthException,
     BaseAppException,

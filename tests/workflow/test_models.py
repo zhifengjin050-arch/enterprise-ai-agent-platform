@@ -2,22 +2,16 @@
 
 from __future__ import annotations
 
-from typing import AsyncGenerator
-
 import pytest
-import pytest_asyncio
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.base import Base
 from app.workflow_engine.models import (
-    ApprovalStatus,
     NodeType,
-    TriggerType,
     WorkflowDefinition,
     WorkflowEvent,
-    WorkflowNode,
     WorkflowExecution,
+    WorkflowNode,
     WorkflowStatus,
 )
 
@@ -80,11 +74,15 @@ class TestWorkflowNodeModel:
         db_session.add(wf)
         await db_session.flush()
 
-        db_session.add(WorkflowNode(workflow_id=wf.id, node_type=NodeType.TRIGGER, node_name="start"))
+        db_session.add(
+            WorkflowNode(workflow_id=wf.id, node_type=NodeType.TRIGGER, node_name="start")
+        )
         await db_session.flush()
 
         with pytest.raises(Exception):  # IntegrityError
-            db_session.add(WorkflowNode(workflow_id=wf.id, node_type=NodeType.END, node_name="start"))
+            db_session.add(
+                WorkflowNode(workflow_id=wf.id, node_type=NodeType.END, node_name="start")
+            )
             await db_session.flush()
 
     async def test_repr(self) -> None:

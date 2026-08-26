@@ -2,6 +2,7 @@
 
 Tests rule-based synonym expansion and LLM fallback for query rewriting.
 """
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock
@@ -73,14 +74,14 @@ class TestQueryRewriteService:
     async def test_rewrite_with_llm_fallback(self) -> None:
         """LLM fallback should add more variants."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(*args, **kwargs):
             return {"variants": ["nginx 502排查步骤", "nginx upstream故障处理"]}
+
         mock_llm.structured_output = mock_structured_output
 
         service = QueryRewriteService(llm_client=mock_llm)
-        result = await service.rewrite(
-            "nginx挂了 如何排查故障", "incident_analysis"
-        )
+        result = await service.rewrite("nginx挂了 如何排查故障", "incident_analysis")
         assert len(result.rewritten_queries) >= 1
         assert result.original_query == "nginx挂了 如何排查故障"
 
@@ -88,14 +89,14 @@ class TestQueryRewriteService:
     async def test_llm_fallback_failure(self) -> None:
         """LLM failure should not break rewrite."""
         mock_llm = AsyncMock()
+
         async def mock_fail(*args, **kwargs):
             raise ConnectionError("API unreachable")
+
         mock_llm.structured_output = mock_fail
 
         service = QueryRewriteService(llm_client=mock_llm)
-        result = await service.rewrite(
-            "redis挂了 怎么排查", "incident_analysis"
-        )
+        result = await service.rewrite("redis挂了 怎么排查", "incident_analysis")
         # Should still have rule-based results
         assert len(result.rewritten_queries) >= 1
 

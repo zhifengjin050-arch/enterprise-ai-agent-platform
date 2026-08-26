@@ -91,12 +91,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             else (origin if origin in self.allowed_origins else self.allowed_origins[0])
         )
         response.headers["Access-Control-Allow-Origin"] = allow
-        response.headers["Access-Control-Allow-Methods"] = (
-            "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-        )
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = (
-            "Authorization, Content-Type, X-API-Key, X-Tenant-ID, "
-            "X-Organization-ID, X-Request-ID"
+            "Authorization, Content-Type, X-API-Key, X-Tenant-ID, X-Organization-ID, X-Request-ID"
         )
         response.headers["Access-Control-Expose-Headers"] = "X-Request-ID, X-Tenant-ID"
         return response

@@ -54,9 +54,7 @@ class DocumentChunkRepository:
             await self._session.refresh(r)
         return records
 
-    async def list_by_document(
-        self, document_id: str, *, limit: int = 500
-    ) -> List[DocumentChunk]:
+    async def list_by_document(self, document_id: str, *, limit: int = 500) -> List[DocumentChunk]:
         """List chunks for a document ordered by chunk_index."""
         stmt = (
             select(DocumentChunk)
@@ -72,9 +70,7 @@ class DocumentChunkRepository:
         existing = await self.list_by_document(document_id)
         count = len(existing)
         if count:
-            stmt = delete(DocumentChunk).where(
-                DocumentChunk.document_id == document_id
-            )
+            stmt = delete(DocumentChunk).where(DocumentChunk.document_id == document_id)
             await self._session.execute(stmt)
             await self._session.flush()
         return count

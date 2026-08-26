@@ -2,9 +2,10 @@
 
 Tests rule-based extraction and LLM fallback for relation extraction.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 from unittest.mock import AsyncMock
 
 import pytest
@@ -56,12 +57,19 @@ class TestRelationExtractor:
     async def test_extract_relations_llm_fallback(self) -> None:
         """LLM fallback should add more relations."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(prompt: str, schema: Dict[str, Any], **kwargs):
             return {
                 "relations": [
-                    {"source": "订单服务", "target": "Redis", "type": "depends_on", "confidence": 0.95},
+                    {
+                        "source": "订单服务",
+                        "target": "Redis",
+                        "type": "depends_on",
+                        "confidence": 0.95,
+                    },
                 ]
             }
+
         mock_llm.structured_output = mock_structured_output
 
         entities = [
@@ -81,8 +89,10 @@ class TestRelationExtractor:
     async def test_extract_relations_llm_failure(self) -> None:
         """LLM failure should not break extraction."""
         mock_llm = AsyncMock()
+
         async def mock_fail(*args, **kwargs):
             raise ConnectionError("API unreachable")
+
         mock_llm.structured_output = mock_fail
 
         entities = [
@@ -91,7 +101,9 @@ class TestRelationExtractor:
         ]
         extractor = RelationExtractor(llm_client=mock_llm)
         results = await extractor.extract_relations(
-            entities, "服务A与B无关", "No relation here.",
+            entities,
+            "服务A与B无关",
+            "No relation here.",
             use_llm_fallback=True,
         )
         assert isinstance(results, list)
@@ -125,7 +137,9 @@ class TestExtractRelationsFunction:
             ExtractedEntity(name="服务B", entity_type="service"),
         ]
         results = await extract_relations(
-            entities, "标题", "服务A depends on 服务B",
+            entities,
+            "标题",
+            "服务A depends on 服务B",
             llm_client=None,  # will use default client (no API key = skip LLM)
         )
         assert isinstance(results, list)

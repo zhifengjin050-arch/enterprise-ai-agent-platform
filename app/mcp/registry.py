@@ -3,6 +3,7 @@
 Manages a collection of MCP server connections and adapts their exported
 tools into the Agent Runtime's BaseTool interface for transparent invocation.
 """
+
 from __future__ import annotations
 
 import logging
@@ -82,9 +83,7 @@ class MCPAdapterRegistry:
                     server_name,
                 )
             except Exception as exc:
-                logger.warning(
-                    "MCP discover '%s' failed: %s", server_name, exc
-                )
+                logger.warning("MCP discover '%s' failed: %s", server_name, exc)
 
     # ------------------------------------------------------------------
     # Registration into local ToolRegistry

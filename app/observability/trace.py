@@ -2,6 +2,7 @@
 
 Safe no-op when opentelemetry packages are not installed.
 """
+
 from __future__ import annotations
 
 import logging
@@ -36,12 +37,18 @@ class TraceManager:
             cls._initialized = True
             return
         try:
+            from app.core.config import get_settings
+
+            endpoint = (get_settings().otel_exporter_otlp_endpoint or "").strip()
             provider = SDKTraceProvider()
-            provider.add_span_processor(
-                BatchSpanProcessor(OTLPSpanExporter())
-            )
+            if endpoint:
+                provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint)))
             otel_trace.set_tracer_provider(provider)
-            logger.info("OpenTelemetry tracer initialized for %s", service_name)
+            logger.info(
+                "OpenTelemetry tracer initialized for %s (exporter=%s)",
+                service_name,
+                endpoint or "disabled",
+            )
         except Exception as exc:
             logger.warning("OpenTelemetry init failed (non-fatal): %s", exc)
         cls._initialized = True

@@ -37,7 +37,9 @@ async def test_full_pipeline_high_quality() -> None:
     mock_doc.id = "stored-uuid-001"
     mock_repo.create_document = AsyncMock(return_value=mock_doc)
     mock_indexer = MagicMock()
-    mock_indexer.index_document = AsyncMock(return_value={"indexed": True, "embedding_id": "emb_doc-001"})
+    mock_indexer.index_document = AsyncMock(
+        return_value={"indexed": True, "embedding_id": "emb_doc-001"}
+    )
 
     # Patch SOURCE modules (lazy imports inside node function bodies)
     with (
@@ -178,4 +180,6 @@ async def test_full_pipeline_review_then_approve() -> None:
 def test_build_pipeline_type() -> None:
     """build_knowledge_pipeline should return a callable with invoke/ainvoke."""
     pipeline = build_knowledge_pipeline()
-    assert hasattr(pipeline, "invoke") or hasattr(pipeline, "ainvoke") or hasattr(pipeline, "__call__")
+    assert (
+        hasattr(pipeline, "invoke") or hasattr(pipeline, "ainvoke") or hasattr(pipeline, "__call__")
+    )

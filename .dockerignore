@@ -29,12 +29,12 @@ data/
 logs/
 
 # Frontend (built separately)
-frontend/node_modules/
-frontend/.tmp/
-frontend/dist/
+frontend/
 
-# Documentation (not needed in runtime image)
+# Tests and docs are not needed in the runtime image
+tests/
 docs/
+*.md
 
 # Environment
 .env

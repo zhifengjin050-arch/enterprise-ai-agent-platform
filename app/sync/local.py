@@ -50,18 +50,20 @@ class LocalSyncEngine(SyncEngine):
                     except Exception:
                         content = f"[Binary file: {file_path.name}]"
 
-                    documents.append(Document(
-                        content=content,
-                        source=str(file_path),
-                        metadata={
-                            "file_path": str(file_path),
-                            "extension": ext,
-                            "file_size": file_path.stat().st_size,
-                            "modified_at": datetime.fromtimestamp(
-                                file_path.stat().st_mtime
-                            ).isoformat(),
-                        },
-                    ))
+                    documents.append(
+                        Document(
+                            content=content,
+                            source=str(file_path),
+                            metadata={
+                                "file_path": str(file_path),
+                                "extension": ext,
+                                "file_size": file_path.stat().st_size,
+                                "modified_at": datetime.fromtimestamp(
+                                    file_path.stat().st_mtime
+                                ).isoformat(),
+                            },
+                        )
+                    )
 
         self._last_sync_time = datetime.utcnow()
         return documents
@@ -86,15 +88,17 @@ class LocalSyncEngine(SyncEngine):
                         except Exception:
                             content = f"[Binary file: {file_path.name}]"
 
-                        documents.append(Document(
-                            content=content,
-                            source=str(file_path),
-                            metadata={
-                                "file_path": str(file_path),
-                                "extension": ext,
-                                "modified_at": mtime.isoformat(),
-                            },
-                        ))
+                        documents.append(
+                            Document(
+                                content=content,
+                                source=str(file_path),
+                                metadata={
+                                    "file_path": str(file_path),
+                                    "extension": ext,
+                                    "modified_at": mtime.isoformat(),
+                                },
+                            )
+                        )
 
         return documents
 

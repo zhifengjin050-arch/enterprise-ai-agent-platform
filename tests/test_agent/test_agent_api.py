@@ -2,13 +2,13 @@
 
 Tests /api/agent/chat and /api/agent/history/{conversation_id}.
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 from app.agent.knowledge_agent import KnowledgeAgent, KnowledgeAgentResult
 from app.citation.models import CitationSource
@@ -119,6 +119,7 @@ class TestAgentHistoryAPI:
         """Existing conversation should return history."""
         # Pre-seed conversation memory
         from app.conversation.memory import memory as conv_memory
+
         conv_memory.create_conversation("test-conv-1", title="测试对话")
         conv_memory.add_message("test-conv-1", "user", "问题1")
         conv_memory.add_message("test-conv-1", "assistant", "回答1")

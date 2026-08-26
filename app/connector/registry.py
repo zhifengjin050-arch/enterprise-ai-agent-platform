@@ -116,10 +116,7 @@ class ConnectorRegistry:
         """
         if connector_type not in self._adapters:
             available = ", ".join(sorted(self._adapters.keys()))
-            raise ValueError(
-                f"Unknown connector type: '{connector_type}'. "
-                f"Available: {available}"
-            )
+            raise ValueError(f"Unknown connector type: '{connector_type}'. Available: {available}")
         adapter_cls = self._adapters[connector_type]
         return adapter_cls(config=config)
 
@@ -129,10 +126,7 @@ class ConnectorRegistry:
         Returns:
             Dict mapping type key to class-level name.
         """
-        return {
-            key: getattr(cls, "name", key)
-            for key, cls in self._adapters.items()
-        }
+        return {key: getattr(cls, "name", key) for key, cls in self._adapters.items()}
 
     def is_registered(self, connector_type: str) -> bool:
         """Check if a connector type is registered.
@@ -169,10 +163,7 @@ class ConnectorRegistry:
         Returns:
             Dict mapping type key to metadata dict.
         """
-        return {
-            key: _default_metadata(cls)
-            for key, cls in self._adapters.items()
-        }
+        return {key: _default_metadata(cls) for key, cls in self._adapters.items()}
 
     def list_capabilities(self, connector_type: str) -> List[str]:
         """List the capabilities declared by a connector type.

@@ -2,9 +2,8 @@
 
 Tests rule-based intent recognition with various query patterns.
 """
-from __future__ import annotations
 
-import pytest
+from __future__ import annotations
 
 from app.query.intent import QueryIntent, classify_intent
 
@@ -68,10 +67,6 @@ class TestClassifyIntent:
 
     def test_multiple_keywords_higher_confidence(self) -> None:
         """More keyword matches should yield higher confidence."""
-        result_multi = classify_intent(
-            "502故障排查步骤", use_llm_fallback=False
-        )
-        result_single = classify_intent(
-            "今天天气", use_llm_fallback=False
-        )
+        result_multi = classify_intent("502故障排查步骤", use_llm_fallback=False)
+        result_single = classify_intent("今天天气", use_llm_fallback=False)
         assert result_multi.confidence > result_single.confidence

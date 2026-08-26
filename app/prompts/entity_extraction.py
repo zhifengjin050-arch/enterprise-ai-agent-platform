@@ -3,6 +3,7 @@
 The LLM extracts named entities from enterprise documents and
 classifies them into predefined entity types.
 """
+
 from __future__ import annotations
 
 ENTITY_EXTRACTION_SYSTEM_PROMPT = """你是一位企业知识图谱实体抽取专家。
@@ -38,8 +39,15 @@ ENTITY_EXTRACTION_SCHEMA = {
                     "type": {
                         "type": "string",
                         "enum": [
-                            "service", "component", "technology", "tool",
-                            "team", "person", "environment", "incident", "sop",
+                            "service",
+                            "component",
+                            "technology",
+                            "tool",
+                            "team",
+                            "person",
+                            "environment",
+                            "incident",
+                            "sop",
                         ],
                         "description": "实体类型",
                     },
@@ -70,8 +78,4 @@ def build_entity_extraction_prompt(title: str, content: str) -> str:
     # Truncate content if too long
     truncated = content[:8000] if len(content) > 8000 else content
 
-    return (
-        f"### 文档标题\n\n{title}\n\n"
-        f"### 文档内容\n\n{truncated}\n\n"
-        "请抽取该文档中的命名实体。"
-    )
+    return f"### 文档标题\n\n{title}\n\n### 文档内容\n\n{truncated}\n\n请抽取该文档中的命名实体。"

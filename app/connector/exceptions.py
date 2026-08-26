@@ -7,6 +7,7 @@ handling through the global exception handler.
 These classes maintain backward compatibility with existing code
 that catches ``ConnectorError`` or uses ``.source`` / ``.resource`` attributes.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -46,7 +47,11 @@ class ConnectionError(ConnectorError):
         merged_details["source"] = source
         if detail:
             merged_details["detail"] = detail
-        message = f"Failed to connect to {source}: {detail}" if detail else f"Failed to connect to {source}"
+        message = (
+            f"Failed to connect to {source}: {detail}"
+            if detail
+            else f"Failed to connect to {source}"
+        )
         super().__init__(message=message, details=merged_details)
 
     @property
@@ -72,7 +77,11 @@ class AuthenticationError(ConnectorError):
         merged_details["source"] = source
         if detail:
             merged_details["detail"] = detail
-        message = f"Authentication failed for {source}: {detail}" if detail else f"Authentication failed for {source}"
+        message = (
+            f"Authentication failed for {source}: {detail}"
+            if detail
+            else f"Authentication failed for {source}"
+        )
         super().__init__(message=message, details=merged_details)
 
     @property

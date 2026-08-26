@@ -6,6 +6,7 @@ vector storage and similarity search capabilities.
 Note: chromadb is imported lazily to avoid hard dependency on
 Windows C++ build tools during development.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
@@ -39,9 +40,7 @@ class ChromaStore(VectorStore):
             pass
 
         settings = get_settings()
-        self._collection_name = (
-            collection_name or settings.chroma_collection or "knowledge_docs"
-        )
+        self._collection_name = collection_name or settings.chroma_collection or "knowledge_docs"
         self._persistent_path = persistent_path or settings.chroma_path or "./data/chroma"
         self._client: Any = None
         self._collection: Any = None
@@ -56,9 +55,7 @@ class ChromaStore(VectorStore):
             return
 
         if self._chromadb is None:
-            raise RuntimeError(
-                "ChromaDB is not installed. Run: pip install chromadb"
-            )
+            raise RuntimeError("ChromaDB is not installed. Run: pip install chromadb")
 
         self._client = self._chromadb.PersistentClient(
             path=self._persistent_path,
@@ -70,13 +67,9 @@ class ChromaStore(VectorStore):
         self._ensure_client()
         if self._collection is None:
             try:
-                self._collection = self._client.get_collection(
-                    self._collection_name
-                )
+                self._collection = self._client.get_collection(self._collection_name)
             except ValueError:
-                self._collection = self._client.create_collection(
-                    self._collection_name
-                )
+                self._collection = self._client.create_collection(self._collection_name)
         return self._collection
 
     async def add(
@@ -145,16 +138,10 @@ class ChromaStore(VectorStore):
                         id=doc_id,
                         document_id=meta.get("document_id", doc_id),
                         score=(
-                            float(results["distances"][0][i])
-                            if results.get("distances")
-                            else 0.0
+                            float(results["distances"][0][i]) if results.get("distances") else 0.0
                         ),
                         metadata=meta,
-                        content=(
-                            results["documents"][0][i]
-                            if results.get("documents")
-                            else None
-                        ),
+                        content=(results["documents"][0][i] if results.get("documents") else None),
                     )
                 )
         return output

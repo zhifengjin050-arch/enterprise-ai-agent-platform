@@ -4,6 +4,7 @@ Allows the Agent Runtime to invoke tools hosted on external MCP servers
 as if they were local tools, with proper permission scoping
 (``mcp`` and ``mcp:<tool-name>``).
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -35,9 +36,7 @@ class MCPToolAdapter(BaseTool):
         self._original_tool_name = original_tool_name or name
         self.permissions = ["mcp", f"mcp:{name}"]
 
-    async def execute(
-        self, input: Dict[str, Any], context: ToolContext
-    ) -> ToolResult:
+    async def execute(self, input: Dict[str, Any], context: ToolContext) -> ToolResult:
         """Forward execution to the remote MCP server.
 
         The ``context`` parameter is not forwarded to the remote server
@@ -45,9 +44,7 @@ class MCPToolAdapter(BaseTool):
         ``input`` payload is sent.
         """
         try:
-            result = await self._client.execute_tool(
-                self._original_tool_name, input
-            )
+            result = await self._client.execute_tool(self._original_tool_name, input)
             if isinstance(result, dict) and "error" in result:
                 return ToolResult(
                     success=False,

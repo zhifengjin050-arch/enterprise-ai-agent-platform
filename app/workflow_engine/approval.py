@@ -3,6 +3,7 @@
 Human-in-the-loop approval for production releases,
 database modifications, auto-fix confirmations, etc.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -148,7 +149,10 @@ class ApprovalService:
         self._approvals[approval_id] = record
         logger.info(
             "Approval created id=%s workflow=%s run=%s node=%s",
-            approval_id, workflow_id, run_id, node_name,
+            approval_id,
+            workflow_id,
+            run_id,
+            node_name,
         )
         return record.to_dict()
 
@@ -175,9 +179,7 @@ class ApprovalService:
         if record is None:
             raise ValueError(f"Approval {approval_id} not found")
         if record.status != "PENDING":
-            raise ValueError(
-                f"Approval {approval_id} is not pending (status={record.status})"
-            )
+            raise ValueError(f"Approval {approval_id} is not pending (status={record.status})")
 
         record.status = "APPROVED"
         record.decided_by = user_id
@@ -185,7 +187,9 @@ class ApprovalService:
         record.decided_at = datetime.now(timezone.utc)
 
         logger.info(
-            "Approval %s approved by %s", approval_id, user_id,
+            "Approval %s approved by %s",
+            approval_id,
+            user_id,
         )
         await self._fire_callback(approval_id, record.to_dict())
         return record.to_dict()
@@ -213,9 +217,7 @@ class ApprovalService:
         if record is None:
             raise ValueError(f"Approval {approval_id} not found")
         if record.status != "PENDING":
-            raise ValueError(
-                f"Approval {approval_id} is not pending (status={record.status})"
-            )
+            raise ValueError(f"Approval {approval_id} is not pending (status={record.status})")
 
         record.status = "REJECTED"
         record.decided_by = user_id
@@ -223,7 +225,9 @@ class ApprovalService:
         record.decided_at = datetime.now(timezone.utc)
 
         logger.info(
-            "Approval %s rejected by %s", approval_id, user_id,
+            "Approval %s rejected by %s",
+            approval_id,
+            user_id,
         )
         await self._fire_callback(approval_id, record.to_dict())
         return record.to_dict()
@@ -250,7 +254,9 @@ class ApprovalService:
                 await cb(record)
             except Exception as exc:
                 logger.error(
-                    "Approval callback failed for %s: %s", approval_id, exc,
+                    "Approval callback failed for %s: %s",
+                    approval_id,
+                    exc,
                 )
 
     async def _timeout_loop(self) -> None:
@@ -270,7 +276,8 @@ class ApprovalService:
                     record.comment = "Auto-rejected due to timeout"
                     logger.info(
                         "Approval %s timed out (expired after %d minutes)",
-                        aid, record.timeout_minutes,
+                        aid,
+                        record.timeout_minutes,
                     )
                     await self._fire_callback(aid, record.to_dict())
                 await asyncio.sleep(30)  # Check every 30 seconds

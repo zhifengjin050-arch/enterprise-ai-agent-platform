@@ -3,6 +3,7 @@
 All knowledge entity persistence goes through this repository.
 API and workflow layers must not execute raw ORM queries directly.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -79,9 +80,7 @@ class EntityRepository:
         Returns:
             KnowledgeEntity or None.
         """
-        stmt = select(KnowledgeEntity).where(
-            KnowledgeEntity.id == _as_uuid(entity_id)
-        )
+        stmt = select(KnowledgeEntity).where(KnowledgeEntity.id == _as_uuid(entity_id))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -103,16 +102,10 @@ class EntityRepository:
             List of matching KnowledgeEntity.
         """
         if exact:
-            stmt = (
-                select(KnowledgeEntity)
-                .where(KnowledgeEntity.name == name)
-                .limit(limit)
-            )
+            stmt = select(KnowledgeEntity).where(KnowledgeEntity.name == name).limit(limit)
         else:
             stmt = (
-                select(KnowledgeEntity)
-                .where(KnowledgeEntity.name.ilike(f"%{name}%"))
-                .limit(limit)
+                select(KnowledgeEntity).where(KnowledgeEntity.name.ilike(f"%{name}%")).limit(limit)
             )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
@@ -139,11 +132,7 @@ class EntityRepository:
             if isinstance(entity_type, str):
                 entity_type = EntityType(entity_type)
             stmt = stmt.where(KnowledgeEntity.entity_type == entity_type)
-        stmt = (
-            stmt.order_by(KnowledgeEntity.name)
-            .limit(limit)
-            .offset(offset)
-        )
+        stmt = stmt.order_by(KnowledgeEntity.name).limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
@@ -184,10 +173,6 @@ class EntityRepository:
             else str(entity.entity_type),
             "description": entity.description,
             "metadata_json": entity.metadata_json or {},
-            "created_at": entity.created_at.isoformat()
-            if entity.created_at
-            else None,
-            "updated_at": entity.updated_at.isoformat()
-            if entity.updated_at
-            else None,
+            "created_at": entity.created_at.isoformat() if entity.created_at else None,
+            "updated_at": entity.updated_at.isoformat() if entity.updated_at else None,
         }

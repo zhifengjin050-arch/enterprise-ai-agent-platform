@@ -9,8 +9,8 @@ import pytest
 
 from app.workflow.knowledge_pipeline import quality_node, quality_router
 
-
 # ── quality_node scoring ─────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_quality_high_score() -> None:

@@ -5,6 +5,7 @@ Provides dependency injection for:
 - require_permission: Route-level permission guard.
 - get_current_tenant: Extract tenant context from authenticated user.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -106,6 +107,7 @@ def require_permission(permission_code: str):
     Returns:
         A FastAPI dependency function.
     """
+
     async def _check(
         current_user: Optional[Dict[str, Any]] = Depends(get_current_user),
         session: AsyncSession = Depends(get_db),
@@ -117,9 +119,7 @@ def require_permission(permission_code: str):
             )
 
         service = AuthService()
-        has_perm = await service.has_permission(
-            session, current_user["id"], permission_code
-        )
+        has_perm = await service.has_permission(session, current_user["id"], permission_code)
         if not has_perm:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

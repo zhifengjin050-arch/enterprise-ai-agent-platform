@@ -3,6 +3,7 @@
 Represents a traceable reference from a knowledge document
 that supports an agent's answer.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -21,6 +22,7 @@ class CitationSource:
         page: Optional page number or section reference.
         score: Relevance score from search ranking.
     """
+
     document_id: str = ""
     title: str = ""
     content_snippet: str = ""
@@ -49,6 +51,7 @@ class Citation:
         answer: The generated answer text.
         confidence: Overall confidence score (0.0 to 1.0).
     """
+
     sources: list = field(default_factory=list)
     answer: str = ""
     confidence: float = 0.0

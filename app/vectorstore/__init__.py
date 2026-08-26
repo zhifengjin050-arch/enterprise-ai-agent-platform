@@ -8,6 +8,7 @@ Public API:
     VectorSearchResult   — search result dataclass
     ChromaStore          — ChromaDB persistent implementation
 """
+
 from app.vectorstore.base import VectorSearchResult, VectorStore
 from app.vectorstore.chroma_store import ChromaStore
 

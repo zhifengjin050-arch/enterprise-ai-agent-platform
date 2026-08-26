@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate quality baseline report (avoids PowerShell encoding issues by writing to file)."""
+
 from __future__ import annotations
 
 import json
 import subprocess
-import sys
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent
@@ -24,7 +24,9 @@ def main() -> None:
     lines.append("")
     lines.append(f"*Generated: {__import__('datetime').datetime.now().isoformat()}*")
     lines.append("")
-    lines.append("> **Note**: Informational baseline only. No mass fixes required per Phase A-3 rules.")
+    lines.append(
+        "> **Note**: Informational baseline only. No mass fixes required per Phase A-3 rules."
+    )
     lines.append("")
 
     # --- ruff check ---
@@ -87,7 +89,9 @@ def main() -> None:
         lines.append("")
         lines.append("### Top findings")
         for x in results[:10]:
-            lines.append(f"- `{x['test_id']}`: {Path(x['filename']).relative_to(REPO)}:{x['line_number']} — {x['issue_text'][:80]}")
+            lines.append(
+                f"- `{x['test_id']}`: {Path(x['filename']).relative_to(REPO)}:{x['line_number']} — {x['issue_text'][:80]}"
+            )
     except (ValueError, json.JSONDecodeError) as e:
         lines.append(f"- **Parse error**: {e}")
         lines.append(f"- **Raw output (first 200 chars)**: {bandit_out_raw[:200]}")
@@ -98,10 +102,14 @@ def main() -> None:
     lines.append("")
     lines.append("| Tool | Result | Action |")
     lines.append("|------|--------|--------|")
-    lines.append(f"| ruff lint | {total_errs} occurrences across {n_errors} categories | `ruff check app/ --fix` (opt-in) |")
+    lines.append(
+        f"| ruff lint | {total_errs} occurrences across {n_errors} categories | `ruff check app/ --fix` (opt-in) |"
+    )
     lines.append(f"| ruff format | {n_unfmt} files need formatting | `ruff format app/` (opt-in) |")
-    lines.append(f"| mypy | {len(err_lines)} errors in {len(unique_files)} files | Fix selectively (opt-in) |")
-    bandit_n = len(results) if 'results' in dir() else '?'
+    lines.append(
+        f"| mypy | {len(err_lines)} errors in {len(unique_files)} files | Fix selectively (opt-in) |"
+    )
+    bandit_n = len(results) if "results" in dir() else "?"
     lines.append(f"| bandit | {bandit_n} findings | Review high-severity items (opt-in) |")
     lines.append("")
     lines.append("---")
@@ -110,7 +118,7 @@ def main() -> None:
     # Write
     output = REPO / "docs" / "QUALITY_BASELINE_REPORT.md"
     output.write_text("\n".join(lines), encoding="utf-8")
-    print(f"Report written to docs/QUALITY_BASELINE_REPORT.md")
+    print("Report written to docs/QUALITY_BASELINE_REPORT.md")
 
 
 if __name__ == "__main__":

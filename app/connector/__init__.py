@@ -20,6 +20,7 @@ New in v0.7.0:
     - Full / Incremental / Delta sync modes
     - Health check API at GET /api/connectors/{id}/health
 """
+
 from app.connector.base import BaseConnector, ConnectorDocument, ConnectorMetadata
 from app.connector.capability import ConnectorCapability
 from app.connector.config_schemas import (

@@ -74,17 +74,13 @@ class ApiKeyService:
         await self._session.flush()
         return key, raw
 
-    async def get(
-        self, key_id: str, *, tenant_id: Optional[str] = None
-    ) -> Optional[ApiKey]:
+    async def get(self, key_id: str, *, tenant_id: Optional[str] = None) -> Optional[ApiKey]:
         stmt = select(ApiKey).where(ApiKey.id == key_id)
         stmt = apply_tenant_filter(stmt, ApiKey.tenant_id, tenant_id)
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def list(
-        self, *, tenant_id: Optional[str] = None, limit: int = 50
-    ) -> List[ApiKey]:
+    async def list(self, *, tenant_id: Optional[str] = None, limit: int = 50) -> List[ApiKey]:
         stmt = select(ApiKey).order_by(ApiKey.created_at.desc()).limit(limit)
         stmt = apply_tenant_filter(stmt, ApiKey.tenant_id, tenant_id)
         result = await self._session.execute(stmt)

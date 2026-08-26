@@ -39,8 +39,7 @@ class LLMProvider(ABC):
         system_prompt: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: int = 2048,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @abstractmethod
     async def stream(
@@ -55,12 +54,10 @@ class LLMProvider(ABC):
         yield  # pragma: no cover
 
     @abstractmethod
-    async def embedding(self, texts: List[str]) -> List[List[float]]:
-        ...
+    async def embedding(self, texts: List[str]) -> List[List[float]]: ...
 
     @abstractmethod
-    def get_model_name(self) -> str:
-        ...
+    def get_model_name(self) -> str: ...
 
 
 class OpenAICompatibleProvider(LLMProvider):

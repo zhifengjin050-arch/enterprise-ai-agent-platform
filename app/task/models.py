@@ -2,6 +2,7 @@
 
 Tracks document import tasks processed by background workers.
 """
+
 from __future__ import annotations
 
 import enum
@@ -46,22 +47,12 @@ class TaskRecord(Base):
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
     )
-    task_type: Mapped[str] = mapped_column(
-        String(50), nullable=False, default="document_import"
-    )
+    task_type: Mapped[str] = mapped_column(String(50), nullable=False, default="document_import")
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
-    status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default=TaskStatus.QUEUED.value
-    )
-    payload: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSON, nullable=True, default=dict
-    )
-    result: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSON, nullable=True, default=dict
-    )
-    error: Mapped[Optional[str]] = mapped_column(
-        Text, nullable=True
-    )
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default=TaskStatus.QUEUED.value)
+    payload: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True, default=dict)
+    result: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True, default=dict)
+    error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

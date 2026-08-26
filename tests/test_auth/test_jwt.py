@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-import pytest
-
 from app.auth.jwt import create_access_token, decode_access_token
 
 

@@ -3,6 +3,7 @@
 Provides data models and extraction logic for generating
 traceable citations from search results.
 """
+
 from app.citation.extractor import CitationExtractor, extract_citations
 from app.citation.models import Citation, CitationSource
 

@@ -2,23 +2,21 @@
 
 from __future__ import annotations
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.db.base import Base
-from app.db.session import get_db, reset_engine
-from app.main import app as fastapi_app
-
 # Import models for metadata
 import app.auth.models  # noqa: F401
+import app.connector.models  # noqa: F401
 import app.incident.models  # noqa: F401
 import app.knowledge.models  # noqa: F401
 import app.llm.cost.models  # noqa: F401
 import app.sop.models  # noqa: F401
-import app.connector.models  # noqa: F401
 import app.task.models  # noqa: F401
+from app.db.base import Base
+from app.db.session import get_db, reset_engine
+from app.main import app as fastapi_app
 
 
 @pytest_asyncio.fixture

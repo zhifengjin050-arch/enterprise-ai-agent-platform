@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-
-from app.knowledge.hybrid_search import IntelligenceHybridSearch, IntelligenceHybridResult
+from app.knowledge.hybrid_search import IntelligenceHybridResult, IntelligenceHybridSearch
 from app.knowledge.retrieval import KnowledgeRetriever, RetrievalResult
 from app.search.hybrid import HybridResult
 

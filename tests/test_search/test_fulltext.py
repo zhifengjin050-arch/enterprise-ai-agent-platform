@@ -2,11 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List
-
-import pytest
-
-from app.search.fulltext import DocumentResult, FullTextSearch
+from app.search.fulltext import FullTextSearch
 
 
 class TestMakeSnippet:

@@ -2,24 +2,24 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
 from app.connector.base import BaseConnector, ConnectorDocument
 from app.connector.lifecycle import (
+    _VALID_TRANSITIONS,
     ConnectorLifecycleManager,
     ConnectorState,
-    _VALID_TRANSITIONS,
 )
 from app.core.exceptions import ConnectorException
-
 
 # ── Dummy connector for testing ──
 
 
 class DummyLifecycleConnector(BaseConnector):
     """Dummy connector for lifecycle testing."""
+
     name: str = "DummyLifecycle"
     connector_type: str = "dummy_lifecycle"
 
@@ -42,6 +42,7 @@ class DummyLifecycleConnector(BaseConnector):
 
 class FailingInitConnector(BaseConnector):
     """Connector whose validate_config raises."""
+
     name: str = "FailingInit"
     connector_type: str = "failing_init"
 

@@ -7,6 +7,7 @@ Design:
   - Dev environment: creates a virtual FTS5 table over knowledge_documents
   - Prod environment: uses PostgreSQL to_tsvector / tsquery
 """
+
 from __future__ import annotations
 
 import logging
@@ -115,13 +116,11 @@ class FullTextSearch:
     ) -> List[DocumentResult]:
         """Search using SQLite FTS5."""
         # Sanitize query for FTS5 syntax
-        safe_query = " ".join(
-            re.sub(r'[^\w\u4e00-\u9fff]', ' ', query).split()
-        )
+        safe_query = " ".join(re.sub(r"[^\w\u4e00-\u9fff]", " ", query).split())
         if not safe_query.strip():
             return []
 
-        fts_query = "\"" + safe_query + "\"" if " " in safe_query else safe_query
+        fts_query = '"' + safe_query + '"' if " " in safe_query else safe_query
 
         sql = text("""
             SELECT
@@ -242,10 +241,7 @@ class FullTextSearch:
         stmt = (
             select(KnowledgeDocument)
             .where(KnowledgeDocument.status == DocumentStatus.ACTIVE)
-            .where(
-                KnowledgeDocument.title.ilike(like)
-                | KnowledgeDocument.content.ilike(like)
-            )
+            .where(KnowledgeDocument.title.ilike(like) | KnowledgeDocument.content.ilike(like))
             .order_by(KnowledgeDocument.updated_at.desc())
             .limit(limit)
             .offset(offset)

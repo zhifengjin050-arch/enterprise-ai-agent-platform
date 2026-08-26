@@ -41,9 +41,7 @@ async def get_llm_cost_stats(
         )
 
     service = AuthService()
-    has_perm = await service.has_permission(
-        session, current_user["id"], "admin.llm"
-    )
+    has_perm = await service.has_permission(session, current_user["id"], "admin.llm")
     if not has_perm:
         from fastapi import HTTPException, status
 

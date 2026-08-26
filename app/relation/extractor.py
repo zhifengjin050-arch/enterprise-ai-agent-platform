@@ -4,6 +4,7 @@ Two-layer strategy:
 1. Rule-based pattern matching for common relational patterns
 2. LLM fallback for complex/ambiguous documents
 """
+
 from __future__ import annotations
 
 import logging
@@ -50,6 +51,7 @@ class ExtractedRelation:
         relation_type: Relation type string.
         confidence: Confidence score (0.0 to 1.0).
     """
+
     source: str = ""
     target: str = ""
     relation_type: str = ""
@@ -72,6 +74,7 @@ class RelationExtractor:
             self._llm = llm_client
         else:
             from app.llm.client import llm_client as _llm
+
             self._llm = _llm
 
     def _rule_extract(
@@ -102,10 +105,7 @@ class RelationExtractor:
                     continue
 
                 # Find entity names in this sentence
-                found_entities = [
-                    e for e in entities
-                    if e.name.lower() in sentence
-                ]
+                found_entities = [e for e in entities if e.name.lower() in sentence]
 
                 if len(found_entities) >= 2:
                     # First entity = source, entity after pattern = target
@@ -121,12 +121,14 @@ class RelationExtractor:
                             key = (source_name, target_name, rtype.value)
                             if key not in seen:
                                 seen.add(key)
-                                relations.append(ExtractedRelation(
-                                    source=source_name,
-                                    target=target_name,
-                                    relation_type=rtype.value,
-                                    confidence=0.7,
-                                ))
+                                relations.append(
+                                    ExtractedRelation(
+                                        source=source_name,
+                                        target=target_name,
+                                        relation_type=rtype.value,
+                                        confidence=0.7,
+                                    )
+                                )
 
         return relations
 
@@ -167,9 +169,9 @@ class RelationExtractor:
                 )
 
                 prompt = build_relation_extraction_prompt(
-                    title, content,
-                    [{"name": e.name, "type": getattr(e, "entity_type", "")}
-                     for e in entities],
+                    title,
+                    content,
+                    [{"name": e.name, "type": getattr(e, "entity_type", "")} for e in entities],
                 )
                 result = await self._llm.structured_output(
                     prompt=prompt,
@@ -179,8 +181,7 @@ class RelationExtractor:
                 )
 
                 llm_relations = result.get("relations", [])
-                seen = {(r.source, r.target, r.relation_type)
-                        for r in rule_results}
+                seen = {(r.source, r.target, r.relation_type) for r in rule_results}
                 merged = list(rule_results)
 
                 for rel in llm_relations[:20]:
@@ -191,12 +192,14 @@ class RelationExtractor:
                     key = (source, target, rtype)
                     if source and target and key not in seen:
                         seen.add(key)
-                        merged.append(ExtractedRelation(
-                            source=source,
-                            target=target,
-                            relation_type=rtype,
-                            confidence=conf,
-                        ))
+                        merged.append(
+                            ExtractedRelation(
+                                source=source,
+                                target=target,
+                                relation_type=rtype,
+                                confidence=conf,
+                            )
+                        )
 
                 return merged
 

@@ -2,16 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock, patch
+from datetime import datetime, timedelta, timezone
 
-import pytest
-import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.connector.base import BaseConnector, ConnectorDocument
-from app.connector.models import ConnectorConfig, SyncRecord
+from app.connector.models import ConnectorConfig
 from app.connector.repository import ConnectorConfigRepository, SyncRecordRepository
 from app.connector.scheduler import SyncScheduler
 
@@ -198,7 +193,10 @@ class TestSyncScheduler:
     def test_is_due_never_synced(self) -> None:
         """Test that a connector with no last_sync is due."""
         cfg = ConnectorConfig(
-            name="Test", type="feishu", enabled=True, last_sync_at=None,
+            name="Test",
+            type="feishu",
+            enabled=True,
+            last_sync_at=None,
         )
         assert SyncScheduler._is_due(cfg) is True
 
@@ -206,7 +204,10 @@ class TestSyncScheduler:
         """Test hourly schedule when overdue."""
         old = datetime.now(timezone.utc) - timedelta(hours=2)
         cfg = ConnectorConfig(
-            name="Test", type="feishu", enabled=True, last_sync_at=old,
+            name="Test",
+            type="feishu",
+            enabled=True,
+            last_sync_at=old,
             config_json={"schedule": "hourly"},
         )
         assert SyncScheduler._is_due(cfg) is True
@@ -215,7 +216,10 @@ class TestSyncScheduler:
         """Test hourly schedule when not yet due."""
         recent = datetime.now(timezone.utc) - timedelta(minutes=30)
         cfg = ConnectorConfig(
-            name="Test", type="feishu", enabled=True, last_sync_at=recent,
+            name="Test",
+            type="feishu",
+            enabled=True,
+            last_sync_at=recent,
             config_json={"schedule": "hourly"},
         )
         assert SyncScheduler._is_due(cfg) is False
@@ -224,7 +228,10 @@ class TestSyncScheduler:
         """Test daily schedule when overdue."""
         old = datetime.now(timezone.utc) - timedelta(days=2)
         cfg = ConnectorConfig(
-            name="Test", type="yuque", enabled=True, last_sync_at=old,
+            name="Test",
+            type="yuque",
+            enabled=True,
+            last_sync_at=old,
             config_json={"schedule": "daily"},
         )
         assert SyncScheduler._is_due(cfg) is True
@@ -233,7 +240,10 @@ class TestSyncScheduler:
         """Test daily schedule when not yet due."""
         recent = datetime.now(timezone.utc) - timedelta(hours=12)
         cfg = ConnectorConfig(
-            name="Test", type="yuque", enabled=True, last_sync_at=recent,
+            name="Test",
+            type="yuque",
+            enabled=True,
+            last_sync_at=recent,
             config_json={"schedule": "daily"},
         )
         assert SyncScheduler._is_due(cfg) is False
@@ -242,7 +252,10 @@ class TestSyncScheduler:
         """Test never schedule."""
         old = datetime.now(timezone.utc) - timedelta(days=30)
         cfg = ConnectorConfig(
-            name="Test", type="feishu", enabled=True, last_sync_at=old,
+            name="Test",
+            type="feishu",
+            enabled=True,
+            last_sync_at=old,
             config_json={"schedule": "never"},
         )
         assert SyncScheduler._is_due(cfg) is False
@@ -251,7 +264,10 @@ class TestSyncScheduler:
         """Test custom interval minutes."""
         old = datetime.now(timezone.utc) - timedelta(minutes=30)
         cfg = ConnectorConfig(
-            name="Test", type="feishu", enabled=True, last_sync_at=old,
+            name="Test",
+            type="feishu",
+            enabled=True,
+            last_sync_at=old,
             config_json={"schedule_interval_minutes": 15},
         )
         assert SyncScheduler._is_due(cfg) is True

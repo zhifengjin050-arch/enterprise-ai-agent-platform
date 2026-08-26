@@ -3,6 +3,7 @@
 Uses python-jose for JWT operations with HS256 signing.
 Supports access_token and refresh_token.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -27,8 +28,8 @@ def _get_secret() -> str:
     """
     global _JWT_SECRET
     if _JWT_SECRET is None:
-        import os
         import logging
+        import os
 
         settings = get_settings()
         env_secret = os.environ.get("JWT_SECRET")
@@ -69,9 +70,7 @@ def create_refresh_token(
         "sub": data.get("sub"),
         "tenant_id": data.get("tenant_id", ""),
     }
-    expire = datetime.now(timezone.utc) + (
-        expires_delta or timedelta(days=_REFRESH_EXPIRE_DAYS)
-    )
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=_REFRESH_EXPIRE_DAYS))
     to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(to_encode, _get_secret(), algorithm=_JWT_ALGORITHM)
 

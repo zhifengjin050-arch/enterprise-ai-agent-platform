@@ -3,6 +3,7 @@
 All knowledge relation persistence goes through this repository.
 API and workflow layers must not execute raw ORM queries directly.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -108,9 +109,7 @@ class RelationRepository:
         if relation_type is not None:
             if isinstance(relation_type, str):
                 relation_type = RelationType(relation_type)
-            stmt = stmt.where(
-                KnowledgeRelation.relation_type == relation_type
-            )
+            stmt = stmt.where(KnowledgeRelation.relation_type == relation_type)
 
         stmt = stmt.limit(limit)
         result = await self.session.execute(stmt)
@@ -131,9 +130,7 @@ class RelationRepository:
             Dict with 'entity' and 'relations' keys.
         """
         eid = _as_uuid(entity_id)
-        entity_stmt = select(KnowledgeEntity).where(
-            KnowledgeEntity.id == eid
-        )
+        entity_stmt = select(KnowledgeEntity).where(KnowledgeEntity.id == eid)
         entity_result = await self.session.execute(entity_stmt)
         entity = entity_result.scalar_one_or_none()
         if entity is None:
@@ -151,13 +148,9 @@ class RelationRepository:
 
         # Fetch neighbor entities
         if neighbor_ids:
-            neighbor_stmt = select(KnowledgeEntity).where(
-                KnowledgeEntity.id.in_(neighbor_ids)
-            )
+            neighbor_stmt = select(KnowledgeEntity).where(KnowledgeEntity.id.in_(neighbor_ids))
             neighbor_result = await self.session.execute(neighbor_stmt)
-            neighbors = {
-                str(n.id): n for n in neighbor_result.scalars().all()
-            }
+            neighbors = {str(n.id): n for n in neighbor_result.scalars().all()}
         else:
             neighbors = {}
 
@@ -179,9 +172,7 @@ class RelationRepository:
         Returns:
             True if deleted, False if not found.
         """
-        stmt = select(KnowledgeRelation).where(
-            KnowledgeRelation.id == _as_uuid(relation_id)
-        )
+        stmt = select(KnowledgeRelation).where(KnowledgeRelation.id == _as_uuid(relation_id))
         result = await self.session.execute(stmt)
         relation = result.scalar_one_or_none()
         if relation is None:
@@ -210,9 +201,7 @@ class RelationRepository:
             "confidence": relation.confidence,
             "source_document_id": relation.source_document_id,
             "metadata_json": relation.metadata_json or {},
-            "created_at": relation.created_at.isoformat()
-            if relation.created_at
-            else None,
+            "created_at": relation.created_at.isoformat() if relation.created_at else None,
         }
 
     @staticmethod

@@ -3,6 +3,7 @@
 Constructs knowledge entities and relations from extracted
 entity/relation data and persists them via repositories.
 """
+
 from __future__ import annotations
 
 import logging
@@ -59,13 +60,16 @@ class GraphBuilder:
         # Step 1: Extract entities
         entity_extractor = EntityExtractor(llm_client=self._llm_client)
         extracted_entities = await entity_extractor.extract_entities(
-            title, content,
+            title,
+            content,
         )
 
         # Step 2: Extract relations
         relation_extractor = RelationExtractor(llm_client=self._llm_client)
         extracted_relations = await relation_extractor.extract_relations(
-            extracted_entities, title, content,
+            extracted_entities,
+            title,
+            content,
         )
 
         # Step 3: Persist if session is available
@@ -85,7 +89,9 @@ class GraphBuilder:
                         description=ee.description,
                         metadata_json={
                             "source_document_id": document_id,
-                        } if document_id else {},
+                        }
+                        if document_id
+                        else {},
                     )
                     entity_records.append(entity)
                     name_to_id[ee.name.lower()] = str(entity.id)

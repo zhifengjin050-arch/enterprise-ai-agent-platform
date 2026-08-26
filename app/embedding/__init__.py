@@ -13,6 +13,7 @@ Package public API:
     EmbeddingConnectionError — network failure
     EmbeddingConfigurationError — missing key/model
 """
+
 from app.embedding.base import EmbeddingProvider
 from app.embedding.client import OpenAICompatibleEmbedding
 from app.embedding.exceptions import (

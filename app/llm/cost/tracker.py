@@ -3,6 +3,7 @@
 Intercepts LLM calls to record token usage and estimated cost.
 Provides a context manager interface for tracking.
 """
+
 from __future__ import annotations
 
 from typing import Dict, Optional
@@ -36,9 +37,7 @@ def _estimate_cost(
     Returns:
         Estimated cost in USD.
     """
-    pricing = _MODEL_PRICING.get(
-        model, _MODEL_PRICING["default"]
-    )
+    pricing = _MODEL_PRICING.get(model, _MODEL_PRICING["default"])
     input_cost = (prompt_tokens / 1000) * pricing["input"]
     output_cost = (completion_tokens / 1000) * pricing["output"]
     return input_cost + output_cost

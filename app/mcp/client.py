@@ -3,6 +3,7 @@
 Communicates with any MCP-compatible HTTP API (e.g. the Enterprise DevOps MCP server)
 to discover and invoke remote infrastructure tools (Docker, K8s, SSH, health, etc.).
 """
+
 from __future__ import annotations
 
 import logging
@@ -36,9 +37,7 @@ class MCPClient:
         """
         headers = self._get_headers()
         try:
-            resp = await self._client.get(
-                f"{self.base_url}/tools", headers=headers
-            )
+            resp = await self._client.get(f"{self.base_url}/tools", headers=headers)
             resp.raise_for_status()
             data = resp.json()
             # The server may return a list directly or wrap it in {"tools": [...]}
@@ -59,9 +58,7 @@ class MCPClient:
             logger.warning("MCP list_tools failed for %s: %s", self.base_url, e)
             return []
 
-    async def execute_tool(
-        self, name: str, arguments: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def execute_tool(self, name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """POST /tools/{name}/execute -> result dict.
 
         Returns a dict with either the result payload or an ``error`` key
@@ -91,17 +88,13 @@ class MCPClient:
                 detail = {"status_code": e.response.status_code}
             return {"error": f"HTTP {e.response.status_code}", "detail": detail}
         except Exception as e:
-            logger.warning(
-                "MCP execute_tool failed: %s/%s: %s", self.base_url, name, e
-            )
+            logger.warning("MCP execute_tool failed: %s/%s: %s", self.base_url, name, e)
             return {"error": str(e)}
 
     async def health(self) -> bool:
         """GET /health -> True if the server responds with 200."""
         try:
-            resp = await self._client.get(
-                f"{self.base_url}/health", headers=self._get_headers()
-            )
+            resp = await self._client.get(f"{self.base_url}/health", headers=self._get_headers())
             return resp.status_code == 200
         except Exception:
             return False

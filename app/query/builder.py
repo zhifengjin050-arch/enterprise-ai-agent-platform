@@ -3,6 +3,7 @@
 Builds a structured LLM context from hybrid search results,
 with token limit enforcement and deduplication.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,6 +20,7 @@ class ContextDocument:
         source: Source identifier.
         score: RRF fusion score.
     """
+
     title: str = ""
     content: str = ""
     source: str = ""
@@ -97,20 +99,24 @@ class ContextBuilder:
                     max_chars = remaining * _CHARS_PER_TOKEN
                     content = content[: max_chars - len(title)]
                     if content:
-                        context.append(ContextDocument(
-                            title=title,
-                            content=content,
-                            source=title,
-                            score=score,
-                        ))
+                        context.append(
+                            ContextDocument(
+                                title=title,
+                                content=content,
+                                source=title,
+                                score=score,
+                            )
+                        )
                 break
 
-            context.append(ContextDocument(
-                title=title,
-                content=content,
-                source=title,
-                score=score,
-            ))
+            context.append(
+                ContextDocument(
+                    title=title,
+                    content=content,
+                    source=title,
+                    score=score,
+                )
+            )
             total_tokens += doc_tokens
 
         return context
@@ -126,11 +132,7 @@ class ContextBuilder:
         """
         parts: List[str] = []
         for i, doc in enumerate(context, 1):
-            parts.append(
-                f"[文档 {i}]\n"
-                f"标题: {doc.title}\n"
-                f"内容: {doc.content}\n"
-            )
+            parts.append(f"[文档 {i}]\n标题: {doc.title}\n内容: {doc.content}\n")
         return "\n---\n".join(parts)
 
 

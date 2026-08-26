@@ -3,6 +3,7 @@
 Provides entity lookup, neighbor queries, and path-finding
 over the PostgreSQL-backed knowledge graph (Knowledge Graph Lite).
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List
@@ -44,6 +45,7 @@ async def get_entity(name: str) -> Dict[str, Any]:
         # Also fetch relations
         from app.entity.repository import EntityRepository
         from app.relation.repository import RelationRepository
+
         entity_repo = EntityRepository(session)
         relation_repo = RelationRepository(session)
         entities = await entity_repo.find_by_name(name, exact=True)
@@ -55,12 +57,16 @@ async def get_entity(name: str) -> Dict[str, Any]:
                 tgt_id = str(rel.target_entity_id)
                 tgt_entity = await entity_repo.get_entity(tgt_id)
                 tgt_name = tgt_entity.name if tgt_entity else tgt_id
-                relations.append({
-                    "source": src_name,
-                    "target": tgt_name,
-                    "type": rel.relation_type.value if hasattr(rel.relation_type, "value") else str(rel.relation_type),
-                    "confidence": rel.confidence,
-                })
+                relations.append(
+                    {
+                        "source": src_name,
+                        "target": tgt_name,
+                        "type": rel.relation_type.value
+                        if hasattr(rel.relation_type, "value")
+                        else str(rel.relation_type),
+                        "confidence": rel.confidence,
+                    }
+                )
             result["relations"] = relations
         return result
 

@@ -3,6 +3,7 @@
 Provides CRUD operations for connector configurations and sync trigger/status.
 Requires appropriate RBAC permissions (connector.read, connector.write, connector.sync).
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -29,12 +30,14 @@ router = APIRouter(prefix="/api/connectors", tags=["Connectors"])
 
 class SyncTriggerRequest(BaseModel):
     """Optional body for sync trigger."""
+
     sync_mode: str = Field("full", description="full | incremental | delta")
     resume: bool = Field(True, description="Resume from checkpoint for incremental")
 
 
 class ConnectorCreateRequest(BaseModel):
     """Request body for creating a connector."""
+
     name: str
     type: str
     config_json: Optional[Dict[str, Any]] = None
@@ -43,6 +46,7 @@ class ConnectorCreateRequest(BaseModel):
 
 class ConnectorUpdateRequest(BaseModel):
     """Request body for updating a connector."""
+
     name: Optional[str] = None
     config_json: Optional[Dict[str, Any]] = None
     enabled: Optional[bool] = None
@@ -50,6 +54,7 @@ class ConnectorUpdateRequest(BaseModel):
 
 class ConnectorResponse(BaseModel):
     """Connector configuration response."""
+
     id: str
     tenant_id: Optional[str] = None
     name: str
@@ -61,6 +66,7 @@ class ConnectorResponse(BaseModel):
 
 class SyncRecordResponse(BaseModel):
     """Sync record response."""
+
     id: str
     connector_id: str
     document_id: Optional[str] = None
@@ -533,7 +539,9 @@ async def list_connector_types_metadata(
 
 @router.get("/types/discover")
 async def discover_connectors_by_capability(
-    capability: str = Query(..., description="Capability to filter by (e.g., 'document_read', 'search', 'webhook')"),
+    capability: str = Query(
+        ..., description="Capability to filter by (e.g., 'document_read', 'search', 'webhook')"
+    ),
     _=Depends(require_permission("connector.read")),
 ) -> Dict[str, Any]:
     """Discover connector types that support a given capability.

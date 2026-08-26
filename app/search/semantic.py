@@ -4,6 +4,7 @@ Provides vector similarity search over knowledge documents using
 ChromaDB. Converts text queries to embeddings, then performs
 similarity search with optional metadata filtering.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

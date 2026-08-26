@@ -4,6 +4,7 @@ Two-layer strategy:
 1. Rule-based keyword matching for known technologies
 2. LLM fallback for complex/ambiguous documents
 """
+
 from __future__ import annotations
 
 import logging
@@ -64,6 +65,7 @@ class ExtractedEntity:
         entity_type: Entity type string.
         description: Optional description.
     """
+
     name: str = ""
     entity_type: str = ""
     description: str = ""
@@ -85,6 +87,7 @@ class EntityExtractor:
             self._llm = llm_client
         else:
             from app.llm.client import llm_client as _llm
+
             self._llm = _llm
 
     def _rule_extract(self, title: str, content: str) -> List[ExtractedEntity]:
@@ -106,10 +109,7 @@ class EntityExtractor:
                 if name not in found:
                     found[name] = etype
 
-        return [
-            ExtractedEntity(name=n, entity_type=t, description="")
-            for n, t in found.items()
-        ]
+        return [ExtractedEntity(name=n, entity_type=t, description="") for n, t in found.items()]
 
     async def extract_entities(
         self,
@@ -160,11 +160,13 @@ class EntityExtractor:
                     desc = ent.get("description", "").strip()
                     if name and name.lower() not in seen:
                         seen.add(name.lower())
-                        merged.append(ExtractedEntity(
-                            name=name,
-                            entity_type=etype,
-                            description=desc,
-                        ))
+                        merged.append(
+                            ExtractedEntity(
+                                name=name,
+                                entity_type=etype,
+                                description=desc,
+                            )
+                        )
 
                 return merged
 

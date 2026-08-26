@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock
-
-import pytest
 
 from app.connector.base import BaseConnector, ConnectorDocument
 
 
 class HealthyConnector(BaseConnector):
     """A connector that reports healthy."""
+
     name: str = "Healthy"
     connector_type: str = "healthy"
 
@@ -41,6 +39,7 @@ class HealthyConnector(BaseConnector):
 
 class UnhealthyConnector(BaseConnector):
     """A connector that reports unhealthy."""
+
     name: str = "Unhealthy"
     connector_type: str = "unhealthy"
 
@@ -70,6 +69,7 @@ class UnhealthyConnector(BaseConnector):
 
 class WarningConnector(BaseConnector):
     """A connector that reports warning."""
+
     name: str = "Warning"
     connector_type: str = "warning"
 
@@ -99,6 +99,7 @@ class WarningConnector(BaseConnector):
 
 class DefaultHealthConnector(BaseConnector):
     """A connector using default health_check."""
+
     name: str = "Default"
     connector_type: str = "default"
 

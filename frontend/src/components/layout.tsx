@@ -10,8 +10,10 @@ import {
   Menu,
   X,
   ChevronRight,
+  LogOut,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/auth-context"
 
 interface NavItem {
   label: string
@@ -52,6 +54,7 @@ function CurrentTime() {
 export default function Layout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { user, logout } = useAuth()
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -141,7 +144,16 @@ export default function Layout() {
           </h1>
 
           <div className="ml-auto flex items-center gap-4">
+            {user?.username && (
+              <span className="hidden text-sm text-muted-foreground sm:inline">
+                {user.username}
+              </span>
+            )}
             <CurrentTime />
+            <Button variant="ghost" size="sm" className="gap-1" onClick={logout}>
+              <LogOut className="h-4 w-4" />
+              退出
+            </Button>
           </div>
         </header>
 

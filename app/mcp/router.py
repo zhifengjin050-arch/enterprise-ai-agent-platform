@@ -3,6 +3,7 @@
 Exposes endpoints for the frontend / monitoring to inspect which MCP
 servers are registered and which tools have been discovered.
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter

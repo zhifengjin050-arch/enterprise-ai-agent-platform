@@ -41,11 +41,7 @@ def configure_logging(
     if json_format:
         handler.setFormatter(StructuredFormatter())
     else:
-        handler.setFormatter(
-            logging.Formatter(
-                "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-            )
-        )
+        handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
     root_logger.addHandler(handler)
 
     # Suppress noisy third-party loggers

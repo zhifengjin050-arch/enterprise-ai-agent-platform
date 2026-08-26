@@ -12,6 +12,7 @@ End-to-end pipeline for enterprise knowledge Q&A:
 
 Output: KnowledgeAgentResult with answer, citations, confidence, sources.
 """
+
 from __future__ import annotations
 
 import logging
@@ -135,6 +136,7 @@ class KnowledgeAgent:
         graph_terms: List[str] = []
         try:
             from app.entity.extractor import EntityExtractor
+
             entity_extractor = EntityExtractor(llm_client=self._llm_client)
             query_entities = entity_extractor._rule_extract(query, "")
             if query_entities:
@@ -142,6 +144,7 @@ class KnowledgeAgent:
                 from app.db.session import get_session_factory
                 from app.entity.repository import EntityRepository
                 from app.relation.repository import RelationRepository
+
                 factory = get_session_factory()
                 async with factory() as session:
                     entity_repo = EntityRepository(session)
@@ -201,9 +204,7 @@ class KnowledgeAgent:
         conversation_memory.add_message(conv_id, "assistant", answer_result.answer)
 
         # Build source list
-        sources = list(dict.fromkeys(
-            c.title for c in citations if c.title
-        ))
+        sources = list(dict.fromkeys(c.title for c in citations if c.title))
 
         return KnowledgeAgentResult(
             answer=answer_result.answer,

@@ -4,13 +4,11 @@ Tests relation creation, field validation, and type enum.
 Note: SQLAlchemy mapped_column(default=...) applies at INSERT time,
 so id/relation_type/confidence are None/0.0 until session.add()+flush().
 """
+
 from __future__ import annotations
 
 import uuid
 
-import pytest
-
-from app.entity.models import EntityType
 from app.relation.models import KnowledgeRelation, RelationType
 
 

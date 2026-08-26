@@ -16,7 +16,10 @@ class Settings(BaseSettings):
 
     # Application
     app_name: str = "Enterprise AI Knowledge Copilot"
+    app_version: str = "1.0.0"
+    service_name: str = "enterprise-ai-agent-platform"
     debug: bool = False
+    environment: str = "development"
     log_level: str = "INFO"
     log_json_format: bool = True
 
@@ -27,6 +30,9 @@ class Settings(BaseSettings):
     postgres_db: str = "knowledge_copilot"
     postgres_user: str = "postgres"
     postgres_password: str = ""
+    # Redis
+    redis_host: str = "localhost"
+    redis_port: int = 6379
 
     # ChromaDB Vector Store
     chroma_host: str = ""
@@ -73,24 +79,37 @@ class Settings(BaseSettings):
 
     # Security / JWT
     jwt_secret: str = "dev-secret-do-not-use-in-production"
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    jwt_expiration_minutes: int = 60
+    cors_origins: str = "http://localhost:5173,http://localhost:3000,http://localhost"
     rate_limit_per_minute: int = 120
+
+    # Observability
+    otel_exporter_otlp_endpoint: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",
     )
 
     def model_post_init(self, __context: Any) -> None:
-        """Warn if using default dev JWT secret."""
+        """Reject weak JWT secrets in production; warn otherwise."""
         import logging
 
-        if self.jwt_secret == "dev-secret-do-not-use-in-production" and not self.debug:
+        weak = {
+            "dev-secret-do-not-use-in-production",
+            "change-me-in-production",
+            "secret",
+            "",
+        }
+        env = (self.environment or "development").lower()
+        if env in {"production", "prod"} and self.jwt_secret in weak:
+            raise ValueError("JWT_SECRET must be set to a strong value when ENVIRONMENT=production")
+        if self.jwt_secret in weak and not self.debug:
             logging.getLogger(__name__).warning(
-                "JWT_SECRET is using the insecure dev default. "
-                "Set JWT_SECRET via .env or environment variables for any "
-                "non-development deployment."
+                "JWT_SECRET is using an insecure default. "
+                "Set JWT_SECRET via .env for any shared or production deployment."
             )
 
 

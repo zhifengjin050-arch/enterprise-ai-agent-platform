@@ -9,7 +9,6 @@ import pytest
 from app.api_key.models import ApiKeyStatus
 from app.api_key.service import ApiKeyService
 from app.tenant.context import TenantContext, clear_tenant_context, set_tenant_context
-from app.tenant.middleware import TenantMiddleware
 
 
 class TestApiKeyService:

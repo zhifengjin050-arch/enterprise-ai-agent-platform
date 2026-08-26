@@ -23,13 +23,13 @@ class SOPTemplate(Base):
 
     __tablename__ = "sop_templates"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     sop_id: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True, index=True)
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid(as_uuid=True), nullable=True, index=True
+    )
     severity: Mapped[str] = mapped_column(String(20), nullable=False, default="P2")
     category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     steps: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)

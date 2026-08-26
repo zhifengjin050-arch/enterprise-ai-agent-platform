@@ -9,7 +9,6 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
 from sqlalchemy import select
 
 from app.auth.models import Tenant
@@ -38,24 +37,28 @@ class TestTenantIdInExistingModels:
     def test_tenant_id_on_entity(self) -> None:
         """KnowledgeEntity should have tenant_id."""
         from app.entity.models import KnowledgeEntity
+
         entity = KnowledgeEntity(name="test-entity")
         assert hasattr(entity, "tenant_id")
 
     def test_tenant_id_on_relation(self) -> None:
         """KnowledgeRelation should have tenant_id."""
         from app.relation.models import KnowledgeRelation
+
         relation = KnowledgeRelation()
         assert hasattr(relation, "tenant_id")
 
     def test_tenant_id_on_workflow(self) -> None:
         """WorkflowRun should have tenant_id."""
         from app.workflow.models import WorkflowRun
+
         wf = WorkflowRun()
         assert hasattr(wf, "tenant_id")
 
     def test_user_has_tenant_id(self) -> None:
         """User should have tenant_id."""
         from app.auth.models import User
+
         user = User(username="test", hashed_password="pwd")
         assert hasattr(user, "tenant_id")
 

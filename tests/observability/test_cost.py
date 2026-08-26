@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy import select
 
 from app.observability.cost_tracker import LLMUsageTracker
-from app.observability.models import LLMUsageRecord, AgentExecutionTrace, SystemEvent
+from app.observability.models import LLMUsageRecord, SystemEvent
 
 
 class TestLLMUsageTracker:
@@ -62,8 +62,12 @@ class TestLLMUsageTracker:
     @pytest.mark.asyncio
     async def test_summary_returns_aggregates(self, db_session):
         tracker = LLMUsageTracker(db_session)
-        await tracker.record(tenant_id="t-sum", model="deepseek-chat", prompt_tokens=100, completion_tokens=50)
-        await tracker.record(tenant_id="t-sum", model="gpt-4", prompt_tokens=200, completion_tokens=100)
+        await tracker.record(
+            tenant_id="t-sum", model="deepseek-chat", prompt_tokens=100, completion_tokens=50
+        )
+        await tracker.record(
+            tenant_id="t-sum", model="gpt-4", prompt_tokens=200, completion_tokens=100
+        )
 
         summary = await tracker.summary(tenant_id="t-sum")
         assert summary["total_calls"] >= 2

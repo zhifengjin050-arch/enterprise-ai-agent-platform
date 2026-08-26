@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-import pytest
-
 from app.workflow_engine.observability import (
     inc_workflow_exec_count,
     inc_workflow_node_count,

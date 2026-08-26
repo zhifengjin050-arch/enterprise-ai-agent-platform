@@ -5,24 +5,21 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, patch
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+import app.agent_runtime.models  # noqa: F401
+import app.api_key.models  # noqa: F401
+import app.audit.models  # noqa: F401
+import app.auth.models  # noqa: F401
+import app.auth.organization  # noqa: F401
+import app.quota.models  # noqa: F401
+from app.auth.dependencies import get_current_user
+from app.auth.service import AuthService
 from app.db.base import Base
 from app.db.session import get_db, reset_engine
 from app.main import app as fastapi_app
-
-import app.auth.models  # noqa: F401
-import app.auth.organization  # noqa: F401
-import app.api_key.models  # noqa: F401
-import app.audit.models  # noqa: F401
-import app.quota.models  # noqa: F401
-import app.agent_runtime.models  # noqa: F401
-
-from app.auth.dependencies import get_current_user
-from app.auth.service import AuthService
 
 
 @pytest_asyncio.fixture
@@ -118,9 +115,7 @@ async def auth_client(db_engine, tenant_user):
     fastapi_app.dependency_overrides[get_db] = _override_get_db
     fastapi_app.dependency_overrides[get_current_user] = _fake_user
 
-    with patch.object(
-        AuthService, "has_permission", new_callable=AsyncMock, return_value=True
-    ):
+    with patch.object(AuthService, "has_permission", new_callable=AsyncMock, return_value=True):
         transport = ASGITransport(app=fastapi_app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             yield client, tenant_user

@@ -3,6 +3,7 @@
 In-memory store keeping the last N turns per conversation.
 Simple MVP implementation — not intended for long-term persistence.
 """
+
 from __future__ import annotations
 
 from typing import Dict, List, Optional
@@ -86,7 +87,7 @@ class ConversationMemory:
 
         # Trim to max_turns
         if len(conv.messages) > self._max_turns:
-            conv.messages = conv.messages[-self._max_turns:]
+            conv.messages = conv.messages[-self._max_turns :]
 
         return conv
 

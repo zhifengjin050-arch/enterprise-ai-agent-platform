@@ -161,7 +161,13 @@ async def main() -> None:
             skipped,
         )
 
-    logger.info("Summary: %d docs, %d chunks, %d entities, %d relations", len(results), total_chunks, total_entities, total_relations)
+    logger.info(
+        "Summary: %d docs, %d chunks, %d entities, %d relations",
+        len(results),
+        total_chunks,
+        total_entities,
+        total_relations,
+    )
 
 
 if __name__ == "__main__":

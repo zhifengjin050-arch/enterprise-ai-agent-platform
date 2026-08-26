@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import pytest
 
-from app.agent_runtime.memory import AgentMemoryManager
-from app.agent_runtime.trace import AgentTrace
 from app.agent_runtime.context import ContextEngine
+from app.agent_runtime.memory import AgentMemoryManager
 from app.agent_runtime.models import (
+    AgentMessage,
     AgentRecord,
     AgentResult,
     AgentStatus,
     AgentTask,
     AgentTaskStatus,
-    AgentMessage,
     AgentToolCall,
     ExecutionPlan,
     PlanStep,
 )
+from app.agent_runtime.trace import AgentTrace
 from app.prompt.manager import PromptManager
 from app.prompt.models import PromptTemplate
 

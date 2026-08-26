@@ -11,6 +11,7 @@ Public API:
     orchestrator            — Singleton orchestrator instance
     WorkflowRun             — ORM model for persisted runs
 """
+
 from app.workflow.knowledge_pipeline import knowledge_pipeline
 from app.workflow.models import WorkflowRun
 from app.workflow.orchestrator import WorkflowOrchestrator, orchestrator

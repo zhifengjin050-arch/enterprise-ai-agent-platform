@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
 from app.connector.base import BaseConnector, ConnectorDocument
 from app.connector.exceptions import (
     AuthenticationError,
-    ConnectorError,
     ConnectionError,
+    ConnectorError,
     NotFoundError,
     SyncError,
 )
@@ -135,6 +134,7 @@ class TestBaseConnector:
 
     async def test_concrete_subclass(self) -> None:
         """Test that a minimal concrete subclass works."""
+
         class MinimalConnector(BaseConnector):
             name: str = "Minimal"
             connector_type: str = "minimal"
@@ -169,6 +169,7 @@ class TestBaseConnector:
 
     def test_get_metadata_unconfigured(self) -> None:
         """Test metadata when no config provided."""
+
         class EmptyConnector(BaseConnector):
             name: str = "Empty"
             connector_type: str = "empty"

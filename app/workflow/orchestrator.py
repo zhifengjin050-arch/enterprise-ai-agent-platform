@@ -265,7 +265,9 @@ class WorkflowOrchestrator:
             state["review_decision"] = "rejected"
             state["review_comment"] = comment
             state["status"] = "completed"
-            state["error"] = f"Rejected by human review: {comment}" if comment else "Rejected by human review"
+            state["error"] = (
+                f"Rejected by human review: {comment}" if comment else "Rejected by human review"
+            )
 
             await self._save_workflow_run(
                 workflow_run_id=workflow_run_id,

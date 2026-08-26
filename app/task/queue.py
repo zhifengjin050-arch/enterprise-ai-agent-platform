@@ -3,6 +3,7 @@
 Provides in-process queue (backed by database) for document
 import tasks. Designed for Redis/Celery upgrade path.
 """
+
 from __future__ import annotations
 
 from typing import Any, Callable, Dict, List, Optional

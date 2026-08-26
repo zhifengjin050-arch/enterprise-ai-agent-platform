@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
-
 from app.observability.trace import TraceManager, _NoopSpan
 
 
@@ -46,7 +44,7 @@ class TestTraceManager:
 
     def test_start_span_includes_tenant_attributes(self):
         """Span should include tenant_id/user_id if TenantContext is active."""
-        from app.tenant.context import TenantContext, set_tenant_context, clear_tenant_context
+        from app.tenant.context import TenantContext, clear_tenant_context, set_tenant_context
 
         ctx = TenantContext(tenant_id="t-001", user_id="u-001")
         token = set_tenant_context(ctx)

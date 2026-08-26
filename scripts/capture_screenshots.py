@@ -10,6 +10,7 @@ Usage:
     python -m playwright install chromium
     python scripts/capture_screenshots.py
 """
+
 from __future__ import annotations
 
 import json

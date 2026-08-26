@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
 from unittest.mock import AsyncMock, Mock
 
 import httpx
@@ -57,7 +56,9 @@ class TestOpenAICompatibleEmbedding:
     """Tests for the client implementation."""
 
     @pytest.mark.asyncio
-    async def test_embed_text_single(self, provider_with_mock_client: OpenAICompatibleEmbedding) -> None:
+    async def test_embed_text_single(
+        self, provider_with_mock_client: OpenAICompatibleEmbedding
+    ) -> None:
         """embed_text should return a single vector."""
         vector = await provider_with_mock_client.embed_text("Hello world")
         assert isinstance(vector, list)
@@ -65,8 +66,8 @@ class TestOpenAICompatibleEmbedding:
 
     @pytest.mark.asyncio
     async def test_embed_documents_multiple(
-            self,
-            provider_with_mock_client: OpenAICompatibleEmbedding,
+        self,
+        provider_with_mock_client: OpenAICompatibleEmbedding,
     ) -> None:
         """embed_documents should return correct number of vectors."""
         texts = ["first document", "second document"]
@@ -81,7 +82,9 @@ class TestOpenAICompatibleEmbedding:
         assert result == []
 
     @pytest.mark.asyncio
-    async def test_request_format(self, provider_with_mock_client: OpenAICompatibleEmbedding) -> None:
+    async def test_request_format(
+        self, provider_with_mock_client: OpenAICompatibleEmbedding
+    ) -> None:
         """Verify correct POST body and headers are sent."""
         mock_client = provider_with_mock_client._client
         assert mock_client is not None
@@ -99,8 +102,8 @@ class TestOpenAICompatibleEmbedding:
 
     @pytest.mark.asyncio
     async def test_response_parsing_maintains_order(
-            self,
-            provider_with_mock_client: OpenAICompatibleEmbedding,
+        self,
+        provider_with_mock_client: OpenAICompatibleEmbedding,
     ) -> None:
         """Vectors should be returned in the same order as input texts, even if API reorders."""
         mock_client = provider_with_mock_client._client
@@ -171,7 +174,9 @@ class TestOpenAICompatibleEmbedding:
         error_response.status_code = 503
         error_response.text = "Service Unavailable"
         error_response.raise_for_status.side_effect = httpx.HTTPStatusError(
-            "503 error", request=Mock(), response=error_response,
+            "503 error",
+            request=Mock(),
+            response=error_response,
         )
         mock_client.post.return_value = error_response
         provider._client = mock_client

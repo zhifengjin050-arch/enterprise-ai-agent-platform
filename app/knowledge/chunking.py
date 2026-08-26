@@ -133,9 +133,7 @@ class SmartChunker:
 
     # ── Internal helpers ──
 
-    def _protect_blocks(
-        self, text: str
-    ) -> tuple[str, Dict[str, tuple[str, str]]]:
+    def _protect_blocks(self, text: str) -> tuple[str, Dict[str, tuple[str, str]]]:
         """Replace code blocks and tables with placeholders.
 
         Returns:
@@ -161,9 +159,7 @@ class SmartChunker:
         while i < len(lines):
             if _TABLE_ROW_RE.match(lines[i]):
                 table_lines = []
-                while i < len(lines) and (
-                    _TABLE_ROW_RE.match(lines[i]) or lines[i].strip() == ""
-                ):
+                while i < len(lines) and (_TABLE_ROW_RE.match(lines[i]) or lines[i].strip() == ""):
                     if lines[i].strip():
                         table_lines.append(lines[i])
                     i += 1
@@ -180,9 +176,7 @@ class SmartChunker:
 
         return "\n".join(out_lines), placeholders
 
-    def _restore_placeholders(
-        self, text: str, placeholders: Dict[str, tuple[str, str]]
-    ) -> str:
+    def _restore_placeholders(self, text: str, placeholders: Dict[str, tuple[str, str]]) -> str:
         """Restore protected blocks into text."""
         for key, (_kind, original) in placeholders.items():
             text = text.replace(key, original)
@@ -213,9 +207,7 @@ class SmartChunker:
 
         return sections
 
-    def _split_oversized(
-        self, text: str, *, heading: Optional[str] = None
-    ) -> List[Chunk]:
+    def _split_oversized(self, text: str, *, heading: Optional[str] = None) -> List[Chunk]:
         """Split text that exceeds max_tokens by paragraphs / sentences."""
         tokens = estimate_tokens(text)
         meta: Dict[str, Any] = {}
@@ -284,9 +276,7 @@ class SmartChunker:
 
         return chunks
 
-    def _hard_split(
-        self, text: str, *, heading: Optional[str] = None
-    ) -> List[Chunk]:
+    def _hard_split(self, text: str, *, heading: Optional[str] = None) -> List[Chunk]:
         """Hard-split by character budget when paragraphs are too large."""
         max_chars = self.max_tokens * _CHARS_PER_TOKEN
         chunks: List[Chunk] = []
@@ -313,9 +303,7 @@ class SmartChunker:
             start = end
         return chunks
 
-    def _finalize(
-        self, chunks: List[Chunk], *, document_id: str
-    ) -> List[Chunk]:
+    def _finalize(self, chunks: List[Chunk], *, document_id: str) -> List[Chunk]:
         """Assign IDs, indices, document_id, and apply overlap."""
         if not chunks:
             return []

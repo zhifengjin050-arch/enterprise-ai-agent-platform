@@ -109,9 +109,7 @@ async def sqlalchemy_exception_handler(
     if isinstance(exc, IntegrityError):
         db_exc = DatabaseIntegrityError()
     elif isinstance(exc, OperationalError):
-        db_exc = DatabaseConnectionError(
-            details={"db_dialect": str(exc.connection_invalidated)}
-        )
+        db_exc = DatabaseConnectionError(details={"db_dialect": str(exc.connection_invalidated)})
     elif isinstance(exc, SA_TimeoutError):
         db_exc = DatabaseConnectionError(
             message="Database query timed out",
@@ -164,9 +162,7 @@ def register_exception_handlers(app: Any) -> None:
         app: The FastAPI application instance.
     """
     app.add_exception_handler(BaseAppException, base_app_exception_handler)
-    app.add_exception_handler(
-        RequestValidationError, validation_exception_handler
-    )
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
     # SQLAlchemy exceptions (catch multiple via generic handler)
     app.add_exception_handler(IntegrityError, sqlalchemy_exception_handler)
     app.add_exception_handler(OperationalError, sqlalchemy_exception_handler)

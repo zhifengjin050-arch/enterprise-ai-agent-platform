@@ -3,6 +3,7 @@
 Converts hybrid search results into structured Citation objects
 for traceable knowledge agent answers.
 """
+
 from __future__ import annotations
 
 from typing import Any, List
@@ -54,13 +55,15 @@ class CitationExtractor:
             if title_lower:
                 seen_titles.add(title_lower)
 
-            sources.append(CitationSource(
-                document_id=str(getattr(r, id_field, "") or ""),
-                title=title,
-                content_snippet=(getattr(r, snippet_field, "") or "")[:200],
-                source="knowledge_base",
-                score=getattr(r, score_field, 0.0) or 0.0,
-            ))
+            sources.append(
+                CitationSource(
+                    document_id=str(getattr(r, id_field, "") or ""),
+                    title=title,
+                    content_snippet=(getattr(r, snippet_field, "") or "")[:200],
+                    source="knowledge_base",
+                    score=getattr(r, score_field, 0.0) or 0.0,
+                )
+            )
 
             if len(sources) >= max_sources:
                 break

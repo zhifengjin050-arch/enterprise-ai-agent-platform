@@ -10,6 +10,7 @@ Provides the conversational knowledge Q&A capability:
 This is a single-agent implementation following a clear pipeline,
 not a multi-agent orchestration framework.
 """
+
 from app.agent.answer_generator import AnswerGenerator
 from app.agent.knowledge_agent import KnowledgeAgent, KnowledgeAgentResult
 

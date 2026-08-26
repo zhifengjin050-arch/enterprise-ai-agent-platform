@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.auth.models import Permission, Role, Tenant, User
+from app.auth.models import Role, Tenant, User
 from app.auth.repository import RoleRepository, TenantRepository, UserRepository
 
 

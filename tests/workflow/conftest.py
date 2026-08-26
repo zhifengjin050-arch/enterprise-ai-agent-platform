@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import Any, AsyncGenerator, Dict
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.base import Base
@@ -58,13 +57,12 @@ async def auth_api_client(db_engine) -> AsyncGenerator[AsyncClient, None]:
     test session. Patches AuthService.has_permission to always return True.
     """
     from unittest.mock import patch
+
+    import app.workflow_engine.engine as wf_engine_module
     from app.auth.dependencies import get_current_user, get_db
     from app.auth.service import AuthService
-    import app.workflow_engine.engine as wf_engine_module
 
-    factory = async_sessionmaker(
-        db_engine, class_=AsyncSession, expire_on_commit=False
-    )
+    factory = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
 
     async def _override_get_db():
         async with factory() as session:
@@ -93,7 +91,7 @@ async def auth_api_client(db_engine) -> AsyncGenerator[AsyncClient, None]:
 
     with (
         patch.object(AuthService, "has_permission", return_value=True),
-        patch.object(wf_engine_module, 'get_session_factory', return_value=factory),
+        patch.object(wf_engine_module, "get_session_factory", return_value=factory),
     ):
         wf_engine_module.workflow_engine._session_factory = factory
         transport = ASGITransport(app=app)
@@ -201,7 +199,10 @@ def sample_workflow_with_tool() -> Dict[str, Any]:
             {
                 "type": "tool",
                 "name": "restart_pod",
-                "config": {"tool_name": "k8s_restart", "params": {"namespace": "default", "pod": "web-1"}},
+                "config": {
+                    "tool_name": "k8s_restart",
+                    "params": {"namespace": "default", "pod": "web-1"},
+                },
                 "next": "finish",
             },
             {"type": "end", "name": "finish"},

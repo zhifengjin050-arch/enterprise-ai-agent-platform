@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 
@@ -18,12 +18,14 @@ class TestHealthCheck:
             assert response.status_code == 200
 
     async def test_health_has_version(self) -> None:
-        """Test health response includes version 0.6.0."""
+        """Test health response includes the current app version."""
+        from app.core.config import get_settings
+
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.get("/api/health")
             data = response.json()
-            assert data["version"] in ("0.6.0", "0.9.0")
+            assert data["version"] == get_settings().app_version
 
     async def test_health_has_components(self) -> None:
         """Test health response includes component statuses."""

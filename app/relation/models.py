@@ -3,6 +3,7 @@
 Represents a typed, directed relation between two KnowledgeEntities
 in the enterprise knowledge graph.
 """
+
 from __future__ import annotations
 
 import enum
@@ -45,9 +46,7 @@ class KnowledgeRelation(Base):
 
     __tablename__ = "knowledge_relations"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     source_entity_id: Mapped[uuid.UUID] = mapped_column(
         Uuid(as_uuid=True),
         ForeignKey("knowledge_entities.id", ondelete="CASCADE"),
@@ -65,15 +64,9 @@ class KnowledgeRelation(Base):
         nullable=False,
         default=RelationType.RELATED_TO,
     )
-    confidence: Mapped[float] = mapped_column(
-        Float, nullable=False, default=1.0
-    )
-    source_document_id: Mapped[Optional[str]] = mapped_column(
-        String(200), nullable=True
-    )
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        Uuid(as_uuid=True), nullable=True
-    )
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
+    source_document_id: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True)
     metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON, nullable=True, default=dict
     )

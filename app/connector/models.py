@@ -2,6 +2,7 @@
 
 Provides persistence for connector configurations and sync operation history.
 """
+
 from __future__ import annotations
 
 import enum
@@ -57,25 +58,16 @@ class ConnectorConfig(Base):
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
     )
-    tenant_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True
-    )
-    name: Mapped[str] = mapped_column(
-        String(200), nullable=False
-    )
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
     type: Mapped[str] = mapped_column(
-        String(50), nullable=False,
-        comment="Connector type key: feishu, yuque, gitlab, confluence, jira"
+        String(50),
+        nullable=False,
+        comment="Connector type key: feishu, yuque, gitlab, confluence, jira",
     )
-    config_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSON, nullable=True, default=None
-    )
-    enabled: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=True
-    )
-    last_sync_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    config_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True, default=None)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    last_sync_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -121,30 +113,28 @@ class SyncRecord(Base):
         default=lambda: str(uuid.uuid4()),
     )
     connector_id: Mapped[str] = mapped_column(
-        String(36), nullable=False,
+        String(36),
+        nullable=False,
         comment="FK to connector_configs.id",
     )
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     document_id: Mapped[Optional[str]] = mapped_column(
-        String(200), nullable=True,
+        String(200),
+        nullable=True,
         comment="External document ID (for single-document sync)",
     )
     status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="pending",
+        String(20),
+        nullable=False,
+        default="pending",
         comment="pending | running | success | failed",
     )
-    error: Mapped[Optional[str]] = mapped_column(
-        Text, nullable=True
-    )
-    documents_count: Mapped[Optional[int]] = mapped_column(
-        Integer, nullable=True
-    )
+    error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    documents_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
-    finished_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to a serializable dict."""

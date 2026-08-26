@@ -5,18 +5,17 @@ Tests both rule_classifier and LLMClassifier with mocked LLM calls.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
 from app.knowledge.classifier import (
-    CLASSIFICATION_RULES,
-    LLMClassifier,
     DocumentClassification,
+    LLMClassifier,
     classify_document,
     rule_classifier,
 )
-from app.knowledge.models import DocType, KnowledgeDocument
+from app.knowledge.models import KnowledgeDocument
 
 
 class TestRuleClassifier:

@@ -91,8 +91,6 @@ async def get_document_by_id(
 ) -> Optional[KnowledgeDocument]:
     """Get a single document by UUID."""
     result = await session.execute(
-        select(KnowledgeDocument).where(
-            KnowledgeDocument.id == uuid.UUID(str(document_id))
-        )
+        select(KnowledgeDocument).where(KnowledgeDocument.id == uuid.UUID(str(document_id)))
     )
     return result.scalar_one_or_none()

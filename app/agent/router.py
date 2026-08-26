@@ -3,6 +3,7 @@
 Simplified routing for the knowledge agent MVP.
 In future iterations this could delegate to specialized sub-agents.
 """
+
 from __future__ import annotations
 
 from typing import Literal

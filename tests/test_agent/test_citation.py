@@ -2,12 +2,11 @@
 
 Tests CitationSource model and CitationExtractor functionality.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict
-
-import pytest
 
 from app.citation.extractor import CitationExtractor, extract_citations
 from app.citation.models import Citation, CitationSource
@@ -16,6 +15,7 @@ from app.citation.models import Citation, CitationSource
 @dataclass
 class MockResult:
     """Mock search result for testing."""
+
     id: str = ""
     title: str = ""
     snippet: str = ""

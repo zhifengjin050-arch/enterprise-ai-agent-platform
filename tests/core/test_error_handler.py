@@ -7,7 +7,7 @@ JSON response format with appropriate HTTP status codes.
 from __future__ import annotations
 
 import pytest
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, OperationalError
@@ -20,10 +20,8 @@ from app.core.exception_handlers import (
     validation_exception_handler,
 )
 from app.core.exceptions import (
-    BaseAppException,
     ConnectorAuthException,
     PermissionDenied,
-    ValidationException,
 )
 
 
@@ -69,7 +67,11 @@ class TestValidationExceptionHandler:
 
     async def test_returns_422(self, mock_request: MockRequest) -> None:
         # Create a RequestValidationError
-        exc = RequestValidationError(errors=[{"loc": ("body", "name"), "msg": "field required", "type": "value_error.missing"}])
+        exc = RequestValidationError(
+            errors=[
+                {"loc": ("body", "name"), "msg": "field required", "type": "value_error.missing"}
+            ]
+        )
         response = await validation_exception_handler(
             mock_request,  # type: ignore[arg-type]
             exc,

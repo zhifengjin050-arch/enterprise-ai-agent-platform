@@ -3,27 +3,24 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+import app.agent_runtime.models  # noqa: F401
+import app.auth.models  # noqa: F401
+import app.connector.models  # noqa: F401
+import app.prompt.models  # noqa: F401
+import app.sync_engine.models  # noqa: F401
+import app.task.models  # noqa: F401
+from app.agent_runtime.tools.base import BaseTool, ToolContext, ToolResult
+from app.agent_runtime.tools.registry import ToolRegistry
 from app.db.base import Base
 from app.db.session import get_db, reset_engine
 from app.main import app as fastapi_app
-
-import app.auth.models  # noqa: F401
-import app.agent_runtime.models  # noqa: F401
-import app.prompt.models  # noqa: F401
-import app.connector.models  # noqa: F401
-import app.sync_engine.models  # noqa: F401
-import app.task.models  # noqa: F401
-
-from app.agent_runtime.tools.base import BaseTool, ToolContext, ToolResult
-from app.agent_runtime.tools.registry import ToolRegistry
-from app.auth.dependencies import require_permission
 
 
 class StubTool(BaseTool):
@@ -140,9 +137,7 @@ async def auth_api_client(db_engine):
     fastapi_app.dependency_overrides[get_db] = _override_get_db
     fastapi_app.dependency_overrides[get_current_user] = _fake_user
 
-    with patch.object(
-        AuthService, "has_permission", new_callable=AsyncMock, return_value=True
-    ):
+    with patch.object(AuthService, "has_permission", new_callable=AsyncMock, return_value=True):
         transport = ASGITransport(app=fastapi_app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             yield client

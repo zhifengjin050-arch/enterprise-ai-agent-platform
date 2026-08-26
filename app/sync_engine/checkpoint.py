@@ -37,9 +37,7 @@ class SyncCheckpointManager:
         Returns:
             Cursor string, or None if no checkpoint exists.
         """
-        stmt = select(SyncCheckpoint).where(
-            SyncCheckpoint.connector_id == connector_id
-        )
+        stmt = select(SyncCheckpoint).where(SyncCheckpoint.connector_id == connector_id)
         result = await self._session.execute(stmt)
         record = result.scalar_one_or_none()
         return record.cursor if record else None
@@ -53,9 +51,7 @@ class SyncCheckpointManager:
         Returns:
             SyncCheckpoint or None.
         """
-        stmt = select(SyncCheckpoint).where(
-            SyncCheckpoint.connector_id == connector_id
-        )
+        stmt = select(SyncCheckpoint).where(SyncCheckpoint.connector_id == connector_id)
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 

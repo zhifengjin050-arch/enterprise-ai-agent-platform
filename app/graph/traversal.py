@@ -3,6 +3,7 @@
 Provides basic path-finding between entities in the knowledge graph
 using BFS (breadth-first search) over PostgreSQL-stored relations.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Set

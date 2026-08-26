@@ -32,9 +32,7 @@ class ChunkEmbeddingService:
 
         return OpenAICompatibleEmbedding()
 
-    async def embed_chunks(
-        self, chunks: Sequence[Chunk]
-    ) -> List[List[float]]:
+    async def embed_chunks(self, chunks: Sequence[Chunk]) -> List[List[float]]:
         """Generate embedding vectors for a list of chunks.
 
         Args:

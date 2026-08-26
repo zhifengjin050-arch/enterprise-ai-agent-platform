@@ -1,11 +1,11 @@
 """Pytest fixtures for observability tests."""
+
 from __future__ import annotations
 
 from typing import AsyncGenerator
 
-import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.base import Base
@@ -57,12 +57,11 @@ async def auth_api_client(db_engine) -> AsyncGenerator[AsyncClient, None]:
     test session. Patches AuthService.has_permission to always return True.
     """
     from unittest.mock import patch
+
     from app.auth.dependencies import get_current_user
     from app.auth.service import AuthService
 
-    factory = async_sessionmaker(
-        db_engine, class_=AsyncSession, expire_on_commit=False
-    )
+    factory = async_sessionmaker(db_engine, class_=AsyncSession, expire_on_commit=False)
 
     async def _override_get_db():
         async with factory() as session:

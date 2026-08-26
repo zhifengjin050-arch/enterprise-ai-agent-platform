@@ -3,6 +3,7 @@
 Provides full-text, semantic, and hybrid search endpoints for
 enterprise knowledge discovery. These are NOT chatbot RAG endpoints.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional

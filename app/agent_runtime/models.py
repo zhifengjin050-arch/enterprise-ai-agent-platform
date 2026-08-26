@@ -52,9 +52,7 @@ class AgentRecord(Base):
 
     __tablename__ = "agents"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     agent_type: Mapped[str] = mapped_column(
@@ -89,9 +87,7 @@ class AgentTask(Base):
 
     __tablename__ = "agent_tasks"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     agent_id: Mapped[Optional[str]] = mapped_column(
         String(36), ForeignKey("agents.id"), nullable=True, index=True
@@ -107,9 +103,7 @@ class AgentTask(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -132,9 +126,7 @@ class AgentMessage(Base):
 
     __tablename__ = "agent_messages"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     agent_id: Mapped[Optional[str]] = mapped_column(
         String(36), ForeignKey("agents.id"), nullable=True, index=True
@@ -167,9 +159,7 @@ class AgentToolCall(Base):
 
     __tablename__ = "agent_tool_calls"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     task_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("agent_tasks.id"), nullable=False, index=True

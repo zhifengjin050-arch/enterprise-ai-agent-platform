@@ -2,6 +2,7 @@
 
 Tests CRUD operations for KnowledgeRelation using async SQLAlchemy.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -51,7 +52,8 @@ class TestRelationRepository:
 
         repo = RelationRepository(mock_session)
         results = await repo.get_relations(
-            uuid.uuid4(), direction="outgoing",
+            uuid.uuid4(),
+            direction="outgoing",
         )
         assert len(results) == 1
 

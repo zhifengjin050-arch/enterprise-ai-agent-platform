@@ -7,8 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.connector.base import ConnectorDocument
-from app.connector.exceptions import AuthenticationError, ConnectionError, NotFoundError
+from app.connector.exceptions import AuthenticationError
 from app.connector.gitlab import GitLabConnector
 
 
@@ -120,7 +119,7 @@ class TestGitLabConnector:
 
         mock_instance = AsyncMock()
         mock_instance.request.side_effect = [
-            mock_wiki_response,   # Wiki list
+            mock_wiki_response,  # Wiki list
             mock_readme_response,  # README
         ]
         mock_client.return_value.__aenter__.return_value = mock_instance
@@ -136,13 +135,15 @@ class TestGitLabConnector:
     @patch("httpx.AsyncClient")
     async def test_fetch_wiki_disabled(self, mock_client: AsyncMock) -> None:
         """Test fetching with wiki disabled."""
-        conn = GitLabConnector(config={
-            "url": "https://gitlab.com",
-            "token": "tok",
-            "project_id": 1,
-            "wiki_enabled": False,
-            "readme_enabled": False,
-        })
+        conn = GitLabConnector(
+            config={
+                "url": "https://gitlab.com",
+                "token": "tok",
+                "project_id": 1,
+                "wiki_enabled": False,
+                "readme_enabled": False,
+            }
+        )
         docs = await conn.fetch_documents()
         assert len(docs) == 0
 

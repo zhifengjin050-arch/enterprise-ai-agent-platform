@@ -26,9 +26,9 @@ logger = logging.getLogger(__name__)
 INTELLIGENCE_ENTITY_MAP: Dict[str, str] = {
     "person": EntityType.PERSON.value,
     "organization": "organization",  # extended
-    "project": "project",            # extended
+    "project": "project",  # extended
     "system": EntityType.SERVICE.value,
-    "api": "api",                    # extended
+    "api": "api",  # extended
     "technology": EntityType.TECHNOLOGY.value,
 }
 

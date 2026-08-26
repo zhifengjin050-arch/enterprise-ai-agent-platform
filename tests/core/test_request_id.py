@@ -7,9 +7,10 @@ Verifies that:
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
+from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -55,7 +56,6 @@ class TestRequestIDMiddlewareIntegration:
     @pytest.fixture
     def app(self) -> "FastAPI":
         from fastapi import FastAPI
-        from fastapi.testclient import TestClient
 
         app = FastAPI()
         app.add_middleware(RequestIDMiddleware)

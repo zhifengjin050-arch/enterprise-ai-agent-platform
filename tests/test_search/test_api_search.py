@@ -20,10 +20,17 @@ def client() -> TestClient:
 def test_semantic_search_endpoint(mock_get_semantic: AsyncMock, client: TestClient) -> None:
     mock_engine = AsyncMock()
     mock_engine.search.return_value = [
-        type("SemanticResult", (), {
-            "id": "doc-1", "title": "Test Doc", "content": "content",
-            "score": 0.95, "metadata": {"doc_type": "sop"},
-        })(),
+        type(
+            "SemanticResult",
+            (),
+            {
+                "id": "doc-1",
+                "title": "Test Doc",
+                "content": "content",
+                "score": 0.95,
+                "metadata": {"doc_type": "sop"},
+            },
+        )(),
     ]
     mock_get_semantic.return_value = mock_engine
 
@@ -40,10 +47,18 @@ def test_semantic_search_endpoint(mock_get_semantic: AsyncMock, client: TestClie
 def test_fulltext_search_endpoint(mock_get_fts: AsyncMock, client: TestClient) -> None:
     mock_engine = AsyncMock()
     mock_engine.search.return_value = [
-        type("DocumentResult", (), {
-            "id": "doc-1", "title": "Doc", "snippet": "...", "score": 1.0,
-            "doc_type": "sop", "metadata": {},
-        })(),
+        type(
+            "DocumentResult",
+            (),
+            {
+                "id": "doc-1",
+                "title": "Doc",
+                "snippet": "...",
+                "score": 1.0,
+                "doc_type": "sop",
+                "metadata": {},
+            },
+        )(),
     ]
     mock_get_fts.return_value = mock_engine
 
@@ -58,10 +73,17 @@ def test_fulltext_search_endpoint(mock_get_fts: AsyncMock, client: TestClient) -
 def test_hybrid_search_endpoint(mock_get_hybrid: AsyncMock, client: TestClient) -> None:
     mock_engine = AsyncMock()
     mock_engine.search.return_value = [
-        type("HybridResult", (), {
-            "id": "doc-1", "title": "Doc", "snippet": "...",
-            "score": 0.032, "metadata": {},
-        })(),
+        type(
+            "HybridResult",
+            (),
+            {
+                "id": "doc-1",
+                "title": "Doc",
+                "snippet": "...",
+                "score": 0.032,
+                "metadata": {},
+            },
+        )(),
     ]
     mock_get_hybrid.return_value = mock_engine
 

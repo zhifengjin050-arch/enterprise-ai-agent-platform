@@ -38,9 +38,7 @@ class TestJWTRefresh:
         assert decode_refresh_token(token) is None
 
     def test_expired_refresh(self) -> None:
-        token = create_refresh_token(
-            {"sub": "u1"}, expires_delta=timedelta(seconds=-1)
-        )
+        token = create_refresh_token({"sub": "u1"}, expires_delta=timedelta(seconds=-1))
         assert decode_refresh_token(token) is None
 
     @pytest.mark.parametrize("sub", ["a", "b", "c-uuid"])
@@ -71,9 +69,7 @@ class TestAuthServiceTokens:
             username=tenant_user["user"].username,
             password=tenant_user["password"],
         )
-        second = await svc.refresh_tokens(
-            db_session, refresh_token=first["refresh_token"]
-        )
+        second = await svc.refresh_tokens(db_session, refresh_token=first["refresh_token"])
         assert second is not None
         assert second["access_token"]
         assert second["user"]["id"] == str(tenant_user["user"].id)
@@ -147,9 +143,7 @@ class TestAuthAPI:
 
     @pytest.mark.asyncio
     async def test_refresh_bad(self, api_client) -> None:
-        resp = await api_client.post(
-            "/api/auth/refresh", json={"refresh_token": "x.y.z"}
-        )
+        resp = await api_client.post("/api/auth/refresh", json={"refresh_token": "x.y.z"})
         assert resp.status_code == 401
 
     @pytest.mark.asyncio

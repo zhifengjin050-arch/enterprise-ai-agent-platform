@@ -4,6 +4,7 @@ Fetches documents from GitLab Wiki pages and repository README files
 using the GitLab API. Supports Wiki page listing, Markdown content retrieval,
 and README fetching.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -129,11 +130,13 @@ class GitLabConnector(BaseConnector):
             if not items:
                 break
             for item in items:
-                all_pages.append({
-                    "slug": item.get("slug", ""),
-                    "title": item.get("title", ""),
-                    "format": item.get("format", "markdown"),
-                })
+                all_pages.append(
+                    {
+                        "slug": item.get("slug", ""),
+                        "title": item.get("title", ""),
+                        "format": item.get("format", "markdown"),
+                    }
+                )
             if len(items) < per_page:
                 break
             page += 1
@@ -204,39 +207,43 @@ class GitLabConnector(BaseConnector):
 
             for page in pages:
                 slug = page["slug"]
-                documents.append(ConnectorDocument(
-                    id=f"wiki:{slug}",
-                    title=page["title"],
-                    content="",
-                    url=f"{self._base_url}/{self._project_id}/wikis/{slug}",
-                    updated_at=datetime.now(timezone.utc).isoformat(),
-                    metadata={
-                        "slug": slug,
-                        "format": page.get("format", "markdown"),
-                        "source": "wiki",
-                        "project_id": self._project_id,
-                        "connector_type": "gitlab",
-                    },
-                ))
+                documents.append(
+                    ConnectorDocument(
+                        id=f"wiki:{slug}",
+                        title=page["title"],
+                        content="",
+                        url=f"{self._base_url}/{self._project_id}/wikis/{slug}",
+                        updated_at=datetime.now(timezone.utc).isoformat(),
+                        metadata={
+                            "slug": slug,
+                            "format": page.get("format", "markdown"),
+                            "source": "wiki",
+                            "project_id": self._project_id,
+                            "connector_type": "gitlab",
+                        },
+                    )
+                )
 
         # README
         if self._readme_enabled:
             try:
                 readme = await self._get_readme()
                 if readme:
-                    documents.append(ConnectorDocument(
-                        id="readme",
-                        title=readme["title"],
-                        content="",
-                        url=f"{self._base_url}/{self._project_id}",
-                        updated_at=datetime.now(timezone.utc).isoformat(),
-                        metadata={
-                            "source": "readme",
-                            "file_name": readme.get("file_name", "README.md"),
-                            "project_id": self._project_id,
-                            "connector_type": "gitlab",
-                        },
-                    ))
+                    documents.append(
+                        ConnectorDocument(
+                            id="readme",
+                            title=readme["title"],
+                            content="",
+                            url=f"{self._base_url}/{self._project_id}",
+                            updated_at=datetime.now(timezone.utc).isoformat(),
+                            metadata={
+                                "source": "readme",
+                                "file_name": readme.get("file_name", "README.md"),
+                                "project_id": self._project_id,
+                                "connector_type": "gitlab",
+                            },
+                        )
+                    )
             except (ConnectionError, AuthenticationError):
                 pass
 
@@ -261,7 +268,11 @@ class GitLabConnector(BaseConnector):
                 content=readme["content"],
                 url=f"{self._base_url}/{self._project_id}",
                 updated_at=datetime.now(timezone.utc).isoformat(),
-                metadata={"source": "readme", "project_id": self._project_id, "connector_type": "gitlab"},
+                metadata={
+                    "source": "readme",
+                    "project_id": self._project_id,
+                    "connector_type": "gitlab",
+                },
             )
 
         if document_id.startswith("wiki:"):
@@ -274,7 +285,12 @@ class GitLabConnector(BaseConnector):
                     content=data.get("content", ""),
                     url=f"{self._base_url}/{self._project_id}/wikis/{slug}",
                     updated_at=datetime.now(timezone.utc).isoformat(),
-                    metadata={"slug": slug, "source": "wiki", "project_id": self._project_id, "connector_type": "gitlab"},
+                    metadata={
+                        "slug": slug,
+                        "source": "wiki",
+                        "project_id": self._project_id,
+                        "connector_type": "gitlab",
+                    },
                 )
             except (NotFoundError, ConnectionError):
                 return None

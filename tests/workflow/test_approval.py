@@ -73,8 +73,11 @@ class TestApprovalService:
 
     async def test_get_approval(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         fetched = await service.get_approval(created["id"])
         assert fetched is not None
@@ -86,8 +89,11 @@ class TestApprovalService:
 
     async def test_approve(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         result = await service.approve(created["id"], user_id="admin", comment="Looks good")
         assert result["status"] == "APPROVED"
@@ -100,8 +106,11 @@ class TestApprovalService:
 
     async def test_approve_already_decided(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         await service.approve(created["id"], user_id="admin")
         with pytest.raises(ValueError, match="not pending"):
@@ -109,8 +118,11 @@ class TestApprovalService:
 
     async def test_reject(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         result = await service.reject(created["id"], user_id="admin", comment="Not now")
         assert result["status"] == "REJECTED"
@@ -122,8 +134,11 @@ class TestApprovalService:
 
     async def test_reject_twice_raises(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         await service.reject(created["id"], user_id="admin")
         with pytest.raises(ValueError, match="not pending"):
@@ -136,8 +151,11 @@ class TestApprovalService:
             callback_called.append(data)
 
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         service.register_callback(created["id"], cb)
         await service.approve(created["id"], user_id="admin")
@@ -151,8 +169,11 @@ class TestApprovalService:
             callback_called.append(data)
 
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         service.register_callback(created["id"], cb)
         await service.reject(created["id"], user_id="admin")
@@ -169,8 +190,11 @@ class TestApprovalService:
             calls.append("cb2")
 
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         service.register_callback(created["id"], cb1)
         service.register_callback(created["id"], cb2)
@@ -182,8 +206,11 @@ class TestApprovalService:
             raise RuntimeError("callback error")
 
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
         )
         service.register_callback(created["id"], failing_cb)
         # Should not raise
@@ -198,8 +225,11 @@ class TestApprovalService:
 
     async def test_timeout_expires_approval(self, service: ApprovalService) -> None:
         created = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
             timeout_minutes=0,  # Immediately expired
         )
         rec = service._approvals.get(created["id"])
@@ -208,8 +238,11 @@ class TestApprovalService:
 
     async def test_create_with_custom_timeout(self, service: ApprovalService) -> None:
         result = await service.create_approval(
-            workflow_id="wf1", run_id="r1", node_name="review",
-            approvers=["admin"], message="Approve?",
+            workflow_id="wf1",
+            run_id="r1",
+            node_name="review",
+            approvers=["admin"],
+            message="Approve?",
             timeout_minutes=120,
             tenant_id="t1",
             created_by="user1",

@@ -16,6 +16,7 @@ router = APIRouter(prefix="/api/tasks", tags=["Tasks"])
 
 class DocumentImportRequest(BaseModel):
     """Document import task request."""
+
     title: str = "Imported Document"
     content: str = ""
     file_path: Optional[str] = None
@@ -24,6 +25,7 @@ class DocumentImportRequest(BaseModel):
 
 class TaskStatusResponse(BaseModel):
     """Task status response."""
+
     task_id: str
     status: str
     result: Optional[Dict[str, Any]] = None
@@ -112,9 +114,7 @@ async def list_tasks(
         Dict with tasks list.
     """
     queue = TaskQueue()
-    tasks = await queue.list_tasks(
-        session, status=status_filter, limit=limit, offset=offset
-    )
+    tasks = await queue.list_tasks(session, status=status_filter, limit=limit, offset=offset)
     return {
         "tasks": [
             {

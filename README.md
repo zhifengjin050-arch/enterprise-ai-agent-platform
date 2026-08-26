@@ -223,7 +223,7 @@ Linux / macOS:
 | API / OpenAPI | http://localhost:8000/docs |
 | Grafana | http://localhost:3000 (`admin` / `admin`) |
 
-Demo 租户 `CloudTech`、用户 `admin`、Agent `Enterprise Assistant`、Workflow `Incident Analysis` 会由 seed 脚本写入。重置：
+Demo 租户 `CloudTech`、用户 `admin` / `admin123`、Agent `Enterprise Assistant`、Workflow `Incident Analysis` 会由 seed 脚本写入。打开控制台后先登录。重置：
 
 ```bash
 ./scripts/demo_reset.sh

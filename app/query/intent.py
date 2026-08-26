@@ -11,6 +11,7 @@ Supported intents:
 - configuration_help: config/setup queries
 - general_search: anything else
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,27 +20,79 @@ from dataclasses import dataclass
 
 INTENT_RULES: dict = {
     "incident_analysis": [
-        "宕机", "故障", "挂了", "崩溃", "outage", "down",
-        "502", "503", "500", "crash", "panic", "异常",
-        "不可用", "unavailable", "timeout", "超时",
-        "告警", "alert", "error", "错误", "事故",
+        "宕机",
+        "故障",
+        "挂了",
+        "崩溃",
+        "outage",
+        "down",
+        "502",
+        "503",
+        "500",
+        "crash",
+        "panic",
+        "异常",
+        "不可用",
+        "unavailable",
+        "timeout",
+        "超时",
+        "告警",
+        "alert",
+        "error",
+        "错误",
+        "事故",
     ],
     "sop_lookup": [
-        "怎么", "如何", "步骤", "排查", "处理",
-        "操作流程", "how to", "steps", "步骤",
-        "解决", "修复", "fix", "troubleshoot",
-        "恢复", "recover", "rollback", "回滚",
+        "怎么",
+        "如何",
+        "步骤",
+        "排查",
+        "处理",
+        "操作流程",
+        "how to",
+        "steps",
+        "步骤",
+        "解决",
+        "修复",
+        "fix",
+        "troubleshoot",
+        "恢复",
+        "recover",
+        "rollback",
+        "回滚",
     ],
     "architecture_question": [
-        "架构", "设计", "拓扑", "结构", "architecture",
-        "design", "topology", "部署架构", "系统设计",
-        "模块", "component", "组件", "service mesh",
+        "架构",
+        "设计",
+        "拓扑",
+        "结构",
+        "architecture",
+        "design",
+        "topology",
+        "部署架构",
+        "系统设计",
+        "模块",
+        "component",
+        "组件",
+        "service mesh",
     ],
     "configuration_help": [
-        "配置", "config", "设置", "参数", "安装",
-        "部署", "setup", "installation", "参数设置",
-        "环境", "环境变量", "environment",
-        "yaml", "json", "toml", "ini",
+        "配置",
+        "config",
+        "设置",
+        "参数",
+        "安装",
+        "部署",
+        "setup",
+        "installation",
+        "参数设置",
+        "环境",
+        "环境变量",
+        "environment",
+        "yaml",
+        "json",
+        "toml",
+        "ini",
     ],
 }
 
@@ -53,6 +106,7 @@ class QueryIntent:
         confidence: Recognition confidence (0.0 to 1.0).
         original_query: The original user query.
     """
+
     intent: str = "general_search"
     confidence: float = 0.0
     original_query: str = ""

@@ -7,6 +7,7 @@ Usage in workflow:
     provider.embed_text(content)  →  single vector
     provider.embed_documents(texts)  →  batch vectors
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

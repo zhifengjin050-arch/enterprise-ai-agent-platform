@@ -3,6 +3,7 @@
 Captures request count, latency, and status for every incoming request
 using the existing Prometheus metrics from app/monitor/metrics.py.
 """
+
 from __future__ import annotations
 
 import time

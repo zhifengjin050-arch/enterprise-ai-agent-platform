@@ -5,7 +5,7 @@ Tests both rule_extract_tags and AITagger with mocked LLM calls.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -21,9 +21,7 @@ class TestRuleExtractTags:
 
     def test_extract_kubernetes_tags(self) -> None:
         """Kubernetes keywords should produce k8s tags."""
-        tags = rule_extract_tags(
-            "K8s Deployment", "Kubernetes pod deployment for production."
-        )
+        tags = rule_extract_tags("K8s Deployment", "Kubernetes pod deployment for production.")
         assert "kubernetes" in tags
         assert "docker" not in tags  # No docker keywords here
 
@@ -58,9 +56,18 @@ class TestRuleExtractTags:
         """Should not exceed 10 tags from rule extraction."""
         content = " ".join(
             [
-                "kubernetes", "docker", "linux", "network",
-                "database", "security", "monitoring", "jenkins",
-                "cloud", "git", "python", "ansible",
+                "kubernetes",
+                "docker",
+                "linux",
+                "network",
+                "database",
+                "security",
+                "monitoring",
+                "jenkins",
+                "cloud",
+                "git",
+                "python",
+                "ansible",
             ]
         )
         tags = rule_extract_tags("All Tech", content)
@@ -127,9 +134,20 @@ class TestAITagger:
         mock_llm = AsyncMock()
         mock_llm.structured_output.return_value = {
             "tags": [
-                "kubernetes", "docker", "linux", "network", "database",
-                "security", "monitoring", "cicd", "cloud", "git",
-                "python", "ansible", "terraform", "helm",
+                "kubernetes",
+                "docker",
+                "linux",
+                "network",
+                "database",
+                "security",
+                "monitoring",
+                "cicd",
+                "cloud",
+                "git",
+                "python",
+                "ansible",
+                "terraform",
+                "helm",
             ]
         }
 
@@ -142,9 +160,7 @@ class TestAITagger:
     async def test_generate_tags_with_cache(self) -> None:
         """With cache enabled, second call with same content should use cache."""
         mock_llm = AsyncMock()
-        mock_llm.structured_output.return_value = {
-            "tags": ["kubernetes", "docker"]
-        }
+        mock_llm.structured_output.return_value = {"tags": ["kubernetes", "docker"]}
 
         from app.llm.cache import clear_cache
 
@@ -252,9 +268,7 @@ class TestGenerateTags:
     async def test_tags_merged_rule_plus_llm(self) -> None:
         """Rule tags and LLM tags should be merged with rule tags first."""
         mock_llm = AsyncMock()
-        mock_llm.structured_output.return_value = {
-            "tags": ["ai_generated1", "ai_generated2"]
-        }
+        mock_llm.structured_output.return_value = {"tags": ["ai_generated1", "ai_generated2"]}
 
         # Content with only "git" keyword matching (to get < 3 rule tags)
         tags = await generate_tags(

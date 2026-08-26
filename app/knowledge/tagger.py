@@ -127,9 +127,7 @@ class AITagger:
         # Build prompt with existing tag hints
         prompt = build_tag_generation_prompt(title, content)
         if existing_tags:
-            prompt += (
-                f"\n\n已有标签供参考（优先匹配）：{', '.join(existing_tags)}"
-            )
+            prompt += f"\n\n已有标签供参考（优先匹配）：{', '.join(existing_tags)}"
 
         try:
             result = await self._llm.structured_output(

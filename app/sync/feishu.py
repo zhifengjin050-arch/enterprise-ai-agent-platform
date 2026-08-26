@@ -1,17 +1,8 @@
 """Feishu (Lark) knowledge base sync engine.
 
-Syncs documents from Feishu Wiki / Knowledge Base via Feishu Open API.
-
-TODO:
-    - Implement OAuth 2.0 authentication (tenant access token)
-    - Fetch space list and document tree
-    - Support Feishu Document, Sheet, Bitable parsing
-    - Handle pagination for large knowledge bases
-    - Incremental sync based on update timestamps
-
-API Reference:
-    https://open.feishu.cn/document/server-docs/docs/wiki-v2/space-node/list
-    https://open.feishu.cn/document/server-docs/docs/docx-v1/document-docx/content
+DEPRECATED: use ``app.connector.feishu.FeishuConnector`` and the Sync Engine
+(``app.sync_engine``) instead. This module remains only for compatibility
+and raises ``NotImplementedError`` on authenticate/fetch helpers.
 """
 
 from datetime import datetime

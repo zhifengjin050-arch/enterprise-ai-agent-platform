@@ -4,6 +4,7 @@ Fetches documents from Feishu knowledge bases using the Feishu Open API.
 Supports token acquisition, knowledge base listing, document listing,
 document content reading, and Markdown conversion.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -274,11 +275,13 @@ class FeishuConnector(BaseConnector):
             for item in items:
                 obj_type = item.get("obj_type", "")
                 if obj_type in ("doc", "docx"):
-                    all_nodes.append({
-                        "node_token": item.get("node_token", ""),
-                        "title": item.get("title", "Untitled"),
-                        "obj_type": obj_type,
-                    })
+                    all_nodes.append(
+                        {
+                            "node_token": item.get("node_token", ""),
+                            "title": item.get("title", "Untitled"),
+                            "obj_type": obj_type,
+                        }
+                    )
             page_token = data.get("data", {}).get("page_token")
             has_more = data.get("data", {}).get("has_more", False)
             if not has_more or not page_token:
@@ -330,19 +333,21 @@ class FeishuConnector(BaseConnector):
 
             host = self._base_url.replace("https://", "").replace("http://", "")
             for node in nodes:
-                documents.append(ConnectorDocument(
-                    id=node["node_token"],
-                    title=node["title"],
-                    content="",
-                    url=f"https://{host}/wiki/{space_id}/{node['node_token']}",
-                    updated_at=datetime.now(timezone.utc).isoformat(),
-                    metadata={
-                        "space_id": space_id,
-                        "space_name": space["name"],
-                        "obj_type": node.get("obj_type", "docx"),
-                        "connector_type": "feishu",
-                    },
-                ))
+                documents.append(
+                    ConnectorDocument(
+                        id=node["node_token"],
+                        title=node["title"],
+                        content="",
+                        url=f"https://{host}/wiki/{space_id}/{node['node_token']}",
+                        updated_at=datetime.now(timezone.utc).isoformat(),
+                        metadata={
+                            "space_id": space_id,
+                            "space_name": space["name"],
+                            "obj_type": node.get("obj_type", "docx"),
+                            "connector_type": "feishu",
+                        },
+                    )
+                )
 
         return documents
 

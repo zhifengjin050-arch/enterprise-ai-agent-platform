@@ -7,8 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.connector.base import ConnectorDocument
-from app.connector.exceptions import AuthenticationError, ConnectionError, NotFoundError
+from app.connector.exceptions import AuthenticationError
 from app.connector.feishu import FeishuConnector, _convert_to_markdown, _extract_block_text
 
 
@@ -63,9 +62,7 @@ class TestFeishuConnector:
         """Test failed connection test."""
         mock_post_response = AsyncMock()
         mock_post_response.status_code = 401
-        mock_post_response.json = MagicMock(
-            return_value={"code": -1, "msg": "invalid credentials"}
-        )
+        mock_post_response.json = MagicMock(return_value={"code": -1, "msg": "invalid credentials"})
 
         mock_instance = AsyncMock()
         mock_instance.post.return_value = mock_post_response

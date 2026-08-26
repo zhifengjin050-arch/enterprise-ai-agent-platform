@@ -68,7 +68,18 @@ select = [
     "N",  # pep8-naming
     "W",  # warnings
 ]
-ignore = ["E501"]  # line length handled by formatter
+ignore = [
+    "E501",  # line length handled by formatter
+    "E402",  # logger setup before imports is used throughout the package
+    "E741",  # short names like `l` appear in generated/legacy code
+    "F841",  # unused locals are noisy in tests and stubs
+    "N811",
+    "N813",
+    "N818",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -33,12 +33,12 @@ class IncidentRecord(Base):
 
     __tablename__ = "incident_records"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     service: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True, index=True)
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid(as_uuid=True), nullable=True, index=True
+    )
     severity: Mapped[str] = mapped_column(String(20), nullable=False, default="P2")
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default=IncidentStatus.NEW.value

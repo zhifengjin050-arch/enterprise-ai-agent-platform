@@ -89,9 +89,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
             logger.debug("JWT tenant resolve failed: %s", exc)
             return None
 
-    async def _from_api_key(
-        self, key_value: str, request: Request
-    ) -> Optional[TenantContext]:
+    async def _from_api_key(self, key_value: str, request: Request) -> Optional[TenantContext]:
         try:
             from app.api_key.service import ApiKeyService
             from app.db.session import get_session_factory

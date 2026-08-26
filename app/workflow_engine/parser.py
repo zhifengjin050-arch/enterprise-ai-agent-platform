@@ -2,6 +2,7 @@
 
 Validates and parses workflow definitions into executable node graphs.
 """
+
 from __future__ import annotations
 
 import logging
@@ -97,7 +98,7 @@ class WorkflowParser:
 
         if errors:
             raise WorkflowValidationError(
-                f"Workflow definition validation failed:\n" + "\n".join(f"  - {e}" for e in errors)
+                "Workflow definition validation failed:\n" + "\n".join(f"  - {e}" for e in errors)
             )
 
         return {
@@ -193,9 +194,7 @@ class WorkflowParser:
             visited.add(current)
             for nxt in adjacency.get(current, []):
                 if nxt not in node_index and nxt != "__end__":
-                    errors.append(
-                        f"Node '{current}' references unknown next node '{nxt}'"
-                    )
+                    errors.append(f"Node '{current}' references unknown next node '{nxt}'")
                 if nxt not in visited:
                     stack.append(nxt)
 
@@ -217,32 +216,20 @@ class WorkflowParser:
 
         if node_type == "agent":
             if not config.get("agent_name"):
-                errors.append(
-                    f"AgentNode '{node_name}' missing 'agent_name' in config"
-                )
+                errors.append(f"AgentNode '{node_name}' missing 'agent_name' in config")
         elif node_type == "tool":
             if not config.get("tool_name"):
-                errors.append(
-                    f"ToolNode '{node_name}' missing 'tool_name' in config"
-                )
+                errors.append(f"ToolNode '{node_name}' missing 'tool_name' in config")
         elif node_type == "condition":
             if not config.get("expression"):
-                errors.append(
-                    f"ConditionNode '{node_name}' missing 'expression' in config"
-                )
+                errors.append(f"ConditionNode '{node_name}' missing 'expression' in config")
             if not config.get("true_next"):
-                errors.append(
-                    f"ConditionNode '{node_name}' missing 'true_next' in config"
-                )
+                errors.append(f"ConditionNode '{node_name}' missing 'true_next' in config")
             if not config.get("false_next"):
-                errors.append(
-                    f"ConditionNode '{node_name}' missing 'false_next' in config"
-                )
+                errors.append(f"ConditionNode '{node_name}' missing 'false_next' in config")
         elif node_type == "approval":
             if not config.get("approvers"):
-                errors.append(
-                    f"ApprovalNode '{node_name}' missing 'approvers' in config"
-                )
+                errors.append(f"ApprovalNode '{node_name}' missing 'approvers' in config")
         elif node_type == "trigger":
             pass  # trigger has no mandatory config
         elif node_type == "end":
@@ -272,7 +259,11 @@ class WorkflowParser:
 
             # Add edge routing info into config for condition nodes
             if node_type == "condition":
-                config["true_next"] = raw.get("next", [{}])[0] if isinstance(raw.get("next"), list) else raw.get("true_next", "")
+                config["true_next"] = (
+                    raw.get("next", [{}])[0]
+                    if isinstance(raw.get("next"), list)
+                    else raw.get("true_next", "")
+                )
                 config["false_next"] = raw.get("false_next", "")
             # For non-condition, add generic next
             if node_type != "condition":

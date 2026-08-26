@@ -1,10 +1,11 @@
 """Tests for auth API endpoints."""
+
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 from app.db.session import get_db
 from app.main import app

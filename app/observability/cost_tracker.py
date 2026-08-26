@@ -58,6 +58,7 @@ class LLMUsageTracker:
         # Also update legacy cost record if needed for backward compat
         try:
             from app.llm.cost.repository import CostRepository
+
             repo = CostRepository(self._session)
             await repo.create_record(
                 provider=provider,

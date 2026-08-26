@@ -5,11 +5,11 @@ from __future__ import annotations
 import pytest
 
 from app.agent_runtime.tools.base import ToolContext, ToolResult
-from app.agent_runtime.tools.registry import ToolRegistry, build_default_registry
-from app.agent_runtime.tools.knowledge_search import KnowledgeSearchTool
-from app.agent_runtime.tools.graph_query import GraphQueryTool
-from app.agent_runtime.tools.document_query import DocumentQueryTool
 from app.agent_runtime.tools.connector_sync import ConnectorSyncTool
+from app.agent_runtime.tools.document_query import DocumentQueryTool
+from app.agent_runtime.tools.graph_query import GraphQueryTool
+from app.agent_runtime.tools.knowledge_search import KnowledgeSearchTool
+from app.agent_runtime.tools.registry import ToolRegistry, build_default_registry
 from app.core.exceptions import ToolNotFoundException, ToolPermissionException
 from tests.agent_runtime.conftest import StubTool
 

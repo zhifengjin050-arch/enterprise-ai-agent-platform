@@ -6,7 +6,6 @@ import pytest
 
 from app.auth.models import PERMISSION_CODES
 from app.auth.rbac import PermissionChecker
-from app.auth.service import AuthService
 from app.core.exceptions import PermissionDenied
 from app.tenant.context import TenantContext, clear_tenant_context, set_tenant_context
 
@@ -40,9 +39,7 @@ class TestPermissionChecker:
 
     @pytest.mark.asyncio
     async def test_api_key_principal_has_defaults(self, db_session) -> None:
-        token = set_tenant_context(
-            TenantContext(tenant_id="t1", auth_method="api_key")
-        )
+        token = set_tenant_context(TenantContext(tenant_id="t1", auth_method="api_key"))
         try:
             checker = PermissionChecker(db_session)
             assert await checker.has("agent.execute") is True

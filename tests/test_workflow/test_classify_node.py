@@ -5,8 +5,6 @@ Nodes are now async (support LLM fallback). All tests use pytest.mark.asyncio.
 
 from __future__ import annotations
 
-from unittest.mock import patch
-
 import pytest
 
 from app.workflow.knowledge_pipeline import classify_node

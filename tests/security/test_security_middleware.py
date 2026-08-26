@@ -14,9 +14,11 @@ from app.tenant import TenantContext, TenantMiddleware, apply_tenant_filter
 class TestSecurityMiddleware:
     def test_client_ip_from_forwarded(self) -> None:
         mw = SecurityMiddleware(app=None)  # type: ignore[arg-type]
+
         class R:
             headers = {"X-Forwarded-For": "1.2.3.4, 5.6.7.8"}
             client = None
+
         assert mw._client_ip(R()) == "1.2.3.4"
 
     def test_rate_limit(self) -> None:
@@ -28,9 +30,7 @@ class TestSecurityMiddleware:
 
     @pytest.mark.asyncio
     async def test_cors_headers(self, api_client) -> None:
-        resp = await api_client.get(
-            "/api/health", headers={"Origin": "http://localhost"}
-        )
+        resp = await api_client.get("/api/health", headers={"Origin": "http://localhost"})
         assert resp.status_code == 200
         assert "access-control-allow-origin" in {k.lower() for k in resp.headers.keys()}
 
@@ -76,8 +76,8 @@ class TestPackageExports:
     def test_imports(self) -> None:
         from app.api_key import ApiKeyService
         from app.audit import AuditEvent
-        from app.quota import QuotaService
         from app.auth import PermissionChecker, create_refresh_token
+        from app.quota import QuotaService
 
         assert ApiKeyService and AuditEvent and QuotaService
         assert PermissionChecker and create_refresh_token

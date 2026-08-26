@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { getAgents, executeAgent } from "@/lib/api"
 import type { Agent, AgentExecuteResponse } from "@/types/api"
-import { cn, formatDate } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -235,7 +234,7 @@ export default function Agents() {
                   </div>
 
                   {/* Sources */}
-                  {execResult.data.sources.length > 0 && (
+                  {(execResult.data.sources ?? []).length > 0 && (
                     <div>
                       <h4 className="mb-2 text-sm font-medium">来源 ({execResult.data.sources.length})</h4>
                       <div className="space-y-2">
@@ -260,7 +259,7 @@ export default function Agents() {
                   )}
 
                   {/* Tool calls */}
-                  {execResult.data.tool_calls.length > 0 && (
+                  {(execResult.data.tool_calls ?? []).length > 0 && (
                     <div>
                       <h4 className="mb-2 text-sm font-medium">工具调用 ({execResult.data.tool_calls.length})</h4>
                       <div className="space-y-2">

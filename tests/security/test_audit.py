@@ -11,9 +11,7 @@ from app.tenant.context import TenantContext, clear_tenant_context, set_tenant_c
 class TestAuditEvent:
     @pytest.mark.asyncio
     async def test_record_and_list(self, db_session) -> None:
-        token = set_tenant_context(
-            TenantContext(tenant_id="t1", user_id="u1")
-        )
+        token = set_tenant_context(TenantContext(tenant_id="t1", user_id="u1"))
         try:
             evt = AuditEvent(db_session)
             log = await evt.record(

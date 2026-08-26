@@ -6,6 +6,7 @@ Usage:
 
 Equivalent to: python scripts/init_demo_data.py
 """
+
 from __future__ import annotations
 
 import subprocess

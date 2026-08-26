@@ -3,6 +3,7 @@
 Provides the conversational Q&A interface for the enterprise
 knowledge base via the KnowledgeAgent pipeline.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -29,6 +30,7 @@ def _get_agent() -> KnowledgeAgent:
 
 class ChatRequest(BaseModel):
     """Request body for /api/agent/chat."""
+
     query: str
     conversation_id: Optional[str] = None
     user_id: str = ""

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from app.llm.cost.models import LLMCostRecord, RequestType
 
 
@@ -48,6 +46,7 @@ class TestLLMCostRecord:
     def test_record_repr(self) -> None:
         """Test string representation contains key info."""
         import uuid
+
         record = LLMCostRecord(
             id=str(uuid.uuid4()),
             model="gpt-4",

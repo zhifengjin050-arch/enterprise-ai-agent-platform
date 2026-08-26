@@ -66,14 +66,18 @@ class DocumentSource(str, enum.Enum):
 document_tags = Table(
     "document_tags",
     Base.metadata,
-    Column("document_id", Uuid(as_uuid=True), ForeignKey("knowledge_documents.id"), primary_key=True),
+    Column(
+        "document_id", Uuid(as_uuid=True), ForeignKey("knowledge_documents.id"), primary_key=True
+    ),
     Column("tag_id", Uuid(as_uuid=True), ForeignKey("tags.id"), primary_key=True),
 )
 
 document_categories = Table(
     "document_categories",
     Base.metadata,
-    Column("document_id", Uuid(as_uuid=True), ForeignKey("knowledge_documents.id"), primary_key=True),
+    Column(
+        "document_id", Uuid(as_uuid=True), ForeignKey("knowledge_documents.id"), primary_key=True
+    ),
     Column("category_id", Uuid(as_uuid=True), ForeignKey("categories.id"), primary_key=True),
 )
 
@@ -87,9 +91,7 @@ class KnowledgeDocument(Base):
 
     __tablename__ = "knowledge_documents"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     format: Mapped[str] = mapped_column(String(20), nullable=False, default="markdown")
@@ -103,7 +105,9 @@ class KnowledgeDocument(Base):
         nullable=False,
         default=DocumentStatus.DRAFT,
     )
-    source: Mapped[str] = mapped_column(String(50), nullable=False, default=DocumentSource.LOCAL.value)
+    source: Mapped[str] = mapped_column(
+        String(50), nullable=False, default=DocumentSource.LOCAL.value
+    )
     source_url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
     embedding_id: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     quality_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -112,10 +116,10 @@ class KnowledgeDocument(Base):
     category_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         Uuid(as_uuid=True), ForeignKey("categories.id"), nullable=True
     )
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        Uuid(as_uuid=True), nullable=True
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True)
+    metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
+        JSON, nullable=True, default=dict
     )
-    metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True, default=dict)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
@@ -161,12 +165,12 @@ class KnowledgeCategory(Base):
 
     __tablename__ = "categories"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True, index=True)
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid(as_uuid=True), nullable=True, index=True
+    )
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         Uuid(as_uuid=True), ForeignKey("categories.id"), nullable=True
     )
@@ -199,12 +203,12 @@ class KnowledgeTag(Base):
 
     __tablename__ = "tags"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True, index=True)
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        Uuid(as_uuid=True), nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

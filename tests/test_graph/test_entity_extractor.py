@@ -2,6 +2,7 @@
 
 Tests rule-based extraction and LLM fallback for entity extraction.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -30,9 +31,7 @@ class TestEntityExtractor:
     def test_rule_extract_no_match(self) -> None:
         """Rule extractor with no known terms should return empty."""
         extractor = EntityExtractor()
-        results = extractor._rule_extract(
-            "Random Notes", "Just some text without keywords."
-        )
+        results = extractor._rule_extract("Random Notes", "Just some text without keywords.")
         assert results == []
 
     def test_rule_extract_dedup(self) -> None:
@@ -65,6 +64,7 @@ class TestEntityExtractor:
     async def test_extract_entities_llm_fallback(self) -> None:
         """When rule yields <3 entities, LLM fallback should be attempted."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(prompt: str, schema: Dict[str, Any], **kwargs):
             return {
                 "entities": [
@@ -72,6 +72,7 @@ class TestEntityExtractor:
                     {"name": "数据库连接池", "type": "component", "description": ""},
                 ]
             }
+
         mock_llm.structured_output = mock_structured_output
 
         extractor = EntityExtractor(llm_client=mock_llm)
@@ -88,13 +89,16 @@ class TestEntityExtractor:
     async def test_extract_entities_llm_failure(self) -> None:
         """LLM failure should not break extraction."""
         mock_llm = AsyncMock()
+
         async def mock_fail(*args, **kwargs):
             raise ConnectionError("API unreachable")
+
         mock_llm.structured_output = mock_fail
 
         extractor = EntityExtractor(llm_client=mock_llm)
         results = await extractor.extract_entities(
-            "Nginx Guide", "How to configure nginx.",
+            "Nginx Guide",
+            "How to configure nginx.",
             use_llm_fallback=True,
         )
         # Should return rule results without error
@@ -123,12 +127,15 @@ class TestExtractEntitiesFunction:
     async def test_extract_entities_function(self) -> None:
         """Convenience function should return ExtractedEntity list."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(*args, **kwargs):
             return {"entities": []}
+
         mock_llm.structured_output = mock_structured_output
 
         results = await extract_entities(
-            "Test", "Redis Kubernetes Docker content",
+            "Test",
+            "Redis Kubernetes Docker content",
             llm_client=mock_llm,
         )
         assert len(results) >= 3  # rule-based

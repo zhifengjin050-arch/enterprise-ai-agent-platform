@@ -3,6 +3,7 @@
 Fetches documents from Yuque knowledge repositories using the Yuque API.
 Supports repository listing, document listing, and Markdown content retrieval.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
@@ -126,7 +127,9 @@ class YuqueConnector(BaseConnector):
         """
         if self._namespace:
             # When namespace is specified, treat it as a single repo target
-            return [{"namespace": self._namespace, "name": self._namespace.split("/")[-1], "id": "0"}]
+            return [
+                {"namespace": self._namespace, "name": self._namespace.split("/")[-1], "id": "0"}
+            ]
 
         repos: List[Dict[str, Any]] = []
         try:
@@ -134,12 +137,14 @@ class YuqueConnector(BaseConnector):
             data = await self._request("GET", self.REPOS_ENDPOINT.format(login=login))
             if isinstance(data, list):
                 for repo in data:
-                    repos.append({
-                        "namespace": repo.get("namespace", ""),
-                        "name": repo.get("name", ""),
-                        "id": str(repo.get("id", "")),
-                        "type": repo.get("type", "Book"),
-                    })
+                    repos.append(
+                        {
+                            "namespace": repo.get("namespace", ""),
+                            "name": repo.get("name", ""),
+                            "id": str(repo.get("id", "")),
+                            "type": repo.get("type", "Book"),
+                        }
+                    )
         except (AuthenticationError, ConnectionError):
             pass
 
@@ -165,11 +170,13 @@ class YuqueConnector(BaseConnector):
             if not items:
                 break
             for item in items:
-                all_docs.append({
-                    "slug": item.get("slug", ""),
-                    "title": item.get("title", ""),
-                    "updated_at": item.get("updated_at"),
-                })
+                all_docs.append(
+                    {
+                        "slug": item.get("slug", ""),
+                        "title": item.get("title", ""),
+                        "updated_at": item.get("updated_at"),
+                    }
+                )
             if len(items) < limit:
                 break
             offset += limit
@@ -220,19 +227,21 @@ class YuqueConnector(BaseConnector):
                 continue
 
             for doc in docs:
-                documents.append(ConnectorDocument(
-                    id=f"{namespace}:{doc['slug']}",
-                    title=doc["title"],
-                    content="",
-                    url=f"https://www.yuque.com/{namespace}/{doc['slug']}",
-                    updated_at=doc.get("updated_at"),
-                    metadata={
-                        "namespace": namespace,
-                        "repo_name": repo["name"],
-                        "slug": doc["slug"],
-                        "connector_type": "yuque",
-                    },
-                ))
+                documents.append(
+                    ConnectorDocument(
+                        id=f"{namespace}:{doc['slug']}",
+                        title=doc["title"],
+                        content="",
+                        url=f"https://www.yuque.com/{namespace}/{doc['slug']}",
+                        updated_at=doc.get("updated_at"),
+                        metadata={
+                            "namespace": namespace,
+                            "repo_name": repo["name"],
+                            "slug": doc["slug"],
+                            "connector_type": "yuque",
+                        },
+                    )
+                )
 
         return documents
 

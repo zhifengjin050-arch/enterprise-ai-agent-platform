@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from app.knowledge.chunking import SmartChunker, estimate_tokens
 
-
 SAMPLE_MD = """# Introduction
 
 This is the intro paragraph about Kubernetes and Docker.

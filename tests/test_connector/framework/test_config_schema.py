@@ -6,11 +6,11 @@ import pytest
 from pydantic import ValidationError
 
 from app.connector.config_schemas import (
-    FeishuConfig,
-    YuqueConfig,
-    GitLabConfig,
-    BaseConnectorConfig,
     CONNECTOR_CONFIG_SCHEMAS,
+    BaseConnectorConfig,
+    FeishuConfig,
+    GitLabConfig,
+    YuqueConfig,
     validate_connector_config,
 )
 from app.core.exceptions import ConnectorConfigError

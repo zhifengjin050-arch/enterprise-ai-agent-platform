@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-
 from app.observability.metrics import (
-    generate_observability_metrics,
-    agent_task_total,
-    agent_task_latency,
+    _OBSERVABILITY_REGISTRY,
     agent_failure_total,
-    llm_request_total,
+    agent_task_latency,
+    agent_task_total,
+    generate_observability_metrics,
     llm_latency,
+    llm_request_total,
     llm_tokens_input,
     llm_tokens_output,
-    retrieval_total,
     retrieval_latency,
-    sync_job_total,
+    retrieval_total,
     sync_duration,
     sync_failure_total,
-    _OBSERVABILITY_REGISTRY,
+    sync_job_total,
 )
 
 
@@ -60,7 +59,9 @@ class TestMetricRecording:
         agent_task_latency.labels(agent_type="react").observe(1.5)
 
     def test_record_llm_metrics(self):
-        llm_request_total.labels(provider="deepseek", model="deepseek-chat", request_type="chat").inc()
+        llm_request_total.labels(
+            provider="deepseek", model="deepseek-chat", request_type="chat"
+        ).inc()
         llm_tokens_input.labels(provider="deepseek", model="deepseek-chat").inc(100)
         llm_tokens_output.labels(provider="deepseek", model="deepseek-chat").inc(50)
         llm_latency.labels(provider="deepseek", model="deepseek-chat").observe(0.8)

@@ -131,10 +131,7 @@ def get_recent_executions(limit: int = 10) -> List[dict]:
     Returns:
         List of execution summaries.
     """
-    return [
-        e.to_dict()
-        for e in execution_store.list(limit=limit)
-    ]
+    return [e.to_dict() for e in execution_store.list(limit=limit)]
 
 
 def get_sop_summary() -> List[dict]:
@@ -148,12 +145,14 @@ def get_sop_summary() -> List[dict]:
     summary = []
     for sop in list_all_sops():
         stats = calculate_sop_stats(sop.id)
-        summary.append({
-            "sop_id": sop.id,
-            "title": sop.title,
-            "problem": sop.problem,
-            "severity": sop.severity,
-            "stats": stats.to_dict(),
-        })
+        summary.append(
+            {
+                "sop_id": sop.id,
+                "title": sop.title,
+                "problem": sop.problem,
+                "severity": sop.severity,
+                "stats": stats.to_dict(),
+            }
+        )
 
     return summary

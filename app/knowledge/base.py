@@ -29,12 +29,10 @@ class KnowledgeLoader(ABC):
     """
 
     @abstractmethod
-    def load_documents(self) -> List[Document]:
-        ...
+    def load_documents(self) -> List[Document]: ...
 
     @abstractmethod
-    def get_source_name(self) -> str:
-        ...
+    def get_source_name(self) -> str: ...
 
     def validate_connection(self) -> bool:
         """Optional: Validate connectivity to the knowledge source."""

@@ -3,6 +3,7 @@
 Provides persistence for workflow execution state, enabling
 resume, audit, and monitoring capabilities.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -59,9 +60,7 @@ class WorkflowRun(Base):
         nullable=True,
         comment="Error message if workflow failed",
     )
-    tenant_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True
-    )
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

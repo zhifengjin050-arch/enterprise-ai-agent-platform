@@ -41,9 +41,13 @@ class TestVectorStoreInterface:
 
     def test_concrete_subclass_must_implement_all_methods(self) -> None:
         class IncompleteStore(VectorStore):
-            async def add(self, document_id: str, embedding: List[float],
-                          metadata: Optional[Dict[str, Any]] = None,
-                          content: Optional[str] = None) -> None:
+            async def add(
+                self,
+                document_id: str,
+                embedding: List[float],
+                metadata: Optional[Dict[str, Any]] = None,
+                content: Optional[str] = None,
+            ) -> None:
                 pass
 
         with pytest.raises(TypeError):
@@ -51,13 +55,26 @@ class TestVectorStoreInterface:
 
     def test_valid_implementation(self) -> None:
         class ValidStore(VectorStore):
-            async def add(self, *args: Any, **kwargs: Any) -> None: pass
-            async def add_batch(self, *args: Any, **kwargs: Any) -> None: pass
-            async def query(self, *args: Any, **kwargs: Any) -> List[VectorSearchResult]: return []
-            async def delete(self, *args: Any, **kwargs: Any) -> None: pass
-            async def delete_batch(self, *args: Any, **kwargs: Any) -> None: pass
-            async def update(self, *args: Any, **kwargs: Any) -> None: pass
-            async def count(self) -> int: return 0
+            async def add(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            async def add_batch(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            async def query(self, *args: Any, **kwargs: Any) -> List[VectorSearchResult]:
+                return []
+
+            async def delete(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            async def delete_batch(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            async def update(self, *args: Any, **kwargs: Any) -> None:
+                pass
+
+            async def count(self) -> int:
+                return 0
 
         store = ValidStore()
         assert store is not None

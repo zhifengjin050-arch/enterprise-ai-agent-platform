@@ -9,7 +9,10 @@ metadata:
 data:
   # Application
   APP_NAME: "Enterprise AI Agent Platform"
+  APP_VERSION: "1.0.0"
+  SERVICE_NAME: "enterprise-ai-agent-platform"
   DEBUG: "false"
+  ENVIRONMENT: "development"
 
   # PostgreSQL
   POSTGRES_HOST: "postgres-service"

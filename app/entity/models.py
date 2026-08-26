@@ -4,6 +4,7 @@ Represents a named entity extracted from enterprise documents.
 Entities can be services, components, technologies, tools, teams,
 persons, environments, incidents, or SOPs.
 """
+
 from __future__ import annotations
 
 import enum
@@ -52,18 +53,14 @@ class KnowledgeEntity(Base):
 
     __tablename__ = "knowledge_entities"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(300), nullable=False, index=True)
     entity_type: Mapped[EntityType] = mapped_column(
         Enum(EntityType, name="entity_type_enum", native_enum=False),
         nullable=False,
         default=EntityType.COMPONENT,
     )
-    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        Uuid(as_uuid=True), nullable=True
-    )
+    tenant_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON, nullable=True, default=dict

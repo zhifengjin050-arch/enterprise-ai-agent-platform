@@ -7,7 +7,6 @@ import pytest
 from app.agent_runtime.agent import BaseAgent
 from app.agent_runtime.models import AgentResult, AgentStatus, AgentTask, AgentTaskStatus
 from app.agent_runtime.tools.registry import ToolRegistry
-from app.core.exceptions import AgentExecutionException
 from tests.agent_runtime.conftest import FakeLLM, StubTool
 
 
@@ -82,7 +81,8 @@ class TestAgentLifecycle:
     @pytest.mark.asyncio
     async def test_execute_without_llm_fallback(self, tool_registry: ToolRegistry) -> None:
         agent = BaseAgent(tools=tool_registry, llm=None)
-        # Prevent auto-loading real gateway by setting a Fake that raises? 
+
+        # Prevent auto-loading real gateway by setting a Fake that raises?
         # initialize may load gateway — inject FakeLLM that raises
         class Boom:
             async def chat(self, *a, **k):

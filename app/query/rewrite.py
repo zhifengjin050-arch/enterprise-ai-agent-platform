@@ -7,6 +7,7 @@ Two-layer strategy:
 1. Rule-based synonym expansion (fast)
 2. LLM fallback for deeper query understanding
 """
+
 from __future__ import annotations
 
 import logging
@@ -29,7 +30,9 @@ QUERY_REWRITE_RULES: Dict[str, List[str]] = {
     "docker": ["docker container", "docker engine", "docker daemon"],
     "pod": ["kubernetes pod", "k8s pod", "pod status"],
     "crashloopbackoff": [
-        "CrashLoopBackOff", "pod crash loop", "container crash looping",
+        "CrashLoopBackOff",
+        "pod crash loop",
+        "container crash looping",
     ],
     "宕机": ["outage", "downtime", "service down", "不可用"],
     "故障": ["incident", "fault", "error", "异常"],
@@ -72,6 +75,7 @@ class RewriteResult:
         original_query: The original user query.
         rewritten_queries: List of rewritten query variants.
     """
+
     original_query: str = ""
     rewritten_queries: List[str] = field(default_factory=list)
 
@@ -119,6 +123,7 @@ class QueryRewriteService:
             self._llm = llm_client
         else:
             from app.llm.client import llm_client as _llm
+
             self._llm = _llm
 
     async def rewrite(

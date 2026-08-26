@@ -49,9 +49,7 @@ class QuotaPlan(Base):
     __tablename__ = "quotas"
     __table_args__ = (UniqueConstraint("tenant_id", name="uq_quotas_tenant_id"),)
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     plan: Mapped[str] = mapped_column(
         String(50), nullable=False, default=QuotaPlanName.FREE.value, index=True

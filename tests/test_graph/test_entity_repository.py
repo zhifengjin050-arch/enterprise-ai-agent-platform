@@ -2,10 +2,11 @@
 
 Tests CRUD operations for KnowledgeEntity using async SQLAlchemy.
 """
+
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -82,7 +83,8 @@ class TestEntityRepository:
         mock_session = AsyncMock()
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = KnowledgeEntity(
-            name="Redis", entity_type=EntityType.TECHNOLOGY,
+            name="Redis",
+            entity_type=EntityType.TECHNOLOGY,
         )
         mock_session.execute = AsyncMock(return_value=mock_result)
 

@@ -5,7 +5,7 @@ Tests both rule_quality_analyzer and LLMQualityAnalyzer with mocked LLM calls.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -49,10 +49,16 @@ class TestRuleQualityAnalyzer:
 
     def test_missing_title_penalty(self) -> None:
         """Missing or untitled document should get a penalty."""
-        result = rule_quality_analyzer("Untitled", "# Section 1\n\nThis is some test content that exceeds fifty characters for proper quality analysis.")
+        result = rule_quality_analyzer(
+            "Untitled",
+            "# Section 1\n\nThis is some test content that exceeds fifty characters for proper quality analysis.",
+        )
         score_with_penalty = result.score
 
-        result_good = rule_quality_analyzer("Good Title", "# Section 1\n\nThis is some test content that exceeds fifty characters for proper quality analysis.")
+        result_good = rule_quality_analyzer(
+            "Good Title",
+            "# Section 1\n\nThis is some test content that exceeds fifty characters for proper quality analysis.",
+        )
         assert score_with_penalty < result_good.score
 
     def test_no_headings_issue(self) -> None:
@@ -154,11 +160,13 @@ class TestLLMQualityAnalyzer:
         """_dict_to_quality_result should handle partial data."""
         analyzer = LLMQualityAnalyzer(llm_client=AsyncMock())
 
-        result = analyzer._dict_to_quality_result({
-            "score": 0.75,
-            "issues": ["Issue 1"],
-            "suggestions": ["Suggestion 1"],
-        })
+        result = analyzer._dict_to_quality_result(
+            {
+                "score": 0.75,
+                "issues": ["Issue 1"],
+                "suggestions": ["Suggestion 1"],
+            }
+        )
 
         assert result.score == 0.75
         assert result.issues == ["Issue 1"]

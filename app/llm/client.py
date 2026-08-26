@@ -102,9 +102,7 @@ class OpenAICompatibleLLM(LLMService):
             return data["choices"][0]["message"]["content"]
 
         except httpx.HTTPStatusError as e:
-            raise ConnectionError(
-                f"LLM API error: {e.response.status_code} - {e.response.text}"
-            )
+            raise ConnectionError(f"LLM API error: {e.response.status_code} - {e.response.text}")
         except httpx.RequestError as e:
             raise ConnectionError(f"LLM API request failed: {str(e)}")
 
@@ -154,9 +152,7 @@ class OpenAICompatibleLLM(LLMService):
                             break
                         chunk = json.loads(raw)
                         if content := (
-                            chunk.get("choices", [{}])[0]
-                            .get("delta", {})
-                            .get("content")
+                            chunk.get("choices", [{}])[0].get("delta", {}).get("content")
                         ):
                             yield content
 
@@ -232,9 +228,7 @@ class OpenAICompatibleLLM(LLMService):
             return self._parse_json_response(content)
 
         except httpx.HTTPStatusError as e:
-            raise ConnectionError(
-                f"LLM API error: {e.response.status_code} - {e.response.text}"
-            )
+            raise ConnectionError(f"LLM API error: {e.response.status_code} - {e.response.text}")
         except httpx.RequestError as e:
             raise ConnectionError(f"LLM API request failed: {str(e)}")
 
@@ -268,8 +262,7 @@ class OpenAICompatibleLLM(LLMService):
             return json.loads(cleaned)
         except json.JSONDecodeError as e:
             raise ValueError(
-                f"Failed to parse LLM structured output as JSON: {e}\n"
-                f"Raw content: {content[:500]}"
+                f"Failed to parse LLM structured output as JSON: {e}\nRaw content: {content[:500]}"
             )
 
     async def close(self) -> None:

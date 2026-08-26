@@ -4,11 +4,8 @@ Tests entity creation, field validation, and type enum.
 Note: SQLAlchemy mapped_column(default=...) applies at INSERT time,
 so id/entity_type/defaults are None until session.add()+flush().
 """
+
 from __future__ import annotations
-
-import uuid
-
-import pytest
 
 from app.entity.models import EntityType, KnowledgeEntity
 

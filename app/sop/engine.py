@@ -105,10 +105,7 @@ class ExecutionStore:
         return all_execs[offset : offset + limit]
 
     def get_by_sop(self, sop_id: str) -> List[SOPExecution]:
-        return [
-            e for e in self._executions.values()
-            if e.sop_id == sop_id
-        ]
+        return [e for e in self._executions.values() if e.sop_id == sop_id]
 
 
 # Global execution store

@@ -104,12 +104,8 @@ class MetricsCollector:
             status: HTTP status code.
             duration: Request duration in seconds.
         """
-        http_request_count.labels(
-            method=method, endpoint=endpoint, status=str(status)
-        ).inc()
-        http_request_duration.labels(
-            method=method, endpoint=endpoint
-        ).observe(duration)
+        http_request_count.labels(method=method, endpoint=endpoint, status=str(status)).inc()
+        http_request_duration.labels(method=method, endpoint=endpoint).observe(duration)
 
     @staticmethod
     def record_workflow_execution(workflow_type: str = "knowledge") -> None:
@@ -146,19 +142,17 @@ class MetricsCollector:
             prompt_tokens: Input token count.
             completion_tokens: Output token count.
         """
-        llm_call_count.labels(
-            provider=provider, model=model, request_type=request_type
-        ).inc()
+        llm_call_count.labels(provider=provider, model=model, request_type=request_type).inc()
 
         if prompt_tokens > 0:
-            llm_tokens_total.labels(
-                provider=provider, model=model, type="prompt"
-            ).inc(prompt_tokens)
+            llm_tokens_total.labels(provider=provider, model=model, type="prompt").inc(
+                prompt_tokens
+            )
 
         if completion_tokens > 0:
-            llm_tokens_total.labels(
-                provider=provider, model=model, type="completion"
-            ).inc(completion_tokens)
+            llm_tokens_total.labels(provider=provider, model=model, type="completion").inc(
+                completion_tokens
+            )
 
     @staticmethod
     def record_embedding_call(provider: str = "openai") -> None:

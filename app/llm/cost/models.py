@@ -2,6 +2,7 @@
 
 Tracks each LLM API call with token counts and estimated cost.
 """
+
 from __future__ import annotations
 
 import enum
@@ -51,28 +52,14 @@ class LLMCostRecord(Base):
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
     )
-    provider: Mapped[str] = mapped_column(
-        String(50), nullable=False, default="unknown"
-    )
+    provider: Mapped[str] = mapped_column(String(50), nullable=False, default="unknown")
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
-    model: Mapped[str] = mapped_column(
-        String(100), nullable=False, default="unknown"
-    )
-    request_type: Mapped[str] = mapped_column(
-        String(50), nullable=False, default="other"
-    )
-    prompt_tokens: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0
-    )
-    completion_tokens: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0
-    )
-    total_tokens: Mapped[int] = mapped_column(
-        Integer, nullable=False, default=0
-    )
-    estimated_cost: Mapped[float] = mapped_column(
-        Float, nullable=False, default=0.0
-    )
+    model: Mapped[str] = mapped_column(String(100), nullable=False, default="unknown")
+    request_type: Mapped[str] = mapped_column(String(50), nullable=False, default="other")
+    prompt_tokens: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    completion_tokens: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    total_tokens: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    estimated_cost: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

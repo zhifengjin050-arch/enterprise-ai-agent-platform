@@ -6,6 +6,7 @@ Supports:
     Schedule Trigger   — cron-based scheduling
     SyncEvent Trigger  — internal sync engine events
 """
+
 from __future__ import annotations
 
 import abc
@@ -37,9 +38,7 @@ class Trigger(abc.ABC):
         """Validate whether the trigger should fire."""
 
     @abc.abstractmethod
-    async def extract_context(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def extract_context(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Extract workflow context variables from payload."""
 
     def __repr__(self) -> str:

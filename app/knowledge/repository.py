@@ -162,17 +162,14 @@ class KnowledgeRepository:
             stmt = stmt.where(KnowledgeDocument.doc_type == _normalize_doc_type(doc_type))
         tid = str(tenant_id) if tenant_id is not None else None
         from app.tenant.context import get_tenant_id as _ctx_tid
+
         effective = tid or _ctx_tid()
         if effective:
             try:
                 stmt = stmt.where(KnowledgeDocument.tenant_id == uuid.UUID(str(effective)))
             except ValueError:
                 pass
-        stmt = (
-            stmt.order_by(KnowledgeDocument.updated_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
+        stmt = stmt.order_by(KnowledgeDocument.updated_at.desc()).limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
@@ -292,9 +289,7 @@ class KnowledgeRepository:
 
     async def get_or_create_tag(self, name: str, description: Optional[str] = None) -> KnowledgeTag:
         """Get an existing tag by name or create it."""
-        result = await self.session.execute(
-            select(KnowledgeTag).where(KnowledgeTag.name == name)
-        )
+        result = await self.session.execute(select(KnowledgeTag).where(KnowledgeTag.name == name))
         tag = result.scalar_one_or_none()
         if tag is not None:
             return tag
@@ -334,9 +329,7 @@ class KnowledgeRepository:
 
     async def list_tags(self) -> List[KnowledgeTag]:
         """List all tags."""
-        result = await self.session.execute(
-            select(KnowledgeTag).order_by(KnowledgeTag.name)
-        )
+        result = await self.session.execute(select(KnowledgeTag).order_by(KnowledgeTag.name))
         return list(result.scalars().all())
 
     @staticmethod

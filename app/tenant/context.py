@@ -38,9 +38,7 @@ class TenantContext:
         }
 
 
-_tenant_ctx: ContextVar[Optional[TenantContext]] = ContextVar(
-    "tenant_context", default=None
-)
+_tenant_ctx: ContextVar[Optional[TenantContext]] = ContextVar("tenant_context", default=None)
 
 
 def get_tenant_context() -> Optional[TenantContext]:

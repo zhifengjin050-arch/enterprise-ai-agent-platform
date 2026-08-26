@@ -3,6 +3,7 @@
 Transforms incident records into structured knowledge cards
 for the knowledge base, enabling reuse of incident experience.
 """
+
 from dataclasses import dataclass, field
 from typing import List
 
@@ -52,10 +53,10 @@ async def generate_knowledge_card(incident: IncidentRecord) -> KnowledgeCard:
 故障标题: {incident.title}
 影响服务: {incident.service}
 严重级别: {incident.severity}
-根因: {incident.root_cause or '未记录'}
-解决方案: {incident.solution or '未记录'}
-影响范围: {incident.impact or '未记录'}
-时间线: {incident.timeline or '未记录'}
+根因: {incident.root_cause or "未记录"}
+解决方案: {incident.solution or "未记录"}
+影响范围: {incident.impact or "未记录"}
+时间线: {incident.timeline or "未记录"}
 
 请生成包含以下内容的知识卡片：
 1. 标题：简洁的问题描述
@@ -140,17 +141,15 @@ def _parse_card_response(
         elif section_lower.startswith("相关sop") or section_lower.startswith("关联流程"):
             lines = section.split("\n")[1:]
             related_sops = [
-                line.strip().lstrip("- ").lstrip("* ")
-                for line in lines
-                if line.strip()
+                line.strip().lstrip("- ").lstrip("* ") for line in lines if line.strip()
             ]
         elif section_lower.startswith("标签") or section_lower.startswith("关键词"):
-            line = section.split(":", 1)[-1].strip() if ":" in section else section.split("\n", 1)[-1].strip()
-            tags = [
-                t.strip().lstrip("- ").lstrip("* ")
-                for t in line.split(",")
-                if t.strip()
-            ]
+            line = (
+                section.split(":", 1)[-1].strip()
+                if ":" in section
+                else section.split("\n", 1)[-1].strip()
+            )
+            tags = [t.strip().lstrip("- ").lstrip("* ") for t in line.split(",") if t.strip()]
 
     return KnowledgeCard(
         title=title,

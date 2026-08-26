@@ -7,8 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from httpx import AsyncClient
 
-from app.agent_runtime.models import AgentRecord, AgentResult
-from app.main import app as fastapi_app
+from app.agent_runtime.models import AgentResult
 
 
 class TestAgentAPIAuth:
@@ -24,9 +23,7 @@ class TestAgentAPIAuth:
 
     @pytest.mark.asyncio
     async def test_execute_no_auth(self, api_client: AsyncClient) -> None:
-        resp = await api_client.post(
-            "/api/agents/fake/execute", json={"query": "hi"}
-        )
+        resp = await api_client.post("/api/agents/fake/execute", json={"query": "hi"})
         assert resp.status_code in (401, 403)
 
     @pytest.mark.asyncio
@@ -108,9 +105,7 @@ class TestAgentAPIHappyPath:
 
     @pytest.mark.asyncio
     async def test_history_not_found(self, auth_api_client: AsyncClient) -> None:
-        resp = await auth_api_client.get(
-            "/api/agents/00000000-0000-0000-0000-000000000000/history"
-        )
+        resp = await auth_api_client.get("/api/agents/00000000-0000-0000-0000-000000000000/history")
         assert resp.status_code == 404
 
     @pytest.mark.asyncio

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify demo pack files exist. Does not start Docker or read .env secrets."""
+
 from __future__ import annotations
 
 import sys

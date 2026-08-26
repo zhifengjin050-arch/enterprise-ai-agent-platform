@@ -2,6 +2,7 @@
 
 Provides JWT-based authentication and user management.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -13,19 +14,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.audit.service import AuditEvent
 from app.auth.dependencies import get_current_user
 from app.auth.service import AuthService
+from app.core.logging import get_logger
 from app.db.session import get_db
 
+logger = get_logger(__name__)
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 
 class LoginRequest(BaseModel):
     """Login request body."""
+
     username: str
     password: str
 
 
 class RegisterRequest(BaseModel):
     """Registration request body."""
+
     username: str
     password: str
     email: Optional[str] = None
@@ -65,7 +70,7 @@ async def login(
             ip=getattr(request.state, "client_ip", None),
         )
     except Exception:
-        pass
+        logger.exception("Failed to record auth.login audit event")
     return result
 
 

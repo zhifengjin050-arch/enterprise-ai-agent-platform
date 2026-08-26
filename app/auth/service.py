@@ -3,6 +3,7 @@
 Business logic between API layer and auth repositories.
 All methods are async and follow the Repository pattern.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -186,9 +187,7 @@ class AuthService:
         Returns:
             Dict with access_token, refresh_token and user info, or None.
         """
-        user_data = await self.authenticate_user(
-            session, username=username, password=password
-        )
+        user_data = await self.authenticate_user(session, username=username, password=password)
         if user_data is None:
             return None
 
@@ -268,8 +267,8 @@ class AuthService:
             return set()
 
         permissions: Set[str] = set()
-        for role in (user.roles or []):
-            for perm in (role.permissions or []):
+        for role in user.roles or []:
+            for perm in role.permissions or []:
                 permissions.add(perm.code)
         return permissions
 
@@ -322,9 +321,7 @@ class AuthService:
         async def _link_role_perms(role: Role, perms: list) -> None:
             for perm in perms:
                 await session.execute(
-                    role_permissions.insert().values(
-                        role_id=role.id, permission_id=perm.id
-                    )
+                    role_permissions.insert().values(role_id=role.id, permission_id=perm.id)
                 )
             await session.flush()
 

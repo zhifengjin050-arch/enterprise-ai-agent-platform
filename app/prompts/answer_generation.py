@@ -3,6 +3,7 @@
 The LLM receives retrieved context documents and a user query,
 and must generate a factual answer with confidence assessment.
 """
+
 from __future__ import annotations
 
 ANSWER_SYSTEM_PROMPT = """你是一位企业 DevOps 知识库智能助手。
@@ -69,9 +70,6 @@ def build_answer_prompt(
 
     prompt += f"### 知识库文档\n\n{context_text}\n\n"
 
-    prompt += (
-        "请基于以上知识库文档回答用户问题。"
-        "如果文档不包含相关信息，请如实说明。"
-    )
+    prompt += "请基于以上知识库文档回答用户问题。如果文档不包含相关信息，请如实说明。"
 
     return prompt

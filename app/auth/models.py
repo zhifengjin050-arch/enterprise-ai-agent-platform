@@ -6,6 +6,7 @@ Relationships:
     User <-> Role <-> Permission  (many-to-many via association tables)
     Tenant -> User, Tenant -> KnowledgeDocument, Tenant -> WorkflowRun, etc.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -32,28 +33,38 @@ from app.db.base import Base
 user_roles = Table(
     "user_roles",
     Base.metadata,
-    Column("user_id", Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
-    Column("role_id", Uuid(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "user_id", Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "role_id", Uuid(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 role_permissions = Table(
     "role_permissions",
     Base.metadata,
-    Column("role_id", Uuid(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True),
-    Column("permission_id", Uuid(as_uuid=True), ForeignKey("permissions.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "role_id", Uuid(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "permission_id",
+        Uuid(as_uuid=True),
+        ForeignKey("permissions.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 
 # ---- Tenant ----
+
 
 class Tenant(Base):
     """Enterprise tenant for multi-tenant isolation."""
 
     __tablename__ = "tenants"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -69,14 +80,13 @@ class Tenant(Base):
 
 # ---- User ----
 
+
 class User(Base):
     """Platform user with RBAC roles."""
 
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
     email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     hashed_password: Mapped[str] = mapped_column(String(256), nullable=False)
@@ -98,9 +108,7 @@ class User(Base):
     )
 
     # Relationships
-    roles: Mapped[List["Role"]] = relationship(
-        "Role", secondary=user_roles, back_populates="users"
-    )
+    roles: Mapped[List["Role"]] = relationship("Role", secondary=user_roles, back_populates="users")
     tenant: Mapped[Optional["Tenant"]] = relationship("Tenant")
 
 
@@ -109,9 +117,7 @@ class Role(Base):
 
     __tablename__ = "roles"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -119,9 +125,7 @@ class Role(Base):
     )
 
     # Relationships
-    users: Mapped[List["User"]] = relationship(
-        "User", secondary=user_roles, back_populates="roles"
-    )
+    users: Mapped[List["User"]] = relationship("User", secondary=user_roles, back_populates="roles")
     permissions: Mapped[List["Permission"]] = relationship(
         "Permission", secondary=role_permissions, back_populates="roles"
     )
@@ -132,9 +136,7 @@ class Permission(Base):
 
     __tablename__ = "permissions"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

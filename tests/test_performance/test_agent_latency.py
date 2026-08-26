@@ -2,11 +2,11 @@
 
 Tests retrieval, LLM, and total latency for agent responses.
 """
+
 from __future__ import annotations
 
 import asyncio
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -31,7 +31,7 @@ class TestAgentLatency:
         await asyncio.sleep(0.01)  # context building 10ms
 
         retrieval_latency = time.time() - start
-        print(f"\nRetrieval latency: {retrieval_latency*1000:.2f}ms")
+        print(f"\nRetrieval latency: {retrieval_latency * 1000:.2f}ms")
         assert retrieval_latency < 1.0  # Under 1s
 
     async def test_llm_latency(self) -> None:
@@ -42,7 +42,7 @@ class TestAgentLatency:
         await asyncio.sleep(0.2)  # 200ms simulated LLM
 
         llm_latency = time.time() - start
-        print(f"\nLLM latency: {llm_latency*1000:.2f}ms")
+        print(f"\nLLM latency: {llm_latency * 1000:.2f}ms")
         assert llm_latency < 5.0  # Under 5s
 
     async def test_total_agent_latency(self) -> None:
@@ -53,9 +53,9 @@ class TestAgentLatency:
         await asyncio.sleep(0.01)  # intent
         await asyncio.sleep(0.05)  # search
         await asyncio.sleep(0.01)  # context
-        await asyncio.sleep(0.2)   # LLM
-        await asyncio.sleep(0.005) # citation
+        await asyncio.sleep(0.2)  # LLM
+        await asyncio.sleep(0.005)  # citation
 
         total_latency = time.time() - start
-        print(f"\nTotal agent latency: {total_latency*1000:.2f}ms")
+        print(f"\nTotal agent latency: {total_latency * 1000:.2f}ms")
         assert total_latency < 10.0  # Under 10s

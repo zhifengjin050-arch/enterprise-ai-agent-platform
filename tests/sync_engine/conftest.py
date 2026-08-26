@@ -9,18 +9,16 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.db.base import Base
-from app.db.session import get_db, reset_engine
-from app.main import app as fastapi_app
-
 # Import models so Base.metadata is complete
 import app.auth.models  # noqa: F401
 import app.connector.models  # noqa: F401
 import app.sync_engine.models  # noqa: F401
 import app.task.models  # noqa: F401
-
 from app.connector.base import BaseConnector, ConnectorDocument
 from app.connector.sync_modes import SyncResult
+from app.db.base import Base
+from app.db.session import get_db, reset_engine
+from app.main import app as fastapi_app
 
 
 class FakeConnector(BaseConnector):

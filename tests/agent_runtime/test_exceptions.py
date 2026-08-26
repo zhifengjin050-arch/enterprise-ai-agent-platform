@@ -4,26 +4,26 @@ from __future__ import annotations
 
 import pytest
 
-from app.core.exceptions import (
-    AgentException,
-    AgentPermissionException,
-    ToolPermissionException,
-    LLMQuotaException,
-    AgentNotFoundException,
-    ToolNotFoundException,
-    AgentExecutionException,
+from app.agent_runtime import (
+    AgentMemoryManager,
+    AgentResult,
+    AgentTrace,
+    BaseAgent,
+    ContextEngine,
+    TaskPlanner,
 )
 from app.auth.models import PERMISSION_CODES
-from app.agent_runtime import (
-    BaseAgent,
-    TaskPlanner,
-    AgentMemoryManager,
-    AgentTrace,
-    ContextEngine,
-    AgentResult,
+from app.core.exceptions import (
+    AgentException,
+    AgentExecutionException,
+    AgentNotFoundException,
+    AgentPermissionException,
+    LLMQuotaException,
+    ToolNotFoundException,
+    ToolPermissionException,
 )
 from app.llm import LLMGateway, ModelRouter, TaskComplexity, get_llm_gateway
-from app.prompt import PromptTemplate, PromptManager
+from app.prompt import PromptManager, PromptTemplate
 
 
 class TestAgentExceptions:
@@ -91,10 +91,7 @@ class TestMigrationAndCompile:
         from pathlib import Path
 
         path = (
-            Path(__file__).resolve().parents[2]
-            / "alembic"
-            / "versions"
-            / "0008_agent_runtime.py"
+            Path(__file__).resolve().parents[2] / "alembic" / "versions" / "0008_agent_runtime.py"
         )
         spec = importlib.util.spec_from_file_location("mig_0008", path)
         assert spec and spec.loader
@@ -108,10 +105,7 @@ class TestMigrationAndCompile:
         from pathlib import Path
 
         path = (
-            Path(__file__).resolve().parents[2]
-            / "alembic"
-            / "versions"
-            / "0008_agent_runtime.py"
+            Path(__file__).resolve().parents[2] / "alembic" / "versions" / "0008_agent_runtime.py"
         )
         spec = importlib.util.spec_from_file_location("mig_0008b", path)
         assert spec and spec.loader

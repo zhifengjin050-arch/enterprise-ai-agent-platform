@@ -2,6 +2,7 @@
 
 Enforces the repository pattern: no direct ORM access from service/API layers.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

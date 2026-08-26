@@ -3,6 +3,7 @@
 Tests GET /api/graph/entity/{name}, /neighbors, /path, /search.
 Mocks DB session to avoid real database access.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -143,9 +144,7 @@ class TestGraphEntityAPI:
         with patch("app.api.graph.get_session_factory", return_value=mock_factory):
             transport = ASGITransport(app=app)
             async with AsyncClient(transport=transport, base_url="http://test") as client:
-                response = await client.get(
-                    "/api/graph/entity/NonExistentXYZ/neighbors"
-                )
+                response = await client.get("/api/graph/entity/NonExistentXYZ/neighbors")
         assert response.status_code == 404
 
     @pytest.mark.asyncio

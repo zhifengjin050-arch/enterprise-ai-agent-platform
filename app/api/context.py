@@ -28,12 +28,14 @@ async def get_knowledge_context(topic: str):
     # TODO: Implement real knowledge base search
     return bridge.format_knowledge_context(
         topic=topic,
-        documents=[{
-            "title": f"Knowledge about {topic}",
-            "content": f"Content about {topic} (placeholder)",
-            "doc_type": "general",
-            "relevance": 1.0,
-        }],
+        documents=[
+            {
+                "title": f"Knowledge about {topic}",
+                "content": f"Content about {topic} (placeholder)",
+                "doc_type": "general",
+                "relevance": 1.0,
+            }
+        ],
         sops=[],
         incidents=[],
     )

@@ -136,9 +136,7 @@ class BaseAgent:
                 self._trace.record_tool(step.tool, latency_ms=latency, success=result.success)
 
                 if result.success and isinstance(result.data, list):
-                    sources.extend(
-                        [d for d in result.data if isinstance(d, dict)]
-                    )
+                    sources.extend([d for d in result.data if isinstance(d, dict)])
                 elif result.success and isinstance(result.data, dict):
                     if "nodes" in result.data:
                         sources.append({"graph": result.data})
@@ -225,11 +223,13 @@ class BaseAgent:
                 "task_id": task_id,
             }
             result = await self._tools.execute(step.tool, step.input, ctx)
-            tool_calls.append({
-                "tool": step.tool,
-                "success": result.success,
-                "error": result.error,
-            })
+            tool_calls.append(
+                {
+                    "tool": step.tool,
+                    "success": result.success,
+                    "error": result.error,
+                }
+            )
             if result.success:
                 if step.tool == "knowledge_search":
                     yield {
@@ -296,10 +296,7 @@ class BaseAgent:
 
         # Offline fallback
         if not snippets:
-            return (
-                f"针对问题「{query}」，当前知识库未检索到足够资料。"
-                "建议补充相关文档后重试。"
-            )
+            return f"针对问题「{query}」，当前知识库未检索到足够资料。建议补充相关文档后重试。"
         return (
             f"针对问题「{query}」，基于检索到的 {len(sources)} 条资料：\n"
             f"{context_block}\n\n"

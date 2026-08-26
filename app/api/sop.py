@@ -2,6 +2,7 @@
 
 CRUD operations for SOP templates and execution tracking.
 """
+
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query

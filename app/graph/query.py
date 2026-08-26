@@ -3,6 +3,7 @@
 Provides entity lookup, neighbor queries, and relation traversal
 over the knowledge graph stored in PostgreSQL.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional

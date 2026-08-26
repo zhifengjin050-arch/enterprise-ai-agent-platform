@@ -114,8 +114,8 @@ SOP_TEMPLATES = {
             ),
         ],
         rollback="1. 重启Redis服务: systemctl restart redis-server\n"
-                 "2. 如果无法恢复，切换至从节点\n"
-                 "3. 联系DBA团队介入",
+        "2. 如果无法恢复，切换至从节点\n"
+        "3. 联系DBA团队介入",
         prerequisites=["系统管理员权限", "Redis客户端(redis-cli)"],
         tags=["redis", "cache", "connection", "troubleshooting"],
     ),
@@ -154,13 +154,13 @@ SOP_TEMPLATES = {
                 order=5,
                 action="根据原因采取相应措施",
                 command="- OOM: 增加内存限制\n"
-                        "- Liveness失败: 检查健康检查路径\n"
-                        "- 镜像问题: 回滚到上一个版本",
+                "- Liveness失败: 检查健康检查路径\n"
+                "- 镜像问题: 回滚到上一个版本",
                 expected="Pod恢复Running状态",
             ),
         ],
         rollback="1. 执行回滚: kubectl rollout undo deployment/<deploy-name> -n <namespace>\n"
-                 "2. 扩容临时实例: kubectl scale deployment/<deploy-name> --replicas=3",
+        "2. 扩容临时实例: kubectl scale deployment/<deploy-name> --replicas=3",
         prerequisites=["kubectl配置", "集群访问权限"],
         tags=["kubernetes", "pod", "crashloop", "troubleshooting"],
     ),
@@ -225,14 +225,14 @@ def validate_sop_structure(data: dict) -> List[str]:
     """
     errors = []
     required_fields = ["id", "title", "problem", "severity", "steps"]
-    for field in required_fields:
-        if field not in data:
-            errors.append(f"Missing required field: {field}")
+    for field_name in required_fields:
+        if field_name not in data:
+            errors.append(f"Missing required field: {field_name}")
 
     if "steps" in data and isinstance(data["steps"], list):
         for i, step in enumerate(data["steps"]):
             if "action" not in step:
-                errors.append(f"Step {i+1}: missing 'action' field")
+                errors.append(f"Step {i + 1}: missing 'action' field")
 
     if "severity" in data and data["severity"] not in ("P0", "P1", "P2", "P3"):
         errors.append(f"Invalid severity: {data['severity']}. Must be P0-P3")

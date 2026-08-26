@@ -6,6 +6,7 @@ Records workflow_id, node_id, and tenant_id for every significant event.
 Metrics are registered at import time on the shared Phase 8 registry
 to avoid duplicate-registration errors at runtime.
 """
+
 from __future__ import annotations
 
 import logging

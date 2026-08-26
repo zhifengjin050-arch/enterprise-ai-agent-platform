@@ -45,9 +45,7 @@ class GraphQueryTool(BaseTool):
                     error="entity_id or entity_name is required",
                 )
 
-            subgraph = await kg.get_subgraph(
-                entity_id, depth=depth, session=context.session
-            )
+            subgraph = await kg.get_subgraph(entity_id, depth=depth, session=context.session)
             return ToolResult(success=True, data=subgraph)
         except Exception as exc:
             return ToolResult(success=False, error=str(exc))

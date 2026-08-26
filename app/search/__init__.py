@@ -5,6 +5,7 @@ Provides three search modes:
   - Semantic: ChromaDB vector similarity search
   - Hybrid: RRF-based fusion of fulltext and semantic results
 """
+
 from app.search.fulltext import DocumentResult, FullTextSearch
 from app.search.hybrid import HybridResult, HybridSearch, rrf_score
 from app.search.indexer import KnowledgeIndexer

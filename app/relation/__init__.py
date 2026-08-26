@@ -3,6 +3,7 @@
 Extracts typed relations between entities from enterprise documents
 using rule-based patterns and LLM fallback.
 """
+
 from app.relation.models import KnowledgeRelation, RelationType
 from app.relation.repository import RelationRepository
 

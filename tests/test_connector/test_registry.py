@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
@@ -12,6 +12,7 @@ from app.connector.registry import ConnectorRegistry
 
 class DummyConnector(BaseConnector):
     """Dummy connector for testing."""
+
     name: str = "Dummy"
     connector_type: str = "dummy"
 
@@ -34,6 +35,7 @@ class DummyConnector(BaseConnector):
 
 class AnotherDummyConnector(BaseConnector):
     """Another dummy connector."""
+
     name: str = "Another"
     connector_type: str = "another"
 
@@ -56,6 +58,7 @@ class AnotherDummyConnector(BaseConnector):
 
 class NotAConnector:
     """Class that does NOT subclass BaseConnector."""
+
     pass
 
 

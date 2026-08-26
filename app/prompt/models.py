@@ -20,13 +20,9 @@ class PromptTemplate(Base):
     """Versioned prompt template stored in PostgreSQL / SQLite."""
 
     __tablename__ = "prompt_templates"
-    __table_args__ = (
-        UniqueConstraint("name", "version", name="uq_prompt_templates_name_version"),
-    )
+    __table_args__ = (UniqueConstraint("name", "version", name="uq_prompt_templates_name_version"),)
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     version: Mapped[str] = mapped_column(String(50), nullable=False, default="1.0.0")
     content: Mapped[str] = mapped_column(Text, nullable=False)

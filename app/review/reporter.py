@@ -3,6 +3,7 @@
 Generates formatted quality reports for the knowledge base.
 Supports markdown and JSON output formats.
 """
+
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,48 +24,58 @@ async def generate_markdown_report(session: AsyncSession) -> str:
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
     lines = [
-        f"# 知识库健康度报告",
-        f"",
+        "# 知识库健康度报告",
+        "",
         f"**生成时间**: {now}",
-        f"",
-        f"## 概览",
-        f"",
-        f"| 指标 | 数值 |",
-        f"|------|------|",
+        "",
+        "## 概览",
+        "",
+        "| 指标 | 数值 |",
+        "|------|------|",
         f"| 文档总数 | {health.total_documents} |",
         f"| 活跃文档 | {health.active_documents} |",
         f"| 过期文档 | {health.expired_documents} |",
         f"| 平均完整度 | {health.avg_completeness:.1%} |",
         f"| 平均新鲜度 | {health.avg_freshness:.1%} |",
         f"| 疑似重复 | {health.duplicate_count} |",
-        f"",
+        "",
     ]
 
     if health.recommendations:
-        lines.extend([
-            f"## 改进建议",
-            f"",
-        ])
+        lines.extend(
+            [
+                "## 改进建议",
+                "",
+            ]
+        )
         for rec in health.recommendations:
             lines.append(f"- {rec}")
         lines.append("")
 
-    lines.extend([
-        f"## 文档详情",
-        f"",
-    ])
+    lines.extend(
+        [
+            "## 文档详情",
+            "",
+        ]
+    )
 
     for doc in health.documents:
         status_icon = "EXPIRED" if doc.is_expired else "ACTIVE"
-        dup_info = f" (疑似重复: doc #{doc.duplicate_of}, 相似度: {doc.duplicate_score:.1%})" if doc.duplicate_of else ""
+        dup_info = (
+            f" (疑似重复: doc #{doc.duplicate_of}, 相似度: {doc.duplicate_score:.1%})"
+            if doc.duplicate_of
+            else ""
+        )
 
-        lines.extend([
-            f"### [{status_icon}] {doc.title} (ID: {doc.document_id})",
-            f"",
-            f"- 完整度: {doc.completeness_score:.1%}",
-            f"- 新鲜度: {doc.freshness_score:.1%}",
-            f"{dup_info}",
-        ])
+        lines.extend(
+            [
+                f"### [{status_icon}] {doc.title} (ID: {doc.document_id})",
+                "",
+                f"- 完整度: {doc.completeness_score:.1%}",
+                f"- 新鲜度: {doc.freshness_score:.1%}",
+                f"{dup_info}",
+            ]
+        )
 
         if doc.missing_sections:
             lines.append(f"- 缺失部分: {', '.join(doc.missing_sections)}")

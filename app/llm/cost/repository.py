@@ -2,6 +2,7 @@
 
 All cost-related DB operations go through this repository.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -67,12 +68,8 @@ class CostRepository:
         Returns:
             Dict with total_tokens, total_cost, request_count.
         """
-        today_start = datetime.now(timezone.utc).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        stmt = select(LLMCostRecord).where(
-            LLMCostRecord.created_at >= today_start
-        )
+        today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        stmt = select(LLMCostRecord).where(LLMCostRecord.created_at >= today_start)
         result = await self.session.execute(stmt)
         records = list(result.scalars().all())
 
@@ -91,9 +88,7 @@ class CostRepository:
         month_start = datetime.now(timezone.utc).replace(
             day=1, hour=0, minute=0, second=0, microsecond=0
         )
-        stmt = select(LLMCostRecord).where(
-            LLMCostRecord.created_at >= month_start
-        )
+        stmt = select(LLMCostRecord).where(LLMCostRecord.created_at >= month_start)
         result = await self.session.execute(stmt)
         records = list(result.scalars().all())
 

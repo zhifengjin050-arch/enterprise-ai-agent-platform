@@ -6,6 +6,7 @@ Does not change application runtime code. Uses existing repositories.
 Usage:
     python scripts/demo_seed.py
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -40,7 +41,6 @@ import app.sync_engine.models  # noqa: F401
 import app.task.models  # noqa: F401
 import app.workflow.models  # noqa: F401
 import app.workflow_engine.models  # noqa: F401
-
 from app.agent_runtime.models import AgentRecord
 from app.auth.repository import TenantRepository, UserRepository
 from app.auth.service import AuthService
@@ -134,9 +134,7 @@ async def seed_connectors(session, tenant_id: str) -> None:
         ("CloudTech GitLab", "gitlab"),
     ]
     for name, ctype in specs:
-        result = await session.execute(
-            select(ConnectorConfig).where(ConnectorConfig.name == name)
-        )
+        result = await session.execute(select(ConnectorConfig).where(ConnectorConfig.name == name))
         if result.scalar_one_or_none() is not None:
             continue
         session.add(

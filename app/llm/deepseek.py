@@ -33,11 +33,7 @@ class DeepSeekLLM(OpenAICompatibleLLM):
     ):
         settings = get_settings()
         resolved_key = api_key or settings.deepseek_api_key or settings.llm_api_key
-        resolved_url = (
-            base_url
-            or settings.deepseek_base_url
-            or settings.llm_base_url
-        ).rstrip("/")
+        resolved_url = (base_url or settings.deepseek_base_url or settings.llm_base_url).rstrip("/")
         super().__init__(
             api_key=resolved_key,
             base_url=resolved_url,

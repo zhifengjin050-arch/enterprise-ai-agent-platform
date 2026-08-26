@@ -25,6 +25,7 @@ Events:
 Webhook:
     POST   /api/workflows/webhook/{workflow_id} — Trigger via webhook
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
@@ -78,6 +79,7 @@ async def list_workflows(
     try:
         tenant_id = current_user.get("tenant_id") if current_user else None
         from app.workflow_engine.models import WorkflowStatus
+
         status_enum = WorkflowStatus(status.upper()) if status else None
         return await workflow_engine.get_workflows(
             tenant_id=tenant_id,
@@ -155,6 +157,7 @@ async def list_runs(
     try:
         tenant_id = current_user.get("tenant_id") if current_user else None
         from app.workflow_engine.models import WorkflowStatus
+
         status_enum = WorkflowStatus(status.upper()) if status else None
         return await workflow_engine.get_runs(
             workflow_id=workflow_id,
@@ -252,7 +255,8 @@ async def cancel_workflow(
         for r in runs:
             if r.get("status") in ("RUNNING", "PAUSED", "WAITING"):
                 result = await workflow_engine.cancel_workflow(
-                    r["id"], tenant_id=tenant_id,
+                    r["id"],
+                    tenant_id=tenant_id,
                 )
                 return result or {"status": "cancelled", "run_id": r["id"]}
 
@@ -303,7 +307,9 @@ async def get_run_events(
     try:
         tenant_id = current_user.get("tenant_id") if current_user else None
         return await workflow_engine.get_run_events(
-            run_id=run_id, tenant_id=tenant_id, limit=limit,
+            run_id=run_id,
+            tenant_id=tenant_id,
+            limit=limit,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))

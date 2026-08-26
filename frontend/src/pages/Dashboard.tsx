@@ -24,9 +24,6 @@ import {
   Heart,
   ArrowRight,
   Database,
-  Search,
-  Cog,
-  Zap,
   Terminal,
 } from "lucide-react"
 

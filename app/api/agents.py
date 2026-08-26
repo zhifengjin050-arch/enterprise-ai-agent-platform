@@ -11,12 +11,13 @@ Routes (prefix /api/agents):
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +31,8 @@ from app.db.session import get_db
 from app.quota.service import QuotaService
 from app.tenant.context import get_tenant_id, get_user_id
 from app.tenant.isolation import apply_tenant_filter
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/agents", tags=["Agent Runtime"])
 
@@ -45,7 +48,14 @@ class CreateAgentRequest(BaseModel):
 
 
 class ExecuteAgentRequest(BaseModel):
-    query: str = Field(..., min_length=1)
+    model_config = ConfigDict(populate_by_name=True)
+
+    query: str = Field(
+        ...,
+        min_length=1,
+        validation_alias=AliasChoices("query", "task"),
+        description="Task text. `task` is accepted as a compatibility alias.",
+    )
     input: Optional[Dict[str, Any]] = None
     conversation_id: Optional[str] = None
 
@@ -185,7 +195,7 @@ async def execute_agent(
             details={"task_id": task.id, "success": result.success},
         )
     except Exception:
-        pass
+        logger.exception("Failed to persist agent memory or audit for task %s", task.id)
 
     await agent.cleanup()
     return {
@@ -224,9 +234,7 @@ async def get_agent_history(
 
     messages: List[Dict[str, Any]] = []
     if conversation_id:
-        messages = await agent_memory.list_history(
-            session, conversation_id, limit=limit
-        )
+        messages = await agent_memory.list_history(session, conversation_id, limit=limit)
     else:
         msg_stmt = (
             select(AgentMessage)

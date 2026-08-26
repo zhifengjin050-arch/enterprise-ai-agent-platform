@@ -2,6 +2,7 @@
 
 All endpoints require admin.monitor permission.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -21,6 +22,7 @@ router = APIRouter(prefix="/api/metrics", tags=["monitor", "metrics"])
 async def _check_db(session: AsyncSession) -> bool:
     try:
         from sqlalchemy import text
+
         await session.execute(text("SELECT 1"))
         return True
     except Exception:
@@ -55,9 +57,7 @@ async def metrics_overview(
         return (await session.execute(stmt)).scalar() or 0
 
     async def count_errors() -> int:
-        stmt = select(func.count(SystemEvent.id)).where(
-            SystemEvent.event_type == "error"
-        )
+        stmt = select(func.count(SystemEvent.id)).where(SystemEvent.event_type == "error")
         if tenant_id:
             stmt = stmt.where(SystemEvent.tenant_id == tenant_id)
         stmt = stmt.where(SystemEvent.created_at >= since_24h)
@@ -108,7 +108,7 @@ async def metrics_agents(
     failed = (
         await session.execute(
             select(func.count(AgentExecutionTrace.id)).where(
-                AgentExecutionTrace.success == False,
+                AgentExecutionTrace.success.is_(False),
                 AgentExecutionTrace.tenant_id == tenant_id if tenant_id else True,
             )
         )
@@ -135,26 +135,29 @@ async def metrics_llm(
         base = base.where(LLMUsageRecord.tenant_id == tenant_id)
 
     # Aggregated
-    agg = (await session.execute(
-        select(
-            func.count(LLMUsageRecord.id).label("calls"),
-            func.sum(LLMUsageRecord.total_tokens).label("tokens"),
-            func.sum(LLMUsageRecord.estimated_cost).label("cost"),
-            func.sum(LLMUsageRecord.prompt_tokens).label("prompt"),
-            func.sum(LLMUsageRecord.completion_tokens).label("completion"),
-        ).where(LLMUsageRecord.tenant_id == tenant_id if tenant_id else True)
-    )).one()
+    agg = (
+        await session.execute(
+            select(
+                func.count(LLMUsageRecord.id).label("calls"),
+                func.sum(LLMUsageRecord.total_tokens).label("tokens"),
+                func.sum(LLMUsageRecord.estimated_cost).label("cost"),
+                func.sum(LLMUsageRecord.prompt_tokens).label("prompt"),
+                func.sum(LLMUsageRecord.completion_tokens).label("completion"),
+            ).where(LLMUsageRecord.tenant_id == tenant_id if tenant_id else True)
+        )
+    ).one()
 
     # Per model
-    per_model = (await session.execute(
-        select(
-            LLMUsageRecord.model,
-            func.count(LLMUsageRecord.id).label("calls"),
-            func.sum(LLMUsageRecord.total_tokens).label("tokens"),
-            func.sum(LLMUsageRecord.estimated_cost).label("cost"),
+    per_model = (
+        await session.execute(
+            select(
+                LLMUsageRecord.model,
+                func.count(LLMUsageRecord.id).label("calls"),
+                func.sum(LLMUsageRecord.total_tokens).label("tokens"),
+                func.sum(LLMUsageRecord.estimated_cost).label("cost"),
+            ).group_by(LLMUsageRecord.model)
         )
-        .group_by(LLMUsageRecord.model)
-    )).all()
+    ).all()
 
     return {
         "total_calls": agg.calls or 0,
@@ -163,7 +166,12 @@ async def metrics_llm(
         "prompt_tokens": int(agg.prompt or 0),
         "completion_tokens": int(agg.completion or 0),
         "per_model": [
-            {"model": r.model, "calls": r.calls, "tokens": int(r.tokens or 0), "cost": round(float(r.cost or 0), 6)}
+            {
+                "model": r.model,
+                "calls": r.calls,
+                "tokens": int(r.tokens or 0),
+                "cost": round(float(r.cost or 0), 6),
+            }
             for r in per_model
         ],
         "tenant_id": tenant_id,
@@ -180,12 +188,12 @@ async def metrics_sync(
         from app.sync_engine.models import SyncEventRecord
 
         base = select(SyncEventRecord)
-        total = (await session.execute(
-            select(func.count(SyncEventRecord.id))
-        )).scalar() or 0
-        failed = (await session.execute(
-            select(func.count(SyncEventRecord.id)).where(SyncEventRecord.event_type == "error")
-        )).scalar() or 0
+        total = (await session.execute(select(func.count(SyncEventRecord.id)))).scalar() or 0
+        failed = (
+            await session.execute(
+                select(func.count(SyncEventRecord.id)).where(SyncEventRecord.event_type == "error")
+            )
+        ).scalar() or 0
 
         return {
             "total_syncs": total,
@@ -212,19 +220,22 @@ async def metrics_errors(
     if tenant_id:
         base = base.where(SystemEvent.tenant_id == tenant_id)
 
-    total = (await session.execute(
-        select(func.count(SystemEvent.id)).where(
-            SystemEvent.tenant_id == tenant_id if tenant_id else True,
+    total = (
+        await session.execute(
+            select(func.count(SystemEvent.id)).where(
+                SystemEvent.tenant_id == tenant_id if tenant_id else True,
+            )
         )
-    )).scalar() or 0
+    ).scalar() or 0
 
-    per_component = (await session.execute(
-        select(
-            SystemEvent.component,
-            func.count(SystemEvent.id).label("count"),
+    per_component = (
+        await session.execute(
+            select(
+                SystemEvent.component,
+                func.count(SystemEvent.id).label("count"),
+            ).group_by(SystemEvent.component)
         )
-        .group_by(SystemEvent.component)
-    )).all()
+    ).all()
 
     return {
         "total_errors": total,

@@ -42,12 +42,7 @@ class ContextEngine:
             "引用资料时保持客观，资料不足时明确说明。"
         )
         history = f"对话历史:\n{conversation_context}\n\n" if conversation_context else ""
-        user = (
-            f"{history}"
-            f"检索资料:\n{sources_block}\n\n"
-            f"用户问题: {query}\n\n"
-            "请用中文回答。"
-        )
+        user = f"{history}检索资料:\n{sources_block}\n\n用户问题: {query}\n\n请用中文回答。"
         return {
             "system": system,
             "user": user,

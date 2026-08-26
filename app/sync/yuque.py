@@ -1,16 +1,7 @@
 """Yuque (语雀) knowledge base sync engine.
 
-Syncs documents from Yuque Knowledge Base via Yuque Open API.
-
-TODO:
-    - Implement Token-based authentication
-    - Fetch user/group repositories (knowledge bases)
-    - Fetch document list with pagination
-    - Support document content in HTML/Markdown format
-    - Incremental sync based on updated_at
-
-API Reference:
-    https://www.yuque.com/yuque/developer/api
+DEPRECATED: use ``app.connector.yuque.YuqueConnector`` and the Sync Engine
+(``app.sync_engine``) instead. This module remains only for compatibility.
 """
 
 from datetime import datetime

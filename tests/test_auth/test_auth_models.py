@@ -4,10 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.auth.models import Permission, Role, Tenant, User, PERMISSION_CODES
+from app.auth.models import PERMISSION_CODES, Permission, Role, Tenant, User
 
 
 class TestUserModel:

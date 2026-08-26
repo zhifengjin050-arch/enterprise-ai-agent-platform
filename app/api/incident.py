@@ -2,6 +2,7 @@
 
 CRUD operations for incident records and AI knowledge card generation.
 """
+
 from typing import List, Optional
 
 from fastapi import APIRouter, Query

@@ -34,9 +34,7 @@ class TestAlertEngine:
             message="LLM failure rate high",
             details={"rate": 0.1},
         )
-        result = await db_session.execute(
-            select(SystemEvent).where(SystemEvent.component == "llm")
-        )
+        result = await db_session.execute(select(SystemEvent).where(SystemEvent.component == "llm"))
         events = list(result.scalars().all())
         assert len(events) >= 1
         assert events[0].message == "LLM failure rate high"

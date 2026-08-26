@@ -3,12 +3,11 @@
 Tests deduplication, token limiting, and text formatting
 from hybrid search results.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict
-
-import pytest
 
 from app.query.builder import ContextBuilder, ContextDocument, build_llm_context
 
@@ -16,6 +15,7 @@ from app.query.builder import ContextBuilder, ContextDocument, build_llm_context
 @dataclass
 class MockResult:
     """Mock search result for testing."""
+
     id: str = ""
     title: str = ""
     snippet: str = ""

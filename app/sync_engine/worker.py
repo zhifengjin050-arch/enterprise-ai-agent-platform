@@ -66,9 +66,7 @@ class SyncWorker:
             RuntimeError: If the connector is already syncing.
         """
         if connector_id in self._active:
-            raise RuntimeError(
-                f"Connector '{connector_id}' already has an active sync"
-            )
+            raise RuntimeError(f"Connector '{connector_id}' already has an active sync")
 
         # Create job in a short-lived session
         factory = get_session_factory()

@@ -19,13 +19,21 @@ async def discover_and_register_all_mcp_servers() -> None:
     tool_registry = get_tool_registry()
 
     # 1. Enterprise DevOps MCP Server (Project 2)
-    if settings.enterprise_devops_mcp_url:
+    # 项目 2 默认是 stdio，不是 HTTP。仅当填了 http(s) URL 时才注册。
+    devops_url = (settings.enterprise_devops_mcp_url or "").strip()
+    if not devops_url:
+        p2 = (settings.project2_mcp_path or "").strip()
+        if p2.startswith("http://") or p2.startswith("https://"):
+            devops_url = p2
+    if devops_url:
         registry.register_server(
             name="enterprise_devops",
-            base_url=settings.enterprise_devops_mcp_url,
+            base_url=devops_url,
             api_key=settings.mcp_api_key,
         )
-        logger.info("MCP: Registered enterprise_devops server at %s", settings.enterprise_devops_mcp_url)
+        logger.info(
+            "MCP: Registered enterprise_devops server at %s", devops_url
+        )
 
     # 2. Generic MCP Server
     if settings.mcp_server_url:

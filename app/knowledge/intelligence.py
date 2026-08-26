@@ -77,9 +77,7 @@ async def process_document_intelligence(
                 len(vectors[0]) if vectors else 0,
             )
         except Exception as exc:
-            logger.warning(
-                "Chunk embedding skipped for %s: %s", document_id, exc
-            )
+            logger.warning("Chunk embedding skipped for %s: %s", document_id, exc)
             embedding_ids = None
             vectors = None
 
@@ -99,9 +97,7 @@ async def process_document_intelligence(
             entity_count = len(result.get("entities") or [])
             relation_count = len(result.get("relations") or [])
         except Exception as exc:
-            logger.warning(
-                "Graph build skipped for %s: %s", document_id, exc
-            )
+            logger.warning("Graph build skipped for %s: %s", document_id, exc)
 
     await session.flush()
     logger.info(

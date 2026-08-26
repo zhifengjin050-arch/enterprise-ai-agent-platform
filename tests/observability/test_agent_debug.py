@@ -38,9 +38,7 @@ class TestAgentDebugRecorder:
             output={"result": "ok"},
         )
         result = await db_session.execute(
-            select(AgentExecutionTrace).where(
-                AgentExecutionTrace.task_id == "task-persist"
-            )
+            select(AgentExecutionTrace).where(AgentExecutionTrace.task_id == "task-persist")
         )
         traces = list(result.scalars().all())
         assert len(traces) >= 1
@@ -98,7 +96,7 @@ class TestAgentDebugRecorder:
 
     @pytest.mark.asyncio
     async def test_record_step_auto_tenant(self, db_session):
-        from app.tenant.context import TenantContext, set_tenant_context, clear_tenant_context
+        from app.tenant.context import TenantContext, clear_tenant_context, set_tenant_context
 
         ctx = TenantContext(tenant_id="auto-t1")
         token = set_tenant_context(ctx)

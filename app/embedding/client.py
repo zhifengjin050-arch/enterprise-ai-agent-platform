@@ -12,6 +12,7 @@ Retry strategy (exponential backoff):
     attempt 0 → 1s  |  attempt 1 → 3s  |  attempt 2 → 5s
     On 3 consecutive failures → EmbeddingConnectionError / EmbeddingAPIError.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -52,16 +53,11 @@ class OpenAICompatibleEmbedding(EmbeddingProvider):
     ) -> None:
         settings = get_settings()
         self.model = (
-            model
-            or settings.embedding_model
-            or settings.llm_model
-            or "text-embedding-ada-002"
+            model or settings.embedding_model or settings.llm_model or "text-embedding-ada-002"
         )
-        self.base_url = (
-            (base_url or settings.embedding_api_base or settings.llm_base_url)
-            .rstrip("/")
-            or "https://api.deepseek.com/v1"
-        )
+        self.base_url = (base_url or settings.embedding_api_base or settings.llm_base_url).rstrip(
+            "/"
+        ) or "https://api.deepseek.com/v1"
         self.api_key = api_key or settings.llm_api_key or settings.embedding_api_key or ""
         self.batch_size = batch_size
         self.max_retries = max_retries
@@ -198,8 +194,7 @@ class OpenAICompatibleEmbedding(EmbeddingProvider):
                 # 5xx or unexpected status — retry
                 last_error = EmbeddingConnectionError(
                     reason=(
-                        f"HTTP {exc.response.status_code}: "
-                        f"{_extract_error_detail(exc.response)}"
+                        f"HTTP {exc.response.status_code}: {_extract_error_detail(exc.response)}"
                     ),
                     retries=attempt + 1,
                 )

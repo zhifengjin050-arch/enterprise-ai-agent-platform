@@ -3,6 +3,7 @@
 Runs periodic sync based on schedule intervals (hourly, daily, custom).
 Tracks last_sync_at to avoid redundant syncs and supports manual trigger.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -162,6 +163,7 @@ class SyncScheduler:
 
             # Normalize SyncResult | List[ConnectorDocument] for Phase 3/4 compat
             from app.connector.sync_modes import normalize_sync_result
+
             sync_result = normalize_sync_result(raw_result)
             documents = sync_result.documents
 
@@ -210,7 +212,9 @@ class SyncScheduler:
 
             logger.info(
                 "Sync completed for %s: %d documents imported, %d errors",
-                connector.name, imported_count, len(errors),
+                connector.name,
+                imported_count,
+                len(errors),
             )
 
         except Exception as exc:

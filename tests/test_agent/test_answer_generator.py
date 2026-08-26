@@ -3,6 +3,7 @@
 Tests LLM-based answer generation with structured_output,
 including caching and LLM failure fallback.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -12,8 +13,6 @@ import pytest
 
 from app.agent.answer_generator import AnswerGenerator, AnswerResult, generate_answer
 from app.prompts.answer_generation import (
-    ANSWER_SCHEMA,
-    ANSWER_SYSTEM_PROMPT,
     build_answer_prompt,
 )
 
@@ -74,6 +73,7 @@ class TestAnswerGenerator:
     async def test_generate_success(self) -> None:
         """Successful LLM call should return structured answer."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(prompt: str, schema: Dict[str, Any], **kwargs):
             return {
                 "answer": "Nginx 502通常由于upstream不可用导致",
@@ -81,6 +81,7 @@ class TestAnswerGenerator:
                 "reasoning_summary": "Matched SOP content",
                 "used_sources": ["Nginx故障处理SOP"],
             }
+
         mock_llm.structured_output = mock_structured_output
 
         generator = AnswerGenerator(llm_client=mock_llm)
@@ -96,8 +97,10 @@ class TestAnswerGenerator:
     async def test_generate_llm_failure_fallback(self) -> None:
         """LLM failure should return fallback answer."""
         mock_llm = AsyncMock()
+
         async def mock_fail(*args, **kwargs):
             raise ConnectionError("API unreachable")
+
         mock_llm.structured_output = mock_fail
 
         generator = AnswerGenerator(llm_client=mock_llm)
@@ -113,6 +116,7 @@ class TestAnswerGenerator:
         """Cached results should be returned without LLM call."""
         mock_llm = AsyncMock()
         call_count = 0
+
         async def mock_structured_output(prompt: str, schema: Dict[str, Any], **kwargs):
             nonlocal call_count
             call_count += 1
@@ -122,6 +126,7 @@ class TestAnswerGenerator:
                 "reasoning_summary": "",
                 "used_sources": ["doc1"],
             }
+
         mock_llm.structured_output = mock_structured_output
 
         generator = AnswerGenerator(llm_client=mock_llm)
@@ -144,6 +149,7 @@ class TestAnswerGenerator:
     async def test_generate_empty_context(self) -> None:
         """Empty context should still produce fallback."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(prompt: str, schema: Dict[str, Any], **kwargs):
             return {
                 "answer": "No relevant documents found",
@@ -151,6 +157,7 @@ class TestAnswerGenerator:
                 "reasoning_summary": "Empty context",
                 "used_sources": [],
             }
+
         mock_llm.structured_output = mock_structured_output
 
         generator = AnswerGenerator(llm_client=mock_llm)
@@ -168,6 +175,7 @@ class TestGenerateAnswer:
     async def test_generate_answer_basic(self) -> None:
         """generate_answer should return AnswerResult."""
         mock_llm = AsyncMock()
+
         async def mock_structured_output(*args, **kwargs):
             return {
                 "answer": "测试答案",
@@ -175,6 +183,7 @@ class TestGenerateAnswer:
                 "reasoning_summary": "test",
                 "used_sources": ["doc1"],
             }
+
         mock_llm.structured_output = mock_structured_output
 
         result = await generate_answer(

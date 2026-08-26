@@ -3,6 +3,7 @@
 The LLM extracts typed, directed relations between entities
 from enterprise document content.
 """
+
 from __future__ import annotations
 
 RELATION_EXTRACTION_SYSTEM_PROMPT = """你是一位企业知识图谱关系抽取专家。
@@ -43,8 +44,12 @@ RELATION_EXTRACTION_SCHEMA = {
                     "type": {
                         "type": "string",
                         "enum": [
-                            "depends_on", "belongs_to", "uses",
-                            "related_to", "caused_by", "solved_by",
+                            "depends_on",
+                            "belongs_to",
+                            "uses",
+                            "related_to",
+                            "caused_by",
+                            "solved_by",
                             "owned_by",
                         ],
                         "description": "关系类型",
@@ -81,10 +86,7 @@ def build_relation_extraction_prompt(
         Formatted prompt string.
     """
     truncated = content[:8000] if len(content) > 8000 else content
-    entity_list = "\n".join(
-        f"- {e.get('name', '?')} ({e.get('type', '?')})"
-        for e in entities[:30]
-    )
+    entity_list = "\n".join(f"- {e.get('name', '?')} ({e.get('type', '?')})" for e in entities[:30])
 
     return (
         f"### 文档标题\n\n{title}\n\n"

@@ -6,6 +6,7 @@ This is NOT a conversational Agent state — no question/answer/chat fields.
 Status lifecycle:
     pending -> processing -> (review -> processing) -> completed / failed
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, TypedDict
@@ -29,7 +30,9 @@ class KnowledgeState(TypedDict, total=False):
     title: Optional[str]
 
     # --- Classification & Tagging ---
-    doc_type: Optional[str]  # sop | incident | architecture | configuration | best_practice | manual
+    doc_type: Optional[
+        str
+    ]  # sop | incident | architecture | configuration | best_practice | manual
     tags: List[str]
 
     # --- Quality ---

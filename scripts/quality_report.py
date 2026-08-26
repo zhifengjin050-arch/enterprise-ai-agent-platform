@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate quality baseline report."""
+
 from __future__ import annotations
 
 import json
 import subprocess
-import sys
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent
@@ -52,9 +52,13 @@ def main() -> None:
         results = data.get("results", [])
         metrics = data.get("metrics", {}).get("_totals", {})
         print(f"  Findings: {len(results)}")
-        print(f"  High: {metrics.get('CONFIDENCE.HIGH', 0)}, Medium: {metrics.get('CONFIDENCE.MEDIUM', 0)}, Low: {metrics.get('CONFIDENCE.LOW', 0)}")
+        print(
+            f"  High: {metrics.get('CONFIDENCE.HIGH', 0)}, Medium: {metrics.get('CONFIDENCE.MEDIUM', 0)}, Low: {metrics.get('CONFIDENCE.LOW', 0)}"
+        )
         for x in results[:10]:
-            print(f"    {x['test_id']}: {Path(x['filename']).name}:{x['line_number']} {x['issue_text'][:80]}")
+            print(
+                f"    {x['test_id']}: {Path(x['filename']).name}:{x['line_number']} {x['issue_text'][:80]}"
+            )
     except json.JSONDecodeError:
         print(f"  Parse failed, stderr: {b['stderr'][:200]}")
 

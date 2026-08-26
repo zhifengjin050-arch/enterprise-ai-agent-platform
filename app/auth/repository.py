@@ -3,6 +3,7 @@
 All auth persistence goes through these repositories.
 API and service layers must not execute raw ORM queries directly.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -50,9 +51,7 @@ class UserRepository:
         await self.session.refresh(user, attribute_names=["roles"])
         return user
 
-    async def get_user(
-        self, user_id: Union[str, uuid.UUID]
-    ) -> Optional[User]:
+    async def get_user(self, user_id: Union[str, uuid.UUID]) -> Optional[User]:
         stmt = (
             select(User)
             .options(selectinload(User.roles).selectinload(Role.permissions))
@@ -80,9 +79,7 @@ class UserRepository:
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def update_user(
-        self, user_id: Union[str, uuid.UUID], **fields: Any
-    ) -> Optional[User]:
+    async def update_user(self, user_id: Union[str, uuid.UUID], **fields: Any) -> Optional[User]:
         user = await self.get_user(user_id)
         if user is None:
             return None
@@ -114,9 +111,7 @@ class RoleRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def create_role(
-        self, *, name: str, description: Optional[str] = None
-    ) -> Role:
+    async def create_role(self, *, name: str, description: Optional[str] = None) -> Role:
         role = Role(name=name, description=description)
         self.session.add(role)
         await self.session.flush()
@@ -124,19 +119,13 @@ class RoleRepository:
 
     async def get_role(self, role_id: Union[str, uuid.UUID]) -> Optional[Role]:
         stmt = (
-            select(Role)
-            .options(selectinload(Role.permissions))
-            .where(Role.id == _as_uuid(role_id))
+            select(Role).options(selectinload(Role.permissions)).where(Role.id == _as_uuid(role_id))
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def find_by_name(self, name: str) -> Optional[Role]:
-        stmt = (
-            select(Role)
-            .options(selectinload(Role.permissions))
-            .where(Role.name == name)
-        )
+        stmt = select(Role).options(selectinload(Role.permissions)).where(Role.name == name)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -144,9 +133,7 @@ class RoleRepository:
         self, role_id: Union[str, uuid.UUID], permission_id: Union[str, uuid.UUID]
     ) -> bool:
         role_stmt = (
-            select(Role)
-            .options(selectinload(Role.permissions))
-            .where(Role.id == _as_uuid(role_id))
+            select(Role).options(selectinload(Role.permissions)).where(Role.id == _as_uuid(role_id))
         )
         role_result = await self.session.execute(role_stmt)
         role = role_result.scalar_one_or_none()
@@ -167,17 +154,13 @@ class TenantRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def create_tenant(
-        self, *, name: str, description: Optional[str] = None
-    ) -> Tenant:
+    async def create_tenant(self, *, name: str, description: Optional[str] = None) -> Tenant:
         tenant = Tenant(name=name, description=description)
         self.session.add(tenant)
         await self.session.flush()
         return tenant
 
-    async def get_tenant(
-        self, tenant_id: Union[str, uuid.UUID]
-    ) -> Optional[Tenant]:
+    async def get_tenant(self, tenant_id: Union[str, uuid.UUID]) -> Optional[Tenant]:
         stmt = select(Tenant).where(Tenant.id == _as_uuid(tenant_id))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
@@ -188,7 +171,5 @@ class TenantRepository:
         return result.scalar_one_or_none()
 
     async def list_tenants(self) -> List[Tenant]:
-        result = await self.session.execute(
-            select(Tenant).order_by(Tenant.name)
-        )
+        result = await self.session.execute(select(Tenant).order_by(Tenant.name))
         return list(result.scalars().all())

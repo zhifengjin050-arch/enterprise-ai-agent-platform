@@ -46,6 +46,14 @@ from app.workflow_engine.trigger import default_trigger_manager
 logger = logging.getLogger(__name__)
 
 
+def _is_closed_session_error(exc: BaseException) -> bool:
+    """True when the DB connection was already torn down (test/app shutdown)."""
+    if isinstance(exc, KeyError) and "connection" in str(exc):
+        return True
+    msg = str(exc).lower()
+    return "closed database" in msg or "cannot operate on a closed" in msg
+
+
 class WorkflowEngine:
     """Central engine for enterprise workflow orchestration.
 
@@ -58,6 +66,18 @@ class WorkflowEngine:
         self._active_runs: Dict[str, asyncio.Task] = {}
         self._paused_runs: Dict[str, Dict[str, Any]] = {}
         self._approval_service = ApprovalService()
+        self._shutting_down = False
+
+    async def shutdown(self) -> None:
+        """Cancel in-flight runs so they cannot use a disposed database session."""
+        self._shutting_down = True
+        tasks = [task for task in self._active_runs.values() if task and not task.done()]
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        self._active_runs.clear()
+        self._paused_runs.clear()
 
     # ──────────────────────────────────────────────
     # Workflow Definition CRUD
@@ -125,7 +145,9 @@ class WorkflowEngine:
                     next_nodes=(
                         raw_node["next"]
                         if isinstance(raw_node.get("next"), list)
-                        else [raw_node["next"]] if raw_node.get("next") else None
+                        else [raw_node["next"]]
+                        if raw_node.get("next")
+                        else None
                     ),
                     condition_expression=raw_node.get("config", {}).get("expression"),
                     timeout_seconds=raw_node.get("config", {}).get("timeout_seconds"),
@@ -140,7 +162,9 @@ class WorkflowEngine:
 
         logger.info(
             "Workflow created id=%s name=%s tenant=%s",
-            workflow_id, parsed["name"], tenant_id,
+            workflow_id,
+            parsed["name"],
+            tenant_id,
         )
 
         return await self.get_workflow(workflow_id)
@@ -208,9 +232,7 @@ class WorkflowEngine:
 
             return self._workflow_to_dict(wf)
 
-    async def delete_workflow(
-        self, workflow_id: str, tenant_id: Optional[str] = None
-    ) -> bool:
+    async def delete_workflow(self, workflow_id: str, tenant_id: Optional[str] = None) -> bool:
         """Delete a workflow definition."""
         factory = self._session_factory
         async with factory() as session:
@@ -308,16 +330,33 @@ class WorkflowEngine:
         )
         self._active_runs[run_id] = task
 
+        # #region agent log
+        try:
+            import json as _json
+            import time as _time
+            open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"C","location":"app/workflow_engine/engine.py:execute_workflow","message":"background run started","data":{"run_id":run_id,"workflow_id":workflow_id,"active":len(self._active_runs),"task_done":task.done()},"timestamp":int(_time.time()*1000)})+"\n")
+        except Exception:
+            pass
+        # #endregion
+
         logger.info(
             "Workflow execution started id=%s run=%s trigger=%s",
-            workflow_id, run_id, trigger_type,
+            workflow_id,
+            run_id,
+            trigger_type,
         )
 
         # Observability
         act_tenant = tenant_id or wf.tenant_id
         record_workflow_trace(workflow_id, run_id, tenant_id=act_tenant, status="RUNNING")
         inc_workflow_exec_count(status="running", trigger_type=trigger_type, tenant_id=act_tenant)
-        obs_log_event(workflow_id, run_id, event_type="workflow_started", data={"trigger_type": trigger_type}, tenant_id=act_tenant)
+        obs_log_event(
+            workflow_id,
+            run_id,
+            event_type="workflow_started",
+            data={"trigger_type": trigger_type},
+            tenant_id=act_tenant,
+        )
 
         return run_dict
 
@@ -354,8 +393,11 @@ class WorkflowEngine:
 
             # Record event
             await self._record_event(
-                session, run.workflow_id, run_id,
-                event_type="pause", tenant_id=tenant_id,
+                session,
+                run.workflow_id,
+                run_id,
+                event_type="pause",
+                tenant_id=tenant_id,
             )
             await session.commit()
 
@@ -380,8 +422,11 @@ class WorkflowEngine:
 
             # Record event
             await self._record_event(
-                session, run.workflow_id, run_id,
-                event_type="resume", tenant_id=tenant_id,
+                session,
+                run.workflow_id,
+                run_id,
+                event_type="resume",
+                tenant_id=tenant_id,
             )
             await session.commit()
 
@@ -410,10 +455,12 @@ class WorkflowEngine:
             run = await self._get_run(session, run_id, tenant_id)
             if run is None:
                 return None
-            if run.status not in (WorkflowStatus.RUNNING, WorkflowStatus.PAUSED, WorkflowStatus.WAITING):
-                raise ValueError(
-                    f"Run {run_id} cannot be cancelled (status={run.status})"
-                )
+            if run.status not in (
+                WorkflowStatus.RUNNING,
+                WorkflowStatus.PAUSED,
+                WorkflowStatus.WAITING,
+            ):
+                raise ValueError(f"Run {run_id} cannot be cancelled (status={run.status})")
 
             run.status = WorkflowStatus.FAILED
             run.error = "Cancelled by user"
@@ -436,8 +483,11 @@ class WorkflowEngine:
 
             # Record event
             await self._record_event(
-                session, run.workflow_id, run_id,
-                event_type="cancel", event_data={"reason": "cancelled_by_user"},
+                session,
+                run.workflow_id,
+                run_id,
+                event_type="cancel",
+                event_data={"reason": "cancelled_by_user"},
                 tenant_id=tenant_id,
             )
             await session.commit()
@@ -568,18 +618,34 @@ class WorkflowEngine:
                     break
 
                 # Observability: node start
-                inc_workflow_node_count(node_type=node.__class__.__name__.replace("Node", "").lower() or "unknown", tenant_id=tenant_id)
-                record_workflow_trace(workflow_id, run_id, node_name=current_node_name, tenant_id=tenant_id, status="RUNNING")
+                inc_workflow_node_count(
+                    node_type=node.__class__.__name__.replace("Node", "").lower() or "unknown",
+                    tenant_id=tenant_id,
+                )
+                record_workflow_trace(
+                    workflow_id,
+                    run_id,
+                    node_name=current_node_name,
+                    tenant_id=tenant_id,
+                    status="RUNNING",
+                )
 
                 # Execute node
                 await self._record_node_event(
-                    run_id, workflow_id, current_node_name, "node_start", tenant_id,
+                    run_id,
+                    workflow_id,
+                    current_node_name,
+                    "node_start",
+                    tenant_id,
                 )
 
                 # Record node start in run
                 async with factory() as session:
                     await self._update_run_current_node(
-                        session, run_id, current_node_name, tenant_id,
+                        session,
+                        run_id,
+                        current_node_name,
+                        tenant_id,
                     )
 
                 result = await node.execute(context)
@@ -589,22 +655,42 @@ class WorkflowEngine:
 
                 # Observability: node end
                 node_status = result.get("status", "unknown")
-                record_workflow_trace(workflow_id, run_id, node_name=current_node_name, tenant_id=tenant_id, status=node_status.upper())
+                record_workflow_trace(
+                    workflow_id,
+                    run_id,
+                    node_name=current_node_name,
+                    tenant_id=tenant_id,
+                    status=node_status.upper(),
+                )
                 if node_status == "failure":
-                    inc_workflow_node_count(node_type=node.__class__.__name__.replace("Node", "").lower(), status="failure", tenant_id=tenant_id)
+                    inc_workflow_node_count(
+                        node_type=node.__class__.__name__.replace("Node", "").lower(),
+                        status="failure",
+                        tenant_id=tenant_id,
+                    )
                 elif node_status == "waiting":
-                    inc_workflow_node_count(node_type=node.__class__.__name__.replace("Node", "").lower(), status="waiting", tenant_id=tenant_id)
+                    inc_workflow_node_count(
+                        node_type=node.__class__.__name__.replace("Node", "").lower(),
+                        status="waiting",
+                        tenant_id=tenant_id,
+                    )
 
                 await self._record_node_event(
-                    run_id, workflow_id, current_node_name, "node_end",
-                    tenant_id, event_data={"result_status": node_status},
+                    run_id,
+                    workflow_id,
+                    current_node_name,
+                    "node_end",
+                    tenant_id,
+                    event_data={"result_status": node_status},
                 )
 
                 # Handle result status
                 if result.get("status") == "failure":
                     async with factory() as session:
                         await self._fail_run(
-                            session, run_id, result.get("error", "Node execution failed"),
+                            session,
+                            run_id,
+                            result.get("error", "Node execution failed"),
                             tenant_id,
                         )
                     return
@@ -616,7 +702,9 @@ class WorkflowEngine:
                         if run_db:
                             run_db.status = WorkflowStatus.WAITING
                             run_db.node_results = context.node_results
-                            run_db.context = context.variables if hasattr(context, 'variables') else {}
+                            run_db.context = (
+                                context.variables if hasattr(context, "variables") else {}
+                            )
                             run_db.updated_at = datetime.now(timezone.utc)
                             await session.commit()
 
@@ -625,7 +713,8 @@ class WorkflowEngine:
                         pass
                     else:
                         approval_id = result.get("output", {}).get("approval_id")
-                        if approval_id and hasattr(self, '_approval_service'):
+                        if approval_id and hasattr(self, "_approval_service"):
+
                             async def approval_callback(
                                 approval_data: Dict[str, Any],
                                 rid: str = run_id,
@@ -634,10 +723,16 @@ class WorkflowEngine:
                                 cnn: str = current_node_name,
                             ) -> None:
                                 await self._handle_approval_callback(
-                                    approval_data, rid, wid, tid, cnn,
+                                    approval_data,
+                                    rid,
+                                    wid,
+                                    tid,
+                                    cnn,
                                 )
+
                             self._approval_service.register_callback(
-                                approval_id, approval_callback,
+                                approval_id,
+                                approval_callback,
                             )
                     return
 
@@ -656,7 +751,8 @@ class WorkflowEngine:
                 if current_node_name in visited:
                     logger.warning(
                         "Cycle detected at node '%s' in run %s — breaking",
-                        current_node_name, run_id,
+                        current_node_name,
+                        run_id,
                     )
                     break
                 visited.add(current_node_name)
@@ -670,16 +766,26 @@ class WorkflowEngine:
                     run_db.completed_at = now
                     run_db.duration_ms = self._compute_duration_ms(run_db.started_at, now)
                     run_db.node_results = context.node_results
-                    run_db.context = context.variables if hasattr(context, 'variables') else {}
+                    run_db.context = context.variables if hasattr(context, "variables") else {}
                     run_db.updated_at = now
                     await session.commit()
 
                     # Observability: workflow completed
                     dur = run_db.duration_ms or 0
-                    record_workflow_trace(workflow_id, run_id, tenant_id=tenant_id, status="COMPLETED", duration_ms=dur)
+                    record_workflow_trace(
+                        workflow_id,
+                        run_id,
+                        tenant_id=tenant_id,
+                        status="COMPLETED",
+                        duration_ms=dur,
+                    )
                     inc_workflow_exec_count(status="completed", tenant_id=tenant_id)
-                    observe_workflow_duration(seconds=dur / 1000.0, workflow_id=workflow_id, status="completed")
-                    obs_log_event(workflow_id, run_id, event_type="workflow_completed", tenant_id=tenant_id)
+                    observe_workflow_duration(
+                        seconds=dur / 1000.0, workflow_id=workflow_id, status="completed"
+                    )
+                    obs_log_event(
+                        workflow_id, run_id, event_type="workflow_completed", tenant_id=tenant_id
+                    )
 
                     # Update workflow definition status
                     wf_db = await self._get_workflow(session, workflow_id, tenant_id)
@@ -689,17 +795,58 @@ class WorkflowEngine:
                         await session.commit()
 
         except asyncio.CancelledError:
+            # #region agent log
+            try:
+                import json as _json
+                import time as _time
+                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"E","location":"app/workflow_engine/engine.py:_run_workflow_async","message":"run cancelled","data":{"run_id":run_id},"timestamp":int(_time.time()*1000)})+"\n")
+            except Exception:
+                pass
+            # #endregion
             logger.info("Workflow run %s was cancelled", run_id)
         except Exception as exc:
-            logger.error("Workflow run %s failed: %s", run_id, exc)
-            factory = self._session_factory
-            async with factory() as session:
-                await self._fail_run(session, run_id, str(exc), tenant_id)
-                # Observability: workflow failed
-                record_workflow_trace(workflow_id, run_id, tenant_id=tenant_id, status="FAILED", error=str(exc))
-                inc_workflow_exec_count(status="failed", tenant_id=tenant_id)
-                obs_log_event(workflow_id, run_id, event_type="workflow_failed", data={"error": str(exc)}, tenant_id=tenant_id)
+            # #region agent log
+            try:
+                import json as _json
+                import time as _time
+                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"D","location":"app/workflow_engine/engine.py:_run_workflow_async","message":"run exception before fail persist","data":{"run_id":run_id,"exc_type":type(exc).__name__,"exc":str(exc)[:240]},"timestamp":int(_time.time()*1000)})+"\n")
+            except Exception:
+                pass
+            # #endregion
+            if self._shutting_down or _is_closed_session_error(exc):
+                logger.info(
+                    "Workflow run %s aborted during shutdown: %s",
+                    run_id,
+                    type(exc).__name__,
+                )
+            else:
+                logger.exception("Workflow run %s failed: %s", run_id, exc)
+                try:
+                    factory = self._session_factory
+                    async with factory() as session:
+                        await self._fail_run(session, run_id, str(exc), tenant_id)
+                        record_workflow_trace(
+                            workflow_id, run_id, tenant_id=tenant_id, status="FAILED", error=str(exc)
+                        )
+                        inc_workflow_exec_count(status="failed", tenant_id=tenant_id)
+                        obs_log_event(
+                            workflow_id,
+                            run_id,
+                            event_type="workflow_failed",
+                            data={"error": str(exc)},
+                            tenant_id=tenant_id,
+                        )
+                except Exception:
+                    logger.exception("Failed to persist workflow failure for run %s", run_id)
         finally:
+            # #region agent log
+            try:
+                import json as _json
+                import time as _time
+                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"C","location":"app/workflow_engine/engine.py:_run_workflow_async.finally","message":"run task exiting","data":{"run_id":run_id,"still_tracked":run_id in self._active_runs},"timestamp":int(_time.time()*1000)})+"\n")
+            except Exception:
+                pass
+            # #endregion
             self._active_runs.pop(run_id, None)
 
     async def _handle_approval_callback(
@@ -722,7 +869,9 @@ class WorkflowEngine:
             if status == ApprovalStatus.APPROVED.value:
                 run.status = WorkflowStatus.RUNNING
                 await self._record_event(
-                    session, workflow_id, run_id,
+                    session,
+                    workflow_id,
+                    run_id,
                     event_type="approval",
                     event_data={"decision": "approved", "approval_id": approval_data.get("id")},
                     tenant_id=tenant_id,
@@ -746,7 +895,9 @@ class WorkflowEngine:
                 run.completed_at = datetime.now(timezone.utc)
                 run.duration_ms = self._compute_duration_ms(run.started_at, run.completed_at)
                 await self._record_event(
-                    session, workflow_id, run_id,
+                    session,
+                    workflow_id,
+                    run_id,
                     event_type="approval",
                     event_data={"decision": status.lower(), "approval_id": approval_data.get("id")},
                     tenant_id=tenant_id,
@@ -758,7 +909,9 @@ class WorkflowEngine:
     # ──────────────────────────────────────────────
 
     @staticmethod
-    def _compute_duration_ms(started_at: Optional[datetime], completed_at: Optional[datetime]) -> Optional[float]:
+    def _compute_duration_ms(
+        started_at: Optional[datetime], completed_at: Optional[datetime]
+    ) -> Optional[float]:
         """Compute duration in ms from two datetimes, handling timezone-naive/aware mismatch."""
         if started_at is None or completed_at is None:
             return None
@@ -888,8 +1041,12 @@ class WorkflowEngine:
         factory = self._session_factory
         async with factory() as session:
             await self._record_event(
-                session, workflow_id, run_id, event_type,
-                node_name=node_name, event_data=event_data,
+                session,
+                workflow_id,
+                run_id,
+                event_type,
+                node_name=node_name,
+                event_data=event_data,
                 tenant_id=tenant_id,
             )
             await session.commit()
@@ -922,7 +1079,9 @@ class WorkflowEngine:
                 next_nodes=(
                     raw_node["next"]
                     if isinstance(raw_node.get("next"), list)
-                    else [raw_node["next"]] if raw_node.get("next") else None
+                    else [raw_node["next"]]
+                    if raw_node.get("next")
+                    else None
                 ),
                 sort_order=i,
                 tenant_id=tenant_id,

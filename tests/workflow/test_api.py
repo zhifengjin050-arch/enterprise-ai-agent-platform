@@ -5,18 +5,14 @@ from __future__ import annotations
 from typing import Any, AsyncGenerator, Dict
 
 import pytest
-from httpx import AsyncClient, ASGITransport
-
-from app.main import app
+from httpx import AsyncClient
 
 
 class TestWorkflowAPI:
     """Tests for /api/workflows endpoints."""
 
     @pytest.fixture
-    async def auth_client(
-        self, auth_api_client: AsyncClient
-    ) -> AsyncGenerator[AsyncClient, None]:
+    async def auth_client(self, auth_api_client: AsyncClient) -> AsyncGenerator[AsyncClient, None]:
         yield auth_api_client
 
     async def test_create_workflow(
@@ -45,9 +41,7 @@ class TestWorkflowAPI:
     async def test_get_workflow(
         self, auth_client: AsyncClient, sample_workflow_definition: Dict[str, Any]
     ) -> None:
-        created = (
-            await auth_client.post("/api/workflows", json=sample_workflow_definition)
-        ).json()
+        created = (await auth_client.post("/api/workflows", json=sample_workflow_definition)).json()
         resp = await auth_client.get(f"/api/workflows/{created['id']}")
         assert resp.status_code == 200
         assert resp.json()["id"] == created["id"]
@@ -59,28 +53,20 @@ class TestWorkflowAPI:
     async def test_execute_workflow(
         self, auth_client: AsyncClient, sample_workflow_definition: Dict[str, Any]
     ) -> None:
-        created = (
-            await auth_client.post("/api/workflows", json=sample_workflow_definition)
-        ).json()
-        resp = await auth_client.post(
-            f"/api/workflows/{created['id']}/execute", json={}
-        )
+        created = (await auth_client.post("/api/workflows", json=sample_workflow_definition)).json()
+        resp = await auth_client.post(f"/api/workflows/{created['id']}/execute", json={})
         assert resp.status_code == 200, resp.text
         data = resp.json()
         assert data["status"] == "RUNNING"
 
     async def test_execute_workflow_not_found(self, auth_client: AsyncClient) -> None:
-        resp = await auth_client.post(
-            "/api/workflows/nonexistent/execute", json={}
-        )
+        resp = await auth_client.post("/api/workflows/nonexistent/execute", json={})
         assert resp.status_code == 400
 
     async def test_list_runs(
         self, auth_client: AsyncClient, sample_workflow_definition: Dict[str, Any]
     ) -> None:
-        created = (
-            await auth_client.post("/api/workflows", json=sample_workflow_definition)
-        ).json()
+        created = (await auth_client.post("/api/workflows", json=sample_workflow_definition)).json()
         await auth_client.post(f"/api/workflows/{created['id']}/execute", json={})
         resp = await auth_client.get(f"/api/workflows/{created['id']}/runs")
         assert resp.status_code == 200
@@ -91,14 +77,8 @@ class TestWorkflowAPI:
     async def test_get_run(
         self, auth_client: AsyncClient, sample_workflow_definition: Dict[str, Any]
     ) -> None:
-        created = (
-            await auth_client.post("/api/workflows", json=sample_workflow_definition)
-        ).json()
-        run = (
-            await auth_client.post(
-                f"/api/workflows/{created['id']}/execute", json={}
-            )
-        ).json()
+        created = (await auth_client.post("/api/workflows", json=sample_workflow_definition)).json()
+        run = (await auth_client.post(f"/api/workflows/{created['id']}/execute", json={})).json()
         resp = await auth_client.get(f"/api/workflows/runs/{run['id']}")
         assert resp.status_code == 200
         assert resp.json()["id"] == run["id"]
@@ -113,11 +93,7 @@ class TestWorkflowAPI:
         created = (
             await auth_client.post("/api/workflows", json=sample_workflow_with_approval)
         ).json()
-        run = (
-            await auth_client.post(
-                f"/api/workflows/{created['id']}/execute", json={}
-            )
-        ).json()
+        run = (await auth_client.post(f"/api/workflows/{created['id']}/execute", json={})).json()
         import asyncio
 
         await asyncio.sleep(0.3)
@@ -142,14 +118,8 @@ class TestWorkflowAPI:
     async def test_run_events(
         self, auth_client: AsyncClient, sample_workflow_definition: Dict[str, Any]
     ) -> None:
-        created = (
-            await auth_client.post("/api/workflows", json=sample_workflow_definition)
-        ).json()
-        run = (
-            await auth_client.post(
-                f"/api/workflows/{created['id']}/execute", json={}
-            )
-        ).json()
+        created = (await auth_client.post("/api/workflows", json=sample_workflow_definition)).json()
+        run = (await auth_client.post(f"/api/workflows/{created['id']}/execute", json={})).json()
         import asyncio
 
         await asyncio.sleep(0.5)

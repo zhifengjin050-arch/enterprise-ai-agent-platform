@@ -22,10 +22,12 @@ def _make_mock_chromadb() -> tuple[Any, Any]:
     mock_coll.query.return_value = {
         "ids": [["emb_d1", "emb_d2"]],
         "distances": [[0.1, 0.3]],
-        "metadatas": [[
-            {"document_id": "d1", "title": "Doc A"},
-            {"document_id": "d2", "title": "Doc B"},
-        ]],
+        "metadatas": [
+            [
+                {"document_id": "d1", "title": "Doc A"},
+                {"document_id": "d2", "title": "Doc B"},
+            ]
+        ],
         "documents": [["content A", "content B"]],
     }
     mock_coll.count.return_value = 2

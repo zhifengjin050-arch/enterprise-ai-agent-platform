@@ -42,6 +42,7 @@ class RetrievalResult:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "id": self.document_id,
             "document_id": self.document_id,
             "chunk_id": self.chunk_id,
             "score": self.score,

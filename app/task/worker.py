@@ -3,6 +3,7 @@
 Polls the task queue and processes pending document import
 tasks by running the knowledge workflow pipeline.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -72,7 +73,8 @@ class TaskWorker:
 
             async with factory() as session:
                 await queue.update_status(
-                    session, task.id,
+                    session,
+                    task.id,
                     status=TaskStatus.SUCCESS.value,
                     result=result,
                 )
@@ -81,15 +83,14 @@ class TaskWorker:
         except Exception as e:
             async with factory() as session:
                 await queue.update_status(
-                    session, task.id,
+                    session,
+                    task.id,
                     status=TaskStatus.FAILED.value,
                     error=str(e),
                 )
                 await session.commit()
 
-    async def _execute_workflow(
-        self, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _execute_workflow(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the knowledge pipeline workflow.
 
         Args:

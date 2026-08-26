@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime, timezone
-
-import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.connector.models import ConnectorConfig, SyncRecord

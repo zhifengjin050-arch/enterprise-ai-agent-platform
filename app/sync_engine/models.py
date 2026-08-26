@@ -60,36 +60,49 @@ class SyncJob(Base):
     )
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     connector_id: Mapped[str] = mapped_column(
-        String(36), nullable=False, index=True,
+        String(36),
+        nullable=False,
+        index=True,
         comment="FK to connector_configs.id",
     )
     sync_mode: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="full",
+        String(20),
+        nullable=False,
+        default="full",
         comment="full | incremental | delta",
     )
     status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default=SyncJobStatus.PENDING.value,
+        String(20),
+        nullable=False,
+        default=SyncJobStatus.PENDING.value,
         comment="pending | running | success | failed | cancelled | partial",
     )
     cursor: Mapped[Optional[str]] = mapped_column(
-        Text, nullable=True,
+        Text,
+        nullable=True,
         comment="Opaque cursor for incremental resume",
     )
     total_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     success_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     failed_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     started_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True,
+        DateTime(timezone=True),
+        nullable=True,
     )
     finished_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True,
+        DateTime(timezone=True),
+        nullable=True,
     )
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     metadata_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSON, nullable=True, default=None,
+        JSON,
+        nullable=True,
+        default=None,
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(),
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
     )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -133,16 +146,22 @@ class SyncCheckpoint(Base):
         default=lambda: str(uuid.uuid4()),
     )
     sync_job_id: Mapped[Optional[str]] = mapped_column(
-        String(36), nullable=True, index=True,
+        String(36),
+        nullable=True,
+        index=True,
         comment="FK to sync_jobs.id (optional)",
     )
     connector_id: Mapped[str] = mapped_column(
-        String(36), nullable=False, unique=True, index=True,
+        String(36),
+        nullable=False,
+        unique=True,
+        index=True,
         comment="FK to connector_configs.id — one checkpoint per connector",
     )
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     cursor: Mapped[str] = mapped_column(
-        Text, nullable=False,
+        Text,
+        nullable=False,
         comment="Opaque cursor value for resume",
     )
     updated_at: Mapped[datetime] = mapped_column(
@@ -184,20 +203,27 @@ class SyncEventRecord(Base):
         default=lambda: str(uuid.uuid4()),
     )
     sync_job_id: Mapped[str] = mapped_column(
-        String(36), nullable=False, index=True,
+        String(36),
+        nullable=False,
+        index=True,
     )
     connector_id: Mapped[str] = mapped_column(
-        String(36), nullable=False, index=True,
+        String(36),
+        nullable=False,
+        index=True,
     )
     tenant_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True, index=True)
     event_type: Mapped[str] = mapped_column(
-        String(20), nullable=False,
+        String(20),
+        nullable=False,
         comment="create | update | delete",
     )
     document_id: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     payload: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=func.now(),
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
     )
 
     def to_dict(self) -> Dict[str, Any]:
