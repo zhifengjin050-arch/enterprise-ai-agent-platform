@@ -38,6 +38,14 @@ See [docs/images/system_architecture.md](docs/images/system_architecture.md) for
 
 ---
 
+## Demo
+
+[![Demo video](docs/videos/cover.png)](docs/videos/demo.mp4)
+
+Click the cover to watch the walkthrough (Chinese narration + subtitles).
+
+---
+
 ## Capabilities
 
 | Module | Capability |
