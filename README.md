@@ -40,10 +40,6 @@
 
 ## Demo
 
-<video controls playsinline width="100%" poster="docs/videos/cover.png" preload="metadata">
-  <source src="https://cdn.jsdelivr.net/gh/zhifengjin050-arch/enterprise-ai-agent-platform@main/docs/videos/demo.mp4" type="video/mp4" />
-</video>
-
 [![Demo video](docs/videos/cover.png)](https://zhifengjin050-arch.github.io/enterprise-ai-agent-platform/)
 
 点击封面在线播放（中文旁白 + 底部字幕）。GitHub 文件页无法内嵌 mp4，演示页托管在 GitHub Pages。

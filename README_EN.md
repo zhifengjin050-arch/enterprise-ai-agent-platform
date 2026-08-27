@@ -40,10 +40,6 @@ See [docs/images/system_architecture.md](docs/images/system_architecture.md) for
 
 ## Demo
 
-<video controls playsinline width="100%" poster="docs/videos/cover.png" preload="metadata">
-  <source src="https://cdn.jsdelivr.net/gh/zhifengjin050-arch/enterprise-ai-agent-platform@main/docs/videos/demo.mp4" type="video/mp4" />
-</video>
-
 [![Demo video](docs/videos/cover.png)](https://zhifengjin050-arch.github.io/enterprise-ai-agent-platform/)
 
 Click the cover to watch the walkthrough (Chinese narration + subtitles). GitHub file pages do not play repo mp4s, so the player is hosted on GitHub Pages.
