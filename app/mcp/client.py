@@ -58,7 +58,12 @@ class MCPClient:
             logger.warning("MCP list_tools failed for %s: %s", self.base_url, e)
             return []
 
-    async def execute_tool(self, name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_tool(
+        self,
+        name: str,
+        arguments: Dict[str, Any],
+        identity: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """POST /tools/{name}/execute -> result dict.
 
         Returns a dict with either the result payload or an ``error`` key
@@ -66,6 +71,14 @@ class MCPClient:
         the HTTP layer.
         """
         headers = self._get_headers()
+        if identity:
+            if identity.get("tenant_id"):
+                headers["X-Tenant-ID"] = str(identity["tenant_id"])
+            if identity.get("user_id"):
+                headers["X-User-ID"] = str(identity["user_id"])
+                headers["X-Employee-ID"] = str(identity["user_id"])
+            if identity.get("organization_id"):
+                headers["X-Organization-ID"] = str(identity["organization_id"])
         url = f"{self.base_url}/tools/{name}/execute"
         try:
             resp = await self._client.post(url, json=arguments, headers=headers)

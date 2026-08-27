@@ -167,6 +167,7 @@ class AuthService:
             "email": user.email,
             "is_active": user.is_active,
             "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+            "organization_id": str(user.organization_id) if user.organization_id else None,
             "roles": [r.name for r in (user.roles or [])],
         }
 
@@ -195,6 +196,7 @@ class AuthService:
             "sub": user_data["id"],
             "username": user_data["username"],
             "tenant_id": user_data.get("tenant_id") or "",
+            "organization_id": user_data.get("organization_id") or "",
             "roles": user_data.get("roles", []),
         }
         access = create_access_token(data=claims, expires_delta=timedelta(hours=1))
@@ -232,12 +234,14 @@ class AuthService:
             "email": user.email,
             "is_active": user.is_active,
             "tenant_id": str(user.tenant_id) if user.tenant_id else None,
+            "organization_id": str(user.organization_id) if user.organization_id else None,
             "roles": [r.name for r in (user.roles or [])],
         }
         claims = {
             "sub": user_data["id"],
             "username": user_data["username"],
             "tenant_id": user_data.get("tenant_id") or "",
+            "organization_id": user_data.get("organization_id") or "",
             "roles": user_data.get("roles", []),
         }
         return {

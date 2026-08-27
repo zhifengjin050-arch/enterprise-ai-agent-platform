@@ -99,3 +99,10 @@ class TestKnowledgeIntelligenceAPI:
         resp = await api_client.get("/api/knowledge/search", params={"q": "test"})
         assert resp.status_code == 200
         assert "results" in resp.json()
+
+    async def test_knowledge_requires_auth_in_production(self, api_client: AsyncClient, monkeypatch) -> None:
+        from app.core.config import get_settings
+
+        monkeypatch.setattr(get_settings(), "environment", "production")
+        resp = await api_client.get("/api/knowledge/documents")
+        assert resp.status_code == 401

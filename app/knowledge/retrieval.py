@@ -85,6 +85,7 @@ class KnowledgeRetriever:
         use_graph: bool = True,
         use_rerank: bool = True,
         session: Any = None,
+        principal: Any = None,
     ) -> List[RetrievalResult]:
         """Retrieve relevant knowledge for a query.
 
@@ -134,6 +135,13 @@ class KnowledgeRetriever:
             )
         else:
             candidates = candidates[:n]
+
+        from app.security.acl import AccessPrincipal, filter_visible
+
+        actor = principal if principal is not None else AccessPrincipal.from_context()
+        if not isinstance(actor, AccessPrincipal):
+            actor = AccessPrincipal.from_mapping(actor if isinstance(actor, dict) else None)
+        candidates = filter_visible(candidates, actor)
 
         logger.info(
             "KnowledgeRetriever: query=%r recall=%d → top_n=%d",

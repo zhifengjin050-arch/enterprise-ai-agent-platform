@@ -9,6 +9,14 @@ Release notes and install walkthrough: [docs/RELEASE_GUIDE.md](docs/RELEASE_GUID
 
 ---
 
+## [1.0.1] hardening
+
+- 生产环境知识库 / Context API 必须登录（Context 也可使用 `X-API-Key`）
+- 生产环境默认关闭公开注册
+- 去掉健康检查与工作流引擎中的本机 debug 写盘
+- 启动日志脱敏数据库 DSN；文档解析拒绝 `..` 路径
+- 明确项目 2 stdio 路径不会走 HTTP MCP 发现
+
 ## [1.0.0] — 2026-08-18 — Release Candidate
 
 ### Added

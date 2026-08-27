@@ -58,6 +58,12 @@ def get_user_id() -> Optional[str]:
     return ctx.user_id if ctx else None
 
 
+def get_organization_id() -> Optional[str]:
+    """Shortcut for current organization_id."""
+    ctx = _tenant_ctx.get()
+    return ctx.organization_id if ctx else None
+
+
 def set_tenant_context(ctx: TenantContext) -> Token:
     """Bind TenantContext for the current task/request."""
     return _tenant_ctx.set(ctx)

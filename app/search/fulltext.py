@@ -263,6 +263,7 @@ class FullTextSearch:
                     "title": d.title or "",
                     "doc_type": d.doc_type.value if d.doc_type else "",
                     "status": d.status.value if d.status else "",
+                    **(d.metadata_json or {}),
                 },
             )
             for d in docs

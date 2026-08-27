@@ -11,11 +11,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.dependencies import require_authenticated_in_production
 from app.db.session import get_db
 from app.knowledge.models import DocumentStatus
 from app.knowledge.repository import KnowledgeRepository
 
-router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
+router = APIRouter(
+    prefix="/api/knowledge",
+    tags=["knowledge"],
+    dependencies=[Depends(require_authenticated_in_production)],
+)
 
 
 class DocumentCreateRequest(BaseModel):
@@ -155,10 +160,18 @@ async def search_documents(
         limit=limit,
         offset=offset,
     )
+    from app.security.acl import AccessPrincipal, principal_can_read
+
+    principal = AccessPrincipal.from_context()
+    visible = [
+        r
+        for r in results
+        if principal_can_read(principal, getattr(r.document, "metadata_json", None))
+    ]
     return {
         "query": q,
-        "results": [KnowledgeRepository.to_dict(r.document) for r in results],
-        "total": len(results),
+        "results": [KnowledgeRepository.to_dict(r.document) for r in visible],
+        "total": len(visible),
         "limit": limit,
         "offset": offset,
     }

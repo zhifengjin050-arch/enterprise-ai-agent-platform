@@ -156,3 +156,16 @@ class TestAuthAPI:
         paths = (await api_client.get("/openapi.json")).json()["paths"]
         assert "/api/auth/refresh" in paths
         assert "/api/auth/login" in paths
+
+    @pytest.mark.asyncio
+    async def test_register_disabled_in_production(self, api_client, monkeypatch) -> None:
+        from app.core.config import get_settings
+
+        settings = get_settings()
+        monkeypatch.setattr(settings, "environment", "production")
+        monkeypatch.setattr(settings, "allow_register", None)
+        resp = await api_client.post(
+            "/api/auth/register",
+            json={"username": "prodblock", "password": "pass12345"},
+        )
+        assert resp.status_code == 403

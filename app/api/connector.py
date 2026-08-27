@@ -18,6 +18,7 @@ from app.connector.lifecycle import lifecycle_manager
 from app.connector.registry import connector_registry
 from app.connector.repository import ConnectorConfigRepository, SyncRecordRepository
 from app.db.session import get_db
+from app.security.dlp import redact_mapping
 from app.sync_engine.worker import sync_worker
 
 router = APIRouter(prefix="/api/connectors", tags=["Connectors"])
@@ -219,7 +220,7 @@ async def get_connector(
         "name": connector.name,
         "type": connector.type,
         "enabled": connector.enabled,
-        "config_json": connector.config_json,
+        "config_json": redact_mapping(connector.config_json),
         "last_sync_at": connector.last_sync_at.isoformat() if connector.last_sync_at else None,
         "created_at": connector.created_at.isoformat() if connector.created_at else None,
         "updated_at": connector.updated_at.isoformat() if connector.updated_at else None,

@@ -16,37 +16,6 @@ from app.workflow_engine.parser import WorkflowValidationError
 
 async def _shutdown_engine(eng: WorkflowEngine) -> None:
     """Cancel leftover background runs before the test DB engine is disposed."""
-    pending = sum(1 for task in eng._active_runs.values() if task and not task.done())
-    # #region agent log
-    try:
-        import json as _json
-        import time as _time
-
-        open(
-            r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log",
-            "a",
-            encoding="utf-8",
-        ).write(
-            _json.dumps(
-                {
-                    "sessionId": "f42d54",
-                    "runId": "post-fix",
-                    "hypothesisId": "C",
-                    "location": "tests/workflow/test_engine.py:_shutdown_engine",
-                    "message": "fixture shutdown",
-                    "data": {
-                        "pending": pending,
-                        "tracked": len(eng._active_runs),
-                        "via": "engine.shutdown",
-                    },
-                    "timestamp": int(_time.time() * 1000),
-                }
-            )
-            + "\n"
-        )
-    except Exception:
-        pass
-    # #endregion
     await eng.shutdown()
 
 
@@ -233,8 +202,6 @@ class TestWorkflowEngineExecution:
     ) -> None:
         created = await engine.create_workflow(sample_workflow_with_approval, tenant_id="t1")
         run = await engine.execute_workflow(created["id"], tenant_id="t1")
-        import asyncio
-
         await asyncio.sleep(0.2)
         await engine.pause_workflow(run["id"], tenant_id="t1")
         resumed = await engine.resume_workflow(run["id"], tenant_id="t1")
@@ -250,8 +217,6 @@ class TestWorkflowEngineExecution:
     ) -> None:
         created = await engine.create_workflow(sample_workflow_with_approval, tenant_id="t1")
         run = await engine.execute_workflow(created["id"], tenant_id="t1")
-        import asyncio
-
         await asyncio.sleep(0.2)
         cancelled = await engine.cancel_workflow(run["id"], tenant_id="t1")
         assert cancelled is not None
@@ -267,8 +232,6 @@ class TestWorkflowEngineExecution:
     ) -> None:
         created = await engine.create_workflow(sample_workflow_definition, tenant_id="t1")
         run = await engine.execute_workflow(created["id"], tenant_id="t1")
-        import asyncio
-
         await asyncio.sleep(0.5)
         events = await engine.get_run_events(run["id"], tenant_id="t1")
         # At minimum should have node_start and node_end events
@@ -328,8 +291,6 @@ class TestWorkflowEngineEdgeCases:
         with patch.object(engine._approval_service, "create_approval") as mock_create:
             mock_create.return_value = {"id": "mock-approval-id", "status": "PENDING"}
             run = await engine.execute_workflow(created["id"], tenant_id="t1")
-            import asyncio
-
             await asyncio.sleep(0.05)
             # Cancel on the run, should still be active
             await engine.cancel_workflow(run["id"], tenant_id="t1")
@@ -341,7 +302,6 @@ class TestWorkflowEngineEdgeCases:
     ) -> None:
         created = await engine.create_workflow(sample_workflow_with_approval, tenant_id="t1")
         run = await engine.execute_workflow(created["id"], tenant_id="t1")
-        import asyncio
 
         # Wait for workflow to reach WAITING state at approval node
         await asyncio.sleep(0.3)
@@ -355,8 +315,6 @@ class TestWorkflowEngineEdgeCases:
     ) -> None:
         created = await engine.create_workflow(sample_workflow_with_approval, tenant_id="t1")
         run = await engine.execute_workflow(created["id"], tenant_id="t1")
-        import asyncio
-
         await asyncio.sleep(0.3)
         await engine.pause_workflow(run["id"], tenant_id="t1")
         await engine.resume_workflow(run["id"], tenant_id="t1")

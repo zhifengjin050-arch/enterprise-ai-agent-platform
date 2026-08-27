@@ -143,3 +143,23 @@ async def get_current_tenant(
     if current_user is None:
         return None
     return current_user.get("tenant_id")
+
+
+def _is_production() -> bool:
+    from app.core.config import get_settings
+
+    env = (get_settings().environment or "development").lower()
+    return env in {"production", "prod"}
+
+
+async def require_authenticated_in_production(
+    current_user: Optional[Dict[str, Any]] = Depends(get_current_user),
+) -> Optional[Dict[str, Any]]:
+    """Production requires JWT; development/test remain open for demos and pytest."""
+    if _is_production() and current_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return current_user

@@ -57,7 +57,10 @@ async def lifespan(app: FastAPI):
         settings.app_name,
         settings.app_version,
     )
-    logger.info("Database: %s", settings.database_url)
+    db_url = settings.database_url
+    if "@" in db_url:
+        db_url = db_url.split("@", 1)[-1]
+    logger.info("Database: %s", db_url)
     logger.info(
         "LLM: %s (%s)",
         settings.llm_model,

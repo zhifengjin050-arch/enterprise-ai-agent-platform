@@ -445,7 +445,10 @@ class DocumentParser:
             UnsupportedFormatError: If the extension is not supported.
             DocumentParseError: If parsing fails.
         """
-        path = Path(file_path)
+        path = Path(file_path).expanduser()
+        if ".." in path.parts:
+            raise DocumentParseError(str(path), "path traversal is not allowed")
+        path = path.resolve()
         if not path.exists():
             raise FileNotFoundError(f"Document not found: {path}")
 

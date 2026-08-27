@@ -12,6 +12,9 @@ class ToolContext:
     """Execution context passed to tools."""
 
     tenant_id: Optional[str] = None
+    user_id: Optional[str] = None
+    organization_id: Optional[str] = None
+    roles: list[str] = field(default_factory=list)
     task_id: str = ""
     agent_id: str = ""
     session: Any = None

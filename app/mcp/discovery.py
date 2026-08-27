@@ -31,9 +31,14 @@ async def discover_and_register_all_mcp_servers() -> None:
             base_url=devops_url,
             api_key=settings.mcp_api_key,
         )
-        logger.info(
-            "MCP: Registered enterprise_devops server at %s", devops_url
-        )
+        logger.info("MCP: Registered enterprise_devops server at %s", devops_url)
+    else:
+        p2_path = (settings.project2_mcp_path or "").strip()
+        if p2_path and not p2_path.startswith("http://") and not p2_path.startswith("https://"):
+            logger.info(
+                "MCP: PROJECT2_MCP_PATH is a stdio/local path; HTTP discovery skipped. "
+                "Set ENTERPRISE_DEVOPS_MCP_URL to an http(s) endpoint to register Project 2 tools."
+            )
 
     # 2. Generic MCP Server
     if settings.mcp_server_url:

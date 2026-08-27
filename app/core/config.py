@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     jwt_expiration_minutes: int = 60
     cors_origins: str = "http://localhost:5173,http://localhost:3000,http://localhost"
     rate_limit_per_minute: int = 120
+    allow_register: bool | None = None
+    """None = 开发允许、生产禁止；显式 true/false 覆盖。"""
 
     # Observability
     otel_exporter_otlp_endpoint: str = ""
@@ -111,6 +113,11 @@ class Settings(BaseSettings):
                 "JWT_SECRET is using an insecure default. "
                 "Set JWT_SECRET via .env for any shared or production deployment."
             )
+
+    def is_register_allowed(self) -> bool:
+        if self.allow_register is not None:
+            return bool(self.allow_register)
+        return (self.environment or "development").lower() not in {"production", "prod"}
 
 
 @lru_cache

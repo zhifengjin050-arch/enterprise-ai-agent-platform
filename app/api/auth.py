@@ -84,6 +84,13 @@ async def register(
     Public registration does **not** accept arbitrary tenant_id
     (prevents cross-tenant join attacks).
     """
+    from app.core.config import get_settings
+
+    if not get_settings().is_register_allowed():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Public registration is disabled",
+        )
     service = AuthService()
     try:
         user = await service.register_user(
@@ -94,10 +101,10 @@ async def register(
             tenant_id=None,
         )
         return user
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail="Registration failed",
         )
 
 

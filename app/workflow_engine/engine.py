@@ -330,14 +330,6 @@ class WorkflowEngine:
         )
         self._active_runs[run_id] = task
 
-        # #region agent log
-        try:
-            import json as _json
-            import time as _time
-            open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"C","location":"app/workflow_engine/engine.py:execute_workflow","message":"background run started","data":{"run_id":run_id,"workflow_id":workflow_id,"active":len(self._active_runs),"task_done":task.done()},"timestamp":int(_time.time()*1000)})+"\n")
-        except Exception:
-            pass
-        # #endregion
 
         logger.info(
             "Workflow execution started id=%s run=%s trigger=%s",
@@ -374,24 +366,12 @@ class WorkflowEngine:
 
             run.status = WorkflowStatus.PAUSED
             run.updated_at = datetime.now(timezone.utc)
-            await session.commit()
-
-            # Cancel the active task if running
-            task = self._active_runs.pop(run_id, None)
-            if task and not task.done():
-                task.cancel()
-
-            # Remove from active runs
-            self._active_runs.pop(run_id, None)
-            # Save paused state
-            self._paused_runs[run_id] = {
+            paused_state = {
                 "workflow_id": run.workflow_id,
                 "current_node": run.current_node,
                 "context": run.context,
                 "node_results": run.node_results,
             }
-
-            # Record event
             await self._record_event(
                 session,
                 run.workflow_id,
@@ -400,9 +380,13 @@ class WorkflowEngine:
                 tenant_id=tenant_id,
             )
             await session.commit()
+            paused = self._run_to_dict(run)
+
+        self._paused_runs[run_id] = paused_state
+        await self._cancel_active_task(run_id)
 
         logger.info("Workflow run paused id=%s", run_id)
-        return await self.get_run(run_id, tenant_id)
+        return paused
 
     async def resume_workflow(
         self, run_id: str, tenant_id: Optional[str] = None
@@ -446,6 +430,21 @@ class WorkflowEngine:
         logger.info("Workflow run resumed id=%s", run_id)
         return await self.get_run(run_id, tenant_id)
 
+    async def _cancel_active_task(self, run_id: str) -> None:
+        """Cancel a background run only after the caller has released its DB session.
+
+        Holding the StaticPool connection while awaiting a cancelled task can
+        recycle SQLite :memory: and drop all tables.
+        """
+        task = self._active_runs.pop(run_id, None)
+        if task is None or task.done():
+            return
+        task.cancel()
+        try:
+            await task
+        except (asyncio.CancelledError, Exception):
+            pass
+
     async def cancel_workflow(
         self, run_id: str, tenant_id: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
@@ -467,21 +466,8 @@ class WorkflowEngine:
             run.completed_at = datetime.now(timezone.utc)
             run.duration_ms = self._compute_duration_ms(run.started_at, run.completed_at)
             run.updated_at = datetime.now(timezone.utc)
-            await session.commit()
 
-            # Remove from paused state
-            self._paused_runs.pop(run_id, None)
-            # Cancel active task
-            task = self._active_runs.pop(run_id, None)
-            if task and not task.done():
-                task.cancel()
-            self._paused_runs.pop(run_id, None)
-            try:
-                await task
-            except (asyncio.CancelledError, Exception):
-                pass
 
-            # Record event
             await self._record_event(
                 session,
                 run.workflow_id,
@@ -491,9 +477,13 @@ class WorkflowEngine:
                 tenant_id=tenant_id,
             )
             await session.commit()
+            cancelled = self._run_to_dict(run)
+
+        self._paused_runs.pop(run_id, None)
+        await self._cancel_active_task(run_id)
 
         logger.info("Workflow run cancelled id=%s", run_id)
-        return await self.get_run(run_id, tenant_id)
+        return cancelled
 
     # ──────────────────────────────────────────────
     # Run Query
@@ -795,24 +785,8 @@ class WorkflowEngine:
                         await session.commit()
 
         except asyncio.CancelledError:
-            # #region agent log
-            try:
-                import json as _json
-                import time as _time
-                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"E","location":"app/workflow_engine/engine.py:_run_workflow_async","message":"run cancelled","data":{"run_id":run_id},"timestamp":int(_time.time()*1000)})+"\n")
-            except Exception:
-                pass
-            # #endregion
             logger.info("Workflow run %s was cancelled", run_id)
         except Exception as exc:
-            # #region agent log
-            try:
-                import json as _json
-                import time as _time
-                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"D","location":"app/workflow_engine/engine.py:_run_workflow_async","message":"run exception before fail persist","data":{"run_id":run_id,"exc_type":type(exc).__name__,"exc":str(exc)[:240]},"timestamp":int(_time.time()*1000)})+"\n")
-            except Exception:
-                pass
-            # #endregion
             if self._shutting_down or _is_closed_session_error(exc):
                 logger.info(
                     "Workflow run %s aborted during shutdown: %s",
@@ -826,7 +800,11 @@ class WorkflowEngine:
                     async with factory() as session:
                         await self._fail_run(session, run_id, str(exc), tenant_id)
                         record_workflow_trace(
-                            workflow_id, run_id, tenant_id=tenant_id, status="FAILED", error=str(exc)
+                            workflow_id,
+                            run_id,
+                            tenant_id=tenant_id,
+                            status="FAILED",
+                            error=str(exc),
                         )
                         inc_workflow_exec_count(status="failed", tenant_id=tenant_id)
                         obs_log_event(
@@ -839,14 +817,6 @@ class WorkflowEngine:
                 except Exception:
                     logger.exception("Failed to persist workflow failure for run %s", run_id)
         finally:
-            # #region agent log
-            try:
-                import json as _json
-                import time as _time
-                open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"C","location":"app/workflow_engine/engine.py:_run_workflow_async.finally","message":"run task exiting","data":{"run_id":run_id,"still_tracked":run_id in self._active_runs},"timestamp":int(_time.time()*1000)})+"\n")
-            except Exception:
-                pass
-            # #endregion
             self._active_runs.pop(run_id, None)
 
     async def _handle_approval_callback(

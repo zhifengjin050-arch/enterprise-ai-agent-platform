@@ -4,11 +4,38 @@ Provides knowledge context for external AI agents (primarily Project 1's AI DevO
 These endpoints are designed to be consumed by other services, not end users.
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 
+from app.auth.dependencies import get_current_user
+from app.core.config import get_settings
 from app.integration.project1_bridge import Project1Bridge
 
-router = APIRouter(prefix="/api/context", tags=["context"])
+
+async def _require_integration_caller(
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    current_user=Depends(get_current_user),
+):
+    """生产环境接受 JWT 或与 PROJECT1_API_KEY 匹配的 X-API-Key。"""
+    settings = get_settings()
+    env = (settings.environment or "development").lower()
+    if env not in {"production", "prod"}:
+        return current_user
+    expected = (settings.project1_api_key or "").strip()
+    if expected and x_api_key == expected:
+        return current_user
+    if current_user is not None:
+        return current_user
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Authentication required",
+    )
+
+
+router = APIRouter(
+    prefix="/api/context",
+    tags=["context"],
+    dependencies=[Depends(_require_integration_caller)],
+)
 bridge = Project1Bridge()
 
 

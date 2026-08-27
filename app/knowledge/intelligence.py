@@ -27,6 +27,7 @@ async def process_document_intelligence(
     content: str,
     embed: bool = True,
     build_graph: bool = True,
+    tenant_id: Optional[str] = None,
     max_tokens: int = 512,
 ) -> Dict[str, Any]:
     """Run Intelligence Layer processing on a document.
@@ -49,8 +50,58 @@ async def process_document_intelligence(
     Returns:
         Summary dict with chunk_count, entity_count, relation_count.
     """
+    from app.security.acl import DocumentACL, merge_acl_metadata
+    from app.security.dlp import redact_text
+
+    content, findings = redact_text(content)
+    if findings:
+        logger.warning(
+            "DLP redacted %d secret span(s) before indexing document %s",
+            len(findings),
+            document_id,
+        )
+
+    acl = DocumentACL(classification="internal", tenant_id=tenant_id)
+    try:
+        from app.knowledge.models import KnowledgeDocument
+
+        doc = await session.get(KnowledgeDocument, document_id)
+        if doc is None:
+            try:
+                import uuid as _uuid
+
+                doc = await session.get(KnowledgeDocument, _uuid.UUID(str(document_id)))
+            except Exception:
+                doc = None
+        if doc is not None:
+            meta = dict(doc.metadata_json or {})
+            acl = DocumentACL.from_metadata(meta)
+            if not acl.tenant_id:
+                tid = str(doc.tenant_id) if getattr(doc, "tenant_id", None) else tenant_id
+                acl = DocumentACL(
+                    classification=acl.classification,
+                    tenant_id=tid,
+                    allowed_org_ids=acl.allowed_org_ids,
+                    allowed_user_ids=acl.allowed_user_ids,
+                )
+            if findings and acl.classification != "secret":
+                acl = DocumentACL(
+                    classification="confidential",
+                    tenant_id=acl.tenant_id,
+                    allowed_org_ids=acl.allowed_org_ids,
+                    allowed_user_ids=acl.allowed_user_ids,
+                )
+            if findings or meta.get("acl") != acl.to_metadata().get("acl"):
+                doc.metadata_json = merge_acl_metadata(meta, acl)
+                if findings:
+                    doc.content = content
+    except Exception as exc:
+        logger.warning("ACL attach skipped for %s: %s", document_id, exc)
+
     chunker = SmartChunker(max_tokens=max_tokens)
     chunks = chunker.chunk(content, document_id=document_id, title=title)
+    for chunk in chunks:
+        chunk.metadata = merge_acl_metadata(chunk.metadata, acl)
 
     repo = DocumentChunkRepository(session)
     await repo.delete_by_document(document_id)

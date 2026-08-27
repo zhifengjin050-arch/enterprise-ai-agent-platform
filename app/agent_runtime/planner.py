@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import re
-from typing import List
+from typing import List, Optional
 
 from app.agent_runtime.models import ExecutionPlan, PlanStep
+from app.security.intent import Intent, IntentKind, classify_intent
 
 _INCIDENT_HINTS = re.compile(
     r"oom|crash|故障|报错|error|fail|down|超时|timeout|5\d\d",
@@ -32,16 +33,21 @@ class TaskPlanner:
     the same ExecutionPlan contract.
     """
 
-    def plan(self, query: str) -> ExecutionPlan:
+    def plan(self, query: str, intent: Optional[Intent] = None) -> ExecutionPlan:
         """Create an execution plan for the query.
 
         Args:
             query: User question.
+            intent: Optional pre-classified intent. Secrets produce no tool steps.
 
         Returns:
             ExecutionPlan with ordered tool steps.
         """
         q = (query or "").strip()
+        classified = intent or classify_intent(q)
+        if classified.kind == IntentKind.SECRET:
+            return ExecutionPlan(steps=[], query=q, rationale="secret_denied")
+
         steps: List[PlanStep] = []
         rationale_parts: List[str] = []
 
@@ -55,6 +61,16 @@ class TaskPlanner:
             )
         )
         rationale_parts.append("knowledge_search")
+
+        if classified.kind == IntentKind.HR_SELF:
+            return ExecutionPlan(
+                steps=steps,
+                query=q,
+                rationale="hr_self → knowledge_search (caller-bound live HR tools when configured)",
+            )
+
+        if classified.kind == IntentKind.ASSET:
+            rationale_parts.append("asset_inventory")
 
         if _GRAPH_HINTS.search(q) or _K8S_HINTS.search(q):
             # Extract a simple entity candidate (first Capitalized / known token)

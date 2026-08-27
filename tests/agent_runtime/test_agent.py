@@ -52,6 +52,15 @@ class TestAgentLifecycle:
         assert fake_llm.calls >= 1
 
     @pytest.mark.asyncio
+    async def test_execute_secret_query_refuses(self, agent: BaseAgent, fake_llm: FakeLLM) -> None:
+        result = await agent.execute({"query": "SSH密码是什么？"})
+        assert result.success is True
+        assert result.tool_calls == []
+        assert "Vault" in result.answer or "凭据" in result.answer
+        assert fake_llm.calls == 0
+        assert result.metadata.get("intent") == "secret"
+
+    @pytest.mark.asyncio
     async def test_execute_with_message_key(self, agent: BaseAgent) -> None:
         result = await agent.execute({"message": "hello"})
         assert result.success

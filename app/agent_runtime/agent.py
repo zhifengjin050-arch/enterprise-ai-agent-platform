@@ -20,6 +20,10 @@ from app.agent_runtime.tools.base import ToolContext
 from app.agent_runtime.tools.registry import ToolRegistry, get_tool_registry
 from app.agent_runtime.trace import AgentTrace
 from app.core.exceptions import AgentExecutionException
+from app.security.acl import AccessPrincipal
+from app.security.dlp import redact_tool_payload
+from app.security.intent import SECRET_REFUSAL, IntentKind, classify_intent
+from app.tenant.context import get_tenant_context
 
 logger = logging.getLogger(__name__)
 
@@ -102,19 +106,34 @@ class BaseAgent:
         tool_calls: List[Dict[str, Any]] = []
         sources: List[Dict[str, Any]] = []
         plan: Optional[ExecutionPlan] = None
+        intent = classify_intent(query)
 
         try:
             if task is not None and session is not None:
                 task.status = AgentTaskStatus.RUNNING.value
                 await session.flush()
 
-            plan = self._planner.plan(query)
-            ctx = ToolContext(
-                tenant_id=self.tenant_id,
-                task_id=task_id,
-                agent_id=self.agent_id,
-                session=session,
-            )
+            if intent.kind == IntentKind.SECRET:
+                await self._audit_secret_query(session, query, task_id)
+                result_obj = AgentResult(
+                    success=True,
+                    answer=SECRET_REFUSAL,
+                    sources=[],
+                    tool_calls=[],
+                    metadata={"intent": intent.kind.value, "reason": intent.reason},
+                    task_id=task_id,
+                )
+                self._status = AgentStatus.COMPLETED
+                if task is not None and session is not None:
+                    task.status = AgentTaskStatus.COMPLETED.value
+                    task.result_json = result_obj.to_dict()
+                    task.completed_at = datetime.now(timezone.utc)
+                    await session.flush()
+                self._trace.finish(success=True)
+                return result_obj
+
+            plan = self._planner.plan(query, intent=intent)
+            ctx = self._tool_context(task_id, session)
 
             for step in plan.steps:
                 # Skip connector_sync without connector_id
@@ -143,6 +162,7 @@ class BaseAgent:
                     elif "document_id" in result.data or "id" in result.data:
                         sources.append(result.data)
 
+            sources = [redact_tool_payload(s) if isinstance(s, dict) else s for s in sources]
             answer = await self._synthesize(query, sources, plan)
 
             self._status = AgentStatus.COMPLETED
@@ -154,6 +174,7 @@ class BaseAgent:
                 metadata={
                     "plan": plan.to_dict() if plan else {},
                     "trace": self._trace.to_dict(),
+                    "intent": intent.kind.value,
                 },
                 task_id=task_id,
             )
@@ -195,7 +216,22 @@ class BaseAgent:
 
         yield {"type": "thinking", "content": "正在分析问题并制定执行计划…", "task_id": task_id}
 
-        plan = self._planner.plan(query)
+        intent = classify_intent(query)
+        if intent.kind == IntentKind.SECRET:
+            await self._audit_secret_query(session, query, task_id)
+            self._status = AgentStatus.COMPLETED
+            yield {
+                "type": "answer",
+                "content": SECRET_REFUSAL,
+                "sources": [],
+                "tool_calls": [],
+                "task_id": task_id,
+                "success": True,
+                "intent": intent.kind.value,
+            }
+            return
+
+        plan = self._planner.plan(query, intent=intent)
         yield {
             "type": "thinking",
             "content": f"计划: {plan.rationale}",
@@ -203,12 +239,7 @@ class BaseAgent:
             "task_id": task_id,
         }
 
-        ctx = ToolContext(
-            tenant_id=self.tenant_id,
-            task_id=task_id,
-            agent_id=self.agent_id,
-            session=session,
-        )
+        ctx = self._tool_context(task_id, session)
         sources: List[Dict[str, Any]] = []
         tool_calls: List[Dict[str, Any]] = []
 
@@ -243,6 +274,7 @@ class BaseAgent:
                 elif isinstance(result.data, dict):
                     sources.append(result.data)
 
+        sources = [redact_tool_payload(s) if isinstance(s, dict) else s for s in sources]
         answer = await self._synthesize(query, sources, plan)
         self._status = AgentStatus.COMPLETED
         yield {
@@ -258,6 +290,37 @@ class BaseAgent:
         """Release resources."""
         self._status = AgentStatus.CREATED
         logger.info("Agent %s cleaned up", self.agent_id)
+
+    def _tool_context(self, task_id: str, session: Any) -> ToolContext:
+        principal = AccessPrincipal.from_context()
+        ctx = get_tenant_context()
+        return ToolContext(
+            tenant_id=self.tenant_id or principal.tenant_id,
+            user_id=principal.user_id,
+            organization_id=principal.organization_id,
+            roles=list(principal.roles),
+            task_id=task_id,
+            agent_id=self.agent_id,
+            session=session,
+            metadata={"auth_method": ctx.auth_method if ctx else "anonymous"},
+        )
+
+    async def _audit_secret_query(self, session: Any, query: str, task_id: str) -> None:
+        if session is None:
+            logger.warning("Secret query denied task=%s query=%r", task_id, query[:80])
+            return
+        try:
+            from app.audit.service import AuditEvent
+
+            await AuditEvent(session).record(
+                "agent.secret_denied",
+                resource="agent",
+                resource_id=self.agent_id,
+                tenant_id=self.tenant_id,
+                details={"task_id": task_id, "query_preview": query[:80]},
+            )
+        except Exception:
+            logger.exception("Failed to audit secret query")
 
     async def _synthesize(
         self,
@@ -281,6 +344,7 @@ class BaseAgent:
                 system = (
                     "你是企业知识助手。根据检索结果回答用户问题，"
                     "给出清晰、可执行的建议。若资料不足请明确说明。"
+                    "禁止复述或猜测密码、密钥、token、私钥或 kubeconfig。"
                 )
                 prompt = (
                     f"用户问题: {query}\n\n"

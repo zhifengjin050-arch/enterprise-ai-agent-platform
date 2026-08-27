@@ -37,21 +37,32 @@ class MCPToolAdapter(BaseTool):
         self.permissions = ["mcp", f"mcp:{name}"]
 
     async def execute(self, input: Dict[str, Any], context: ToolContext) -> ToolResult:
-        """Forward execution to the remote MCP server.
+        """Forward execution to the remote MCP server with caller identity headers."""
+        from app.security.dlp import is_blocked_mcp_tool, redact_tool_payload
 
-        The ``context`` parameter is not forwarded to the remote server
-        because MCP servers have their own auth/tenant model. Only the
-        ``input`` payload is sent.
-        """
+        if is_blocked_mcp_tool(self._original_tool_name) or is_blocked_mcp_tool(self.name):
+            return ToolResult(
+                success=False,
+                error="This tool is blocked from chat. Use Vault / PAM / an approved workflow.",
+            )
+        identity = {
+            "tenant_id": context.tenant_id,
+            "user_id": context.user_id,
+            "organization_id": context.organization_id,
+        }
         try:
-            result = await self._client.execute_tool(self._original_tool_name, input)
+            result = await self._client.execute_tool(
+                self._original_tool_name,
+                input,
+                identity=identity,
+            )
             if isinstance(result, dict) and "error" in result:
                 return ToolResult(
                     success=False,
-                    data=result.get("data"),
+                    data=redact_tool_payload(result.get("data")),
                     error=result["error"],
                 )
-            return ToolResult(success=True, data=result)
+            return ToolResult(success=True, data=redact_tool_payload(result))
         except Exception as e:
             return ToolResult(success=False, error=str(e))
 

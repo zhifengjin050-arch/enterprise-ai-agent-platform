@@ -30,6 +30,15 @@ def _as_uuid(value: Union[str, uuid.UUID]) -> uuid.UUID:
     return uuid.UUID(str(value))
 
 
+def _maybe_uuid(value: Optional[Union[str, uuid.UUID]]) -> Optional[uuid.UUID]:
+    if value is None or value == "":
+        return None
+    try:
+        return _as_uuid(value)
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
 def _normalize_doc_type(value: Optional[Union[str, DocType]]) -> DocType:
     """Map legacy/lowercase type names to DocType enum."""
     if value is None:
@@ -76,6 +85,7 @@ class KnowledgeRepository:
         metadata_json: Optional[Dict[str, Any]] = None,
         tag_names: Optional[Sequence[str]] = None,
         document_id: Optional[Union[str, uuid.UUID]] = None,
+        tenant_id: Optional[Union[str, uuid.UUID]] = None,
     ) -> KnowledgeDocument:
         """Create and persist a knowledge document.
 
@@ -99,6 +109,31 @@ class KnowledgeRepository:
         Returns:
             Persisted KnowledgeDocument.
         """
+        from app.security.acl import DocumentACL, merge_acl_metadata
+        from app.security.dlp import redact_text
+        from app.tenant.context import get_tenant_id
+
+        content, findings = redact_text(content)
+        tid = tenant_id or get_tenant_id()
+        meta = dict(metadata_json or {})
+        acl = DocumentACL.from_metadata(meta)
+        tenant_str = str(tid) if tid else None
+        if not acl.tenant_id and tenant_str:
+            acl = DocumentACL(
+                classification="confidential" if findings else acl.classification,
+                tenant_id=tenant_str,
+                allowed_org_ids=acl.allowed_org_ids,
+                allowed_user_ids=acl.allowed_user_ids,
+            )
+        elif findings and acl.classification != "secret":
+            acl = DocumentACL(
+                classification="confidential",
+                tenant_id=acl.tenant_id,
+                allowed_org_ids=acl.allowed_org_ids,
+                allowed_user_ids=acl.allowed_user_ids,
+            )
+        meta = merge_acl_metadata(meta, acl)
+
         doc = KnowledgeDocument(
             id=_as_uuid(document_id) if document_id else uuid.uuid4(),
             title=title,
@@ -113,7 +148,8 @@ class KnowledgeRepository:
             version=version,
             author=author,
             category_id=_as_uuid(category_id) if category_id else None,
-            metadata_json=metadata_json or {},
+            tenant_id=_maybe_uuid(tid),
+            metadata_json=meta,
         )
 
         if tag_names:

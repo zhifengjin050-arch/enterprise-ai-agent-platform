@@ -25,6 +25,7 @@ async def db_engine():
     )
     async with _test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
     yield _test_engine
     await _test_engine.dispose()
 

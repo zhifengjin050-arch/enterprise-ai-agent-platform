@@ -110,14 +110,6 @@ async def health_check() -> dict:
 
     trace_id = TraceManager.get_trace_id()
 
-    # #region agent log
-    try:
-        import json as _json
-        import time as _time
-        open(r"d:\代码项目\AI Agent项目\项目3：企业级 DevOps RAG 知识库 Agent\debug-f42d54.log", "a", encoding="utf-8").write(_json.dumps({"sessionId":"f42d54","hypothesisId":"A","location":"app/api/health.py:health_check","message":"health payload","data":{"version":settings.app_version,"service":settings.service_name,"status":overall_status},"timestamp":int(_time.time()*1000)})+"\n")
-    except Exception:
-        pass
-    # #endregion
 
     return {
         "status": overall_status,

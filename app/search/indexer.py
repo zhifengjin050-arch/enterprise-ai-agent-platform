@@ -162,6 +162,10 @@ class KnowledgeIndexer:
                 "title": heading,
                 "source": "chunk",
             }
+            chunk_meta = getattr(chunk, "metadata", None) or {}
+            from app.security.acl import DocumentACL
+
+            metadata.update(DocumentACL.from_metadata(chunk_meta).chroma_fields())
             eid = f"chunk_{chunk_id[:24]}"
             try:
                 await self._store.add(
