@@ -7,82 +7,98 @@
     {
       "id": "section-01",
       "title": "工程导读 · 从场景到实现",
-      "caption": "01 / PROJECT DOCUMENTATION"
+      "caption": "01 / PROJECT DOCUMENTATION",
+      "icon": "guide"
     },
     {
       "id": "section-02",
       "title": "项目介绍",
-      "caption": "02 / PROJECT DOCUMENTATION"
+      "caption": "02 / PROJECT DOCUMENTATION",
+      "icon": "features"
     },
     {
       "id": "section-03",
       "title": "Demo",
-      "caption": "03 / PROJECT DOCUMENTATION"
+      "caption": "03 / PROJECT DOCUMENTATION",
+      "icon": "start"
     },
     {
       "id": "section-04",
       "title": "核心能力",
-      "caption": "04 / PROJECT DOCUMENTATION"
+      "caption": "04 / PROJECT DOCUMENTATION",
+      "icon": "features"
     },
     {
       "id": "section-05",
       "title": "系统架构",
-      "caption": "05 / PROJECT DOCUMENTATION"
+      "caption": "05 / PROJECT DOCUMENTATION",
+      "icon": "architecture"
     },
     {
       "id": "section-06",
       "title": "RAG Pipeline",
-      "caption": "06 / PROJECT DOCUMENTATION"
+      "caption": "06 / PROJECT DOCUMENTATION",
+      "icon": "pipeline"
     },
     {
       "id": "section-07",
       "title": "数据流",
-      "caption": "07 / PROJECT DOCUMENTATION"
+      "caption": "07 / PROJECT DOCUMENTATION",
+      "icon": "pipeline"
     },
     {
       "id": "section-08",
       "title": "部署架构",
-      "caption": "08 / PROJECT DOCUMENTATION"
+      "caption": "08 / PROJECT DOCUMENTATION",
+      "icon": "deploy"
     },
     {
       "id": "section-09",
       "title": "技术栈",
-      "caption": "09 / PROJECT DOCUMENTATION"
+      "caption": "09 / PROJECT DOCUMENTATION",
+      "icon": "stack"
     },
     {
       "id": "section-10",
       "title": "快速开始",
-      "caption": "10 / PROJECT DOCUMENTATION"
+      "caption": "10 / PROJECT DOCUMENTATION",
+      "icon": "start"
     },
     {
       "id": "section-11",
       "title": "API 示例",
-      "caption": "11 / PROJECT DOCUMENTATION"
+      "caption": "11 / PROJECT DOCUMENTATION",
+      "icon": "api"
     },
     {
       "id": "section-12",
       "title": "测试结果",
-      "caption": "12 / PROJECT DOCUMENTATION"
+      "caption": "12 / PROJECT DOCUMENTATION",
+      "icon": "performance"
     },
     {
       "id": "section-13",
       "title": "Roadmap",
-      "caption": "13 / PROJECT DOCUMENTATION"
+      "caption": "13 / PROJECT DOCUMENTATION",
+      "icon": "roadmap"
     },
     {
       "id": "section-14",
       "title": "截图",
-      "caption": "14 / PROJECT DOCUMENTATION"
+      "caption": "14 / PROJECT DOCUMENTATION",
+      "icon": "preview"
     },
     {
       "id": "section-15",
       "title": "文档",
-      "caption": "15 / PROJECT DOCUMENTATION"
+      "caption": "15 / PROJECT DOCUMENTATION",
+      "icon": "guide"
     },
     {
       "id": "section-16",
       "title": "License",
-      "caption": "16 / PROJECT DOCUMENTATION"
+      "caption": "16 / PROJECT DOCUMENTATION",
+      "icon": "license"
     }
   ]
 }
