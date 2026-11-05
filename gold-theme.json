@@ -1,0 +1,88 @@
+{
+  "title": "Enterprise AI Agent Platform",
+  "subtitle": "企业知识自动化与智能体工作流",
+  "stack": "Hybrid RAG · Knowledge Graph · Workflow",
+  "repository": "zhifengjin050-arch/enterprise-ai-agent-platform",
+  "sections": [
+    {
+      "id": "section-01",
+      "title": "工程导读 · 从场景到实现",
+      "caption": "01 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-02",
+      "title": "项目介绍",
+      "caption": "02 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-03",
+      "title": "Demo",
+      "caption": "03 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-04",
+      "title": "核心能力",
+      "caption": "04 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-05",
+      "title": "系统架构",
+      "caption": "05 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-06",
+      "title": "RAG Pipeline",
+      "caption": "06 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-07",
+      "title": "数据流",
+      "caption": "07 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-08",
+      "title": "部署架构",
+      "caption": "08 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-09",
+      "title": "技术栈",
+      "caption": "09 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-10",
+      "title": "快速开始",
+      "caption": "10 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-11",
+      "title": "API 示例",
+      "caption": "11 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-12",
+      "title": "测试结果",
+      "caption": "12 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-13",
+      "title": "Roadmap",
+      "caption": "13 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-14",
+      "title": "截图",
+      "caption": "14 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-15",
+      "title": "文档",
+      "caption": "15 / PROJECT DOCUMENTATION"
+    },
+    {
+      "id": "section-16",
+      "title": "License",
+      "caption": "16 / PROJECT DOCUMENTATION"
+    }
+  ]
+}

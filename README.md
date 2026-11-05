@@ -1,6 +1,8 @@
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/hero-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/hero-light.svg"><img src="docs/showcase/hero-light.svg" alt="Enterprise AI Agent Platform · 企业知识自动化与智能体工作流" width="100%"></picture>
+
 <div align="center">
 
-<img src="docs/images/hero.png" alt="Enterprise AI Agent Platform" width="100%" />
+
 
 # Enterprise AI Agent Platform
 
@@ -20,7 +22,9 @@
 </div>
 
 <!-- engineering-guide:start -->
-## 🧭 工程导读 · 从场景到实现
+<a id="-工程导读--从场景到实现"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-01-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-01-light.svg"><img src="docs/showcase/section-01-light.svg" alt="工程导读 · 从场景到实现" width="100%"></picture></h2>
+
 
 **企业知识自动化与 Agent 工作流**。面向分散在多个平台的企业文档，将连接器接入、内容处理、检索问答和任务执行组织到同一平台。
 
@@ -45,7 +49,9 @@ flowchart LR
 
 ---
 
-## 项目介绍
+<a id="项目介绍"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-02-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-02-light.svg"><img src="docs/showcase/section-02-light.svg" alt="项目介绍" width="100%"></picture></h2>
+
 
 这不是聊天机器人。这是一套把企业知识变成可执行自动化的基础设施：
 
@@ -62,7 +68,9 @@ flowchart LR
 
 ---
 
-## Demo
+<a id="demo"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-03-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-03-light.svg"><img src="docs/showcase/section-03-light.svg" alt="Demo" width="100%"></picture></h2>
+
 
 [![Demo video](docs/videos/cover.png)](https://zhifengjin050-arch.github.io/enterprise-ai-agent-platform/)
 
@@ -70,7 +78,9 @@ flowchart LR
 
 ---
 
-## 核心能力
+<a id="核心能力"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-04-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-04-light.svg"><img src="docs/showcase/section-04-light.svg" alt="核心能力" width="100%"></picture></h2>
+
 
 | Module | Capability |
 |--------|------------|
@@ -108,7 +118,9 @@ flowchart LR
 
 ---
 
-## 系统架构
+<a id="系统架构"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-05-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-05-light.svg"><img src="docs/showcase/section-05-light.svg" alt="系统架构" width="100%"></picture></h2>
+
 
 <img src="docs/images/architecture_overview.png" alt="Architecture overview" width="100%" />
 
@@ -134,7 +146,9 @@ Security Layer（JWT / RBAC / Tenant / Audit）、Observability Layer（Trace / 
 
 ---
 
-## RAG Pipeline
+<a id="rag-pipeline"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-06-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-06-light.svg"><img src="docs/showcase/section-06-light.svg" alt="RAG Pipeline" width="100%"></picture></h2>
+
 
 <img src="docs/images/rag-pipeline.png" alt="RAG pipeline" width="100%" />
 
@@ -168,7 +182,9 @@ Quality notes: [docs/RELEASE_GUIDE.md](docs/RELEASE_GUIDE.md). Workflow suite is
 
 ---
 
-## 数据流
+<a id="数据流"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-07-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-07-light.svg"><img src="docs/showcase/section-07-light.svg" alt="数据流" width="100%"></picture></h2>
+
 
 ```mermaid
 flowchart LR
@@ -182,7 +198,9 @@ flowchart LR
 
 ---
 
-## 部署架构
+<a id="部署架构"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-08-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-08-light.svg"><img src="docs/showcase/section-08-light.svg" alt="部署架构" width="100%"></picture></h2>
+
 
 ```mermaid
 flowchart TB
@@ -212,7 +230,9 @@ helm install enterprise-ai ./charts/enterprise-ai-platform \
 
 ---
 
-## 技术栈
+<a id="技术栈"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-09-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-09-light.svg"><img src="docs/showcase/section-09-light.svg" alt="技术栈" width="100%"></picture></h2>
+
 
 | Layer | Stack |
 |-------|--------|
@@ -224,7 +244,9 @@ helm install enterprise-ai ./charts/enterprise-ai-platform \
 
 ---
 
-## 快速开始
+<a id="快速开始"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-10-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-10-light.svg"><img src="docs/showcase/section-10-light.svg" alt="快速开始" width="100%"></picture></h2>
+
 
 ```bash
 git clone https://github.com/zhifengjin050-arch/enterprise-ai-agent-platform.git
@@ -265,7 +287,9 @@ Demo 租户 `CloudTech`、用户 `admin` / `admin123`、Agent `Enterprise Assist
 
 ---
 
-## API 示例
+<a id="api-示例"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-11-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-11-light.svg"><img src="docs/showcase/section-11-light.svg" alt="API 示例" width="100%"></picture></h2>
+
 
 OpenAPI：http://localhost:8000/docs
 
@@ -302,7 +326,9 @@ curl -X POST http://localhost:8000/api/agents/<agent_id>/execute \
 
 ---
 
-## 测试结果
+<a id="测试结果"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-12-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-12-light.svg"><img src="docs/showcase/section-12-light.svg" alt="测试结果" width="100%"></picture></h2>
+
 
 | Check | Result |
 |-------|--------|
@@ -315,7 +341,9 @@ CI：`.github/workflows/ci.yml`（lint + pytest + bandit + frontend build）。
 
 ---
 
-## Roadmap
+<a id="roadmap"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-13-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-13-light.svg"><img src="docs/showcase/section-13-light.svg" alt="Roadmap" width="100%"></picture></h2>
+
 
 **v1.0.0（当前）**：Agent Runtime、Hybrid RAG、Knowledge Graph、Workflow、Connector、多租户安全、可观测性、MCP、Docker / K8s / Helm。
 
@@ -327,7 +355,9 @@ CI：`.github/workflows/ci.yml`（lint + pytest + bandit + frontend build）。
 
 ---
 
-## 截图
+<a id="截图"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-14-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-14-light.svg"><img src="docs/showcase/section-14-light.svg" alt="截图" width="100%"></picture></h2>
+
 
 | Dashboard | Agent | Knowledge |
 |-----------|-------|-----------|
@@ -341,7 +371,9 @@ CI：`.github/workflows/ci.yml`（lint + pytest + bandit + frontend build）。
 
 ---
 
-## 文档
+<a id="文档"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-15-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-15-light.svg"><img src="docs/showcase/section-15-light.svg" alt="文档" width="100%"></picture></h2>
+
 
 - [Release Guide](docs/RELEASE_GUIDE.md)
 - [Final Release Report](docs/FINAL_RELEASE_REPORT.md)
@@ -354,7 +386,9 @@ CI：`.github/workflows/ci.yml`（lint + pytest + bandit + frontend build）。
 
 ---
 
-## License
+<a id="license"></a>
+<h2><picture><source media="(prefers-color-scheme: dark)" srcset="docs/showcase/section-16-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/showcase/section-16-light.svg"><img src="docs/showcase/section-16-light.svg" alt="License" width="100%"></picture></h2>
+
 
 Apache-2.0 · 见 [LICENSE](LICENSE)
 
